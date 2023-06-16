@@ -1,4 +1,4 @@
-# PSP
+# PSP (Plasma Shoes Projecct)
 
 ## GitHub Upload Format and Rules:
 ### 1. Please compile locally before pushing to GitHub.
