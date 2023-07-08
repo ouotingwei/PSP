@@ -10,14 +10,13 @@
 
 #define PI 3.141592653589793
 #define ANGLE 180
-#define SAM_ANG 39
+#define SAM_ANG 30
 #define SHIFT_X 0.05
 #define SHIFT_Y -0.71
 #define SHIFT_Z 0.0
-#define HIGH_THRESHOLD 0.497
+#define HIGH_THRESHOLD 0.2
 
 using namespace std;
-
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "downSampleAndMerge");
@@ -69,9 +68,17 @@ int main(int argc, char **argv)
         point.b = 0;     
     }
 
+    //turn cloud2 into green
+    for (auto& point : cloud2_spl->points) {
+        point.r = 0;   
+        point.g = 255;     
+        point.b = 0;     
+    }
+
     //merge two clouds
     *merge = *shifted_cloud1 + *cloud2_spl;
 
+    /*
     //Remove ground
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
 
@@ -80,12 +87,16 @@ int main(int argc, char **argv)
             filtered_cloud->points.push_back(point);
         }
     }
+
     filtered_cloud->width = filtered_cloud->points.size();
     filtered_cloud->height = 1;
     filtered_cloud->is_dense = true;
+
+    */
     
     //save files
-    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *filtered_cloud);
+    //pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *filtered_cloud);
+    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *merge);
     
     auto merge_end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> merge_diff = merge_end - total_start;
