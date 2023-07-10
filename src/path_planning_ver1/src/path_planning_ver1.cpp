@@ -3,57 +3,60 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/filters/voxel_grid.h>
 #include <open3d/Open3D.h>
 
-void find_boundary(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr& cloud)
-{
+using namespace std;
+
+void estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud){
+    // down sample
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr downsampledCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::VoxelGrid<pcl::PointXYZRGBA> voxelGrid;
+    voxelGrid.setInputCloud(cloud);
+    voxelGrid.setLeafSize(0.01, 0.01, 0.01);
+    voxelGrid.filter(*downsampledCloud);
+
+    // normal estimation
     pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
     pcl::NormalEstimation<pcl::PointXYZRGBA, pcl::Normal> ne;
-    ne.setInputCloud(cloud);
+    ne.setInputCloud(downsampledCloud);
     ne.setRadiusSearch(0.1);
     ne.compute(*normals);
 
-    open3d::geometry::PointCloud o3d_cloud;
-    for (const auto& point : cloud->points)
-    {
-        o3d_cloud.points_.push_back(Eigen::Vector3d(point.x, point.y, point.z));
+    // Convert to Open3D's PointCloud format
+    open3d::geometry::PointCloud o3dCloud;
+    for (const auto& point : downsampledCloud->points){
+        o3dCloud.points_.push_back(Eigen::Vector3d(point.x, point.y, point.z));
     }
 
-    open3d::geometry::PointCloud o3d_normals;
-    for (const auto& normal : normals->points)
-    {
-        o3d_normals.points_.push_back(Eigen::Vector3d(normal.normal_x, normal.normal_y, normal.normal_z));
+    // Adjusting the normal directions
+    open3d::geometry::PointCloud o3dNormals;
+    for (const auto& normal : normals->points){
+        o3dNormals.points_.push_back(Eigen::Vector3d(normal.normal_x, normal.normal_y, normal.normal_z));
     }
 
-    open3d::geometry::PointCloud o3d_oriented_cloud;
-    o3d_oriented_cloud.points_ = o3d_cloud.points_;
-    o3d_oriented_cloud.normals_ = o3d_normals.points_;
-    o3d_oriented_cloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d(0.0, 0.0, 10000.0));
+    o3dCloud.normals_ = o3dNormals.points_;
+    o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d(0.0, 0.0, -10000.0));
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr oriented_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    for (const auto& point : o3d_oriented_cloud.points_)
-    {
-        pcl::PointXYZRGBA pcl_point;
-        pcl_point.x = static_cast<float>(point.x());
-        pcl_point.y = static_cast<float>(point.y());
-        pcl_point.z = static_cast<float>(point.z());
-        oriented_cloud->points.push_back(pcl_point);
+    vector<shared_ptr<const open3d::geometry::Geometry>> geometries;
+    geometries.push_back(make_shared<const open3d::geometry::PointCloud>(o3dCloud));
+
+    open3d::visualization::DrawGeometries(geometries, "result", 1920, 1080, 50, 50, true);
+    for (const auto& normal : o3dCloud.normals_) {
+        cout << "Normal: " << normal << endl;
     }
 
-    pcl::io::savePCDFile("output_cloud.pcd", *oriented_cloud);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv){
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/merge/1.pcd", *cloud) == -1)
-    {
-        std::cout << "Failed to load point cloud." << std::endl;
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/merge/1.pcd", *cloud) == -1){
+        cout << "Failed to load point cloud." << endl;
         return -1;
     }
 
-    find_boundary(cloud);
+    estimateNormals(cloud);
 
     return 0;
 }

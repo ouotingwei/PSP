@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.0.2)
 project(path_planning_ver1)
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=/usr/lib/gcc/x86_64-linux-gnu/9")
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=/path/to/gomp/lib")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp

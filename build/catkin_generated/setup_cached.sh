@@ -7,9 +7,4 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/lab605/PSP/devel:$CMAKE_PREFIX_PATH"
-export LD_LIBRARY_PATH="/home/lab605/PSP/devel/lib:$LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH="/home/lab605/PSP/devel/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PWD='/home/lab605/PSP/build'
-export ROSLISP_PACKAGE_DIRECTORIES='/home/lab605/PSP/devel/share/common-lisp'
-export ROS_PACKAGE_PATH="/home/lab605/PSP/src:$ROS_PACKAGE_PATH"
