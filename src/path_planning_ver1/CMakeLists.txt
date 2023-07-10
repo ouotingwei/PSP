@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(path_planning_ver1)
 
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=/usr/lib/gcc/x86_64-linux-gnu/9")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=/usr/lib/gcc/x86_64-linux-gnu/9")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=/path/to/gomp/lib")
-
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  pcl_ros
 )
 
 find_package(Open3D REQUIRED)
@@ -23,9 +23,9 @@ include_directories(
 
 include_directories(${PCL_INCLUDE_DIRS})
 
-add_executable(pathplanning_ver1 src/path_planning_ver1.cpp)
+add_executable(path_planning_ver1 src/path_planning_ver1.cpp)
 
-target_link_libraries(pathplanning_ver1
+target_link_libraries(path_planning_ver1
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
   ${Open3D_LIBRARIES}

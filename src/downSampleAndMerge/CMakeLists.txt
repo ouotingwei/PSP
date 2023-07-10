@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(downSampleAndMerge)
+project(down_sample_and_merge)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -46,10 +46,10 @@ add_definitions(${PCL_DEFINITIONS})
 catkin_package()
 
 # Build executable
-add_executable(downSampleAndMerge src/downSampleAndMerge.cpp)
+add_executable(down_sample_and_merge src/down_sample_and_merge.cpp)
 
 # Link libraries
-target_link_libraries(downSampleAndMerge
+target_link_libraries(down_sample_and_merge
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
 )

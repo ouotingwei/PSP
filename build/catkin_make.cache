@@ -1,0 +1,2 @@
+downSampleAndMerge:getpcd:path_planning_ver1
+-DCATKIN_DEVEL_PREFIX=/home/lab605/PSP/devel -DCMAKE_INSTALL_PREFIX=/home/lab605/PSP/install -G Unix Makefiles

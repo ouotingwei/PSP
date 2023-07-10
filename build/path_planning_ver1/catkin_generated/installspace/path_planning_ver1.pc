@@ -1,0 +1,8 @@
+prefix=/home/lab605/PSP/install
+
+Name: path_planning_ver1
+Description: Description of path_planning_ver1
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: roscpp
