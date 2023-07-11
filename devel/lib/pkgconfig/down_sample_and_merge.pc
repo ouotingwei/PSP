@@ -1,8 +1,0 @@
-prefix=/home/lab605/PSP/devel
-
-Name: down_sample_and_merge
-Description: Description of down_sample_and_merge
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

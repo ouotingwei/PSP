@@ -3,11 +3,13 @@
 #include <pcl/io/pcd_io.h> 
 #include <pcl/point_cloud.h> 
 #include <pcl/point_types.h> 
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/registration/icp.h>
-
 #include <ros/ros.h>
+#include <string>
 #include<ctime>
 
+#define FILTER 0.01f
 #define PI 3.141592653589793
 #define ANGLE 180
 #define SAM_ANG 30
@@ -29,25 +31,37 @@ int main(int argc, char **argv)
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr merge(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/merge/1.pcd", *cloud1) == -1)
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera1/cam1.pcd", *cloud1) == -1)
     {
         cout << "Failed to load cloud1" << endl;
         return -1;
     }
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/merge/2.pcd", *cloud2) == -1)
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera2/cam2.pcd", *cloud2) == -1)
     {
         cout << "Failed to load cloud2" << endl;
         return -1;
     }
+    
+    // down sample
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr D_sample_1(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr D_sample_2(new pcl::PointCloud<pcl::PointXYZRGBA>);
+
+    pcl::VoxelGrid<pcl::PointXYZRGBA> downSizeFilter;
+    downSizeFilter.setInputCloud(cloud1);
+    downSizeFilter.setInputCloud(cloud2);
+    downSizeFilter.setLeafSize (FILTER, FILTER, FILTER);
+    downSizeFilter.filter(*D_sample_1);
+    downSizeFilter.filter(*D_sample_2);
 
     Eigen::Affine3f rotation = Eigen::Affine3f::Identity();
     rotation.rotate(Eigen::AngleAxisf(SAM_ANG * PI / 180, Eigen::Vector3f::UnitX()));
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud1_spl(new pcl::PointCloud<pcl::PointXYZRGBA>());
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2_spl(new pcl::PointCloud<pcl::PointXYZRGBA>());
-    pcl::transformPointCloud(*cloud1, *cloud1_spl, rotation);
-    pcl::transformPointCloud(*cloud2, *cloud2_spl, rotation);
+
+    pcl::transformPointCloud(*D_sample_1, *cloud1_spl, rotation);
+    pcl::transformPointCloud(*D_sample_2, *cloud2_spl, rotation);
 
     //rotate cloud1_spl
     Eigen::Affine3f rotation_matrix = Eigen::Affine3f::Identity();
@@ -78,24 +92,6 @@ int main(int argc, char **argv)
     //merge two clouds
     *merge = *shifted_cloud1 + *cloud2_spl;
 
-    /*
-    //Remove ground
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
-
-    for (const auto& point : merge->points) {
-        if (point.z <= HIGH_THRESHOLD) {
-            filtered_cloud->points.push_back(point);
-        }
-    }
-
-    filtered_cloud->width = filtered_cloud->points.size();
-    filtered_cloud->height = 1;
-    filtered_cloud->is_dense = true;
-
-    */
-    
-    //save files
-    //pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *filtered_cloud);
     pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *merge);
     
     auto merge_end = std::chrono::high_resolution_clock::now();
