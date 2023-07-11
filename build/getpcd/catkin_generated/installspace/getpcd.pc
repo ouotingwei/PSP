@@ -1,8 +1,0 @@
-prefix=/home/lab605/PSP/install
-
-Name: getpcd
-Description: Description of getpcd
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
