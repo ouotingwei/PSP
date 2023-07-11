@@ -8,24 +8,28 @@
 #include <pcl/filters/voxel_grid.h>
 #include <boost/thread.hpp>
 #include <Eigen/Geometry> 
+#include<iostream>
 #include <chrono>
-#include<string>
+
+using namespace std;
 
 void Callback_cam1(const sensor_msgs::PointCloud2ConstPtr& msg)
 {   
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::fromROSMsg(*msg, *cloud);
-    string filename = "./scan/camera1/cam1.pcd";
-    pcl::io::savePCDFileASCII(filename, *cloud);
+    string scanfile_dir = "./scan/camera1/";
+    string filename = "cam1.pcd";
+    pcl::io::savePCDFileASCII(scanfile_dir + filename, *cloud);
     ROS_INFO_STREAM("Saved " << cloud->points.size() << " data points to " << filename);
 }
 
 void Callback_cam2(const sensor_msgs::PointCloud2ConstPtr& msg)
 {   
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::fromROSMsg(*msg, *cloud);
-    string filename = "./scan/camera2/cam2.pcd";
-    pcl::io::savePCDFileASCII(filename, *cloud);
+    string scanfile_dir = "./scan/camera2/";
+    string filename = "cam2.pcd";
+    pcl::io::savePCDFileASCII(scanfile_dir + filename, *cloud);
     ROS_INFO_STREAM("Saved " << cloud->points.size() << " data points to " << filename);
 }
 

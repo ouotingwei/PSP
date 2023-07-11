@@ -7,18 +7,18 @@
 #include <pcl/registration/icp.h>
 #include <ros/ros.h>
 #include <string>
-#include<ctime>
 
 #define FILTER 0.01f
 #define PI 3.141592653589793
 #define ANGLE 180
-#define SAM_ANG 30
+#define SAM_ANG 28
 #define SHIFT_X 0.05
-#define SHIFT_Y -0.71
-#define SHIFT_Z 0.0
+#define SHIFT_Y -0.61
+#define SHIFT_Z -0.03
 #define HIGH_THRESHOLD 0.2
 
 using namespace std;
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "downSampleAndMerge");
@@ -47,12 +47,15 @@ int main(int argc, char **argv)
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr D_sample_1(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr D_sample_2(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-    pcl::VoxelGrid<pcl::PointXYZRGBA> downSizeFilter;
-    downSizeFilter.setInputCloud(cloud1);
-    downSizeFilter.setInputCloud(cloud2);
-    downSizeFilter.setLeafSize (FILTER, FILTER, FILTER);
-    downSizeFilter.filter(*D_sample_1);
-    downSizeFilter.filter(*D_sample_2);
+    pcl::VoxelGrid<pcl::PointXYZRGBA> downSizeFilter1;
+    downSizeFilter1.setInputCloud(cloud1);
+    downSizeFilter1.setLeafSize(FILTER, FILTER, FILTER);
+    downSizeFilter1.filter(*D_sample_1);
+
+    pcl::VoxelGrid<pcl::PointXYZRGBA> downSizeFilter2;
+    downSizeFilter2.setInputCloud(cloud2);
+    downSizeFilter2.setLeafSize(FILTER, FILTER, FILTER);
+    downSizeFilter2.filter(*D_sample_2);
 
     Eigen::Affine3f rotation = Eigen::Affine3f::Identity();
     rotation.rotate(Eigen::AngleAxisf(SAM_ANG * PI / 180, Eigen::Vector3f::UnitX()));
@@ -102,3 +105,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
