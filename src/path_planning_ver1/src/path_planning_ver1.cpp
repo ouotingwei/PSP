@@ -7,15 +7,15 @@
 #include <open3d/Open3D.h>
 
 // define sample size
-#define WINDOW_SIZE 5
-#define DOWN_SAMPLE_SIZE 0.02
-#define SEARCH_HEIGHT 0.01
+#define WINDOW_SIZE 0.1
+#define DOWN_SAMPLE_SIZE 0.01
 
 //Filter out the workspace
 #define SEARCH_RANGE_BX 0.2
 #define SEARCH_RANGE_SX -0.2
 #define SEARCH_RANGE_BY -0.2
 #define SEARCH_RANGE_SY -0.45
+#define SEARCH_HEIGHT 4.5
 
 using namespace std;
 
@@ -99,7 +99,7 @@ void estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud){
     }
     */
 }
-/*
+
 void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud) {
     float min_x = std::numeric_limits<float>::max();
     float max_x = -std::numeric_limits<float>::max();
@@ -122,12 +122,11 @@ void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud) {
     std::cout << "Y: " << min_y << " to " << max_y << std::endl;
     std::cout << "Z: " << min_z << " to " << max_z << std::endl;
 }
-*/
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr searchAndFilterItems(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud){
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
     for (const pcl::PointXYZRGBA& point : cloud->points) {
-        if (point.x >= SEARCH_RANGE_SX && point.x <= SEARCH_RANGE_BX && point.y >= SEARCH_RANGE_SY && point.y <= SEARCH_RANGE_BY){
+        if (point.x >= SEARCH_RANGE_SX && point.x <= SEARCH_RANGE_BX && point.y >= SEARCH_RANGE_SY && point.y <= SEARCH_RANGE_BY && point.z < SEARCH_HEIGHT){
             filteredCloud->points.push_back(point);
         }
     }
@@ -149,6 +148,11 @@ int main(int argc, char** argv){
     printPointCloudRange(smoothedCloud);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(cloud);
     estimateNormals(filteredCloud);
+
+    if (pcl::io::savePCDFileBinary("./scan/merge/filtered_cloud.pcd", *filteredCloud) == -1) {
+        cout << "Failed to save filtered point cloud." << endl;
+        return -1;
+    }
 
     return 0;
 }

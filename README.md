@@ -16,3 +16,8 @@ https://hackmd.io/@tingweiouo/BJY9HToZ2
 
 ## 流程圖
 <img width="798" alt="截圖 2023-06-17 上午11 08 03" src="https://github.com/ouotingwei/PSP/assets/87459096/706e4ccd-60bf-4448-aabe-3e3612459760">
+
+## dependance
+pcl 1.8
+visualization : open3d
+
