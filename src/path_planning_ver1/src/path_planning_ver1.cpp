@@ -153,6 +153,54 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr searchAndFilterItems(pcl::PointCloud<pcl
 }
 
 vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud){
+    float center_x, center_y, low_z, max_x, min_x, max_y, min_y = 0;
+
+    max_x = cloud[0][0];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][0] > max_x) {
+            max_x = cloud[i][0];  
+        }
+    }
+
+    min_x = cloud[0][0];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][0] < min_x) {
+            min_x = cloud[i][0];  
+        }
+    }
+
+    max_y = cloud[0][1];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][1] > max_y) {
+            max_y = cloud[i][1];  
+        }
+    }
+
+    min_y = cloud[0][1];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][1] < min_y) {
+            min_y = cloud[i][1];  
+        }
+    }
+
+    low_z = cloud[0][2];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][2] < low_z) {
+            low_z = cloud[i][2];  
+        }
+    }
+
+    //cout << max_x << " " << min_x << " " << max_y << " " << min_y << " " << low_z << endl;
+    center_x = (max_x + min_x) / 2;
+    center_y = (max_y + min_y) / 2;
+
+    for(int i = 0; i < cloud.size(); i++){
+        cloud[i][0] = cloud[i][0] - center_x;
+        cloud[i][1] = cloud[i][1] - center_y;
+        cloud[i][2] = cloud[i][2] - low_z;
+    }
+
+    return cloud;
 
 }
 
@@ -167,19 +215,21 @@ int main(int argc, char** argv){
     //pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/flip_cloud.pcd", *flipCloud);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr smoothedCloud = smoothPointCloud(flipCloud);
     //pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/smooth_cloud.pcd", *smoothedCloud);
-    printPointCloudRange(smoothedCloud);
+    //printPointCloudRange(smoothedCloud);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(smoothedCloud);
+    printPointCloudRange(filteredCloud);
     pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filted_cloud.pcd", *filteredCloud);
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
+    vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
 
-    /*
-    for (size_t i = 0; i < vectors.size(); ++i) {
-        for (size_t j = 0; j < vectors[i].size(); ++j) {
-            cout << vectors[i][j] << " ";
+    
+    for (size_t i = 0; i < ok_cloud.size(); ++i) {
+        for (size_t j = 0; j < ok_cloud[i].size(); ++j) {
+            cout << ok_cloud[i][j] << " ";
         }
         cout << endl;
     }
-    */
+    
 
     return 0;
 }
