@@ -16,6 +16,7 @@
 #define SHIFT_Y -0.61
 #define SHIFT_Z -0.03
 #define HIGH_THRESHOLD 0.2
+#define DOWN_SAMPLE_SIZE 0.02
 
 using namespace std;
 
@@ -93,7 +94,14 @@ int main(int argc, char **argv)
     //merge two clouds
     *merge = *shifted_cloud1 + *cloud2_spl;
 
-    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *merge);
+    // Downsample
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr downsampledCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::VoxelGrid<pcl::PointXYZRGBA> voxelGrid;
+    voxelGrid.setInputCloud(merge);
+    voxelGrid.setLeafSize(DOWN_SAMPLE_SIZE, DOWN_SAMPLE_SIZE, DOWN_SAMPLE_SIZE);
+    voxelGrid.filter(*downsampledCloud);
+
+    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *downsampledCloud);
     
     auto merge_end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> merge_diff = merge_end - total_start;
