@@ -4,6 +4,7 @@
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/statistical_outlier_removal.h>
 #include <open3d/Open3D.h>
 
 // define sample size
@@ -16,7 +17,10 @@
 #define SEARCH_RANGE_SY 0.1
 #define SEARCH_HEIGHT -0.485
 #define PROXIMITY_THRESHOLD 0.01
-  
+#define DOWN_SAMPLE_SIZE 0.001
+
+float pl_Dim = 0.03;
+
 using namespace std;
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in) {
@@ -37,46 +41,6 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl
     }
     
     return flipped_cloud;
-}
-
-
-pcl::PointCloud<pcl::PointXYZRGBA>::Ptr smoothPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in){
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    std::map<std::pair<float, float>, float> max_heights;
-
-    for (const pcl::PointXYZRGBA& point : cloud_in->points) {
-
-        std::pair<float, float> position(point.x, point.y);
-        float height = point.z;
-
-        if (max_heights.find(position) == max_heights.end() || height > max_heights[position]) {
-            max_heights[position] = height;
-        }
-    }
-
-
-    for (const pcl::PointXYZRGBA& point : cloud_in->points) {
-        std::pair<float, float> position(point.x, point.y);
-        float height = point.z;
-
-        bool is_similar_position = false;
-        for (const auto& max_height : max_heights) {
-            if (std::abs(max_height.first.first - position.first) <= PROXIMITY_THRESHOLD &&
-                std::abs(max_height.first.second - position.second) <= PROXIMITY_THRESHOLD) {
-                is_similar_position = true;
-                break;
-            }
-        }
-
-        if (is_similar_position && height >= max_heights[position]) {
-            filteredCloud->points.push_back(point);
-        }
-    }
-
-    filteredCloud->width = filteredCloud->points.size();
-    filteredCloud->height = 1;
-
-    return filteredCloud;
 }
 
 vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud) {
@@ -190,7 +154,8 @@ vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud){
         }
     }
 
-    //cout << max_x << " " << min_x << " " << max_y << " " << min_y << " " << low_z << endl;
+    cout << max_x << " " << min_x << " " << max_y << " " << min_y << " " << low_z << endl;
+
     center_x = (max_x + min_x) / 2;
     center_y = (max_y + min_y) / 2;
 
@@ -204,6 +169,14 @@ vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud){
 
 }
 
+vector<vector<double>> PathPlanning(vector<vector<double>> cloud){
+
+}
+
+vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud){
+
+}
+
 int main(int argc, char** argv){
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
     if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *cloud) == -1){
@@ -211,25 +184,29 @@ int main(int argc, char** argv){
         return -1;
     }
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud(cloud);
-    //pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/flip_cloud.pcd", *flipCloud);
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr smoothedCloud = smoothPointCloud(flipCloud);
-    //pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/smooth_cloud.pcd", *smoothedCloud);
-    //printPointCloudRange(smoothedCloud);
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(smoothedCloud);
+    // Downsample
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr downsampledCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::VoxelGrid<pcl::PointXYZRGBA> voxelGrid;
+    voxelGrid.setInputCloud(cloud);
+    voxelGrid.setLeafSize(DOWN_SAMPLE_SIZE, DOWN_SAMPLE_SIZE, DOWN_SAMPLE_SIZE);
+    voxelGrid.filter(*downsampledCloud);
+
+    pcl::StatisticalOutlierRemoval<pcl::PointXYZRGBA> sor; 
+    sor.setInputCloud(downsampledCloud);
+    sor.setMeanK(500);
+    sor.setStddevMulThresh(0.001);
+
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr smooth(new pcl::PointCloud<pcl::PointXYZRGBA>); 
+    sor.filter(*smooth);
+
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud(smooth);
+    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/flip_cloud.pcd", *flipCloud);
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(flipCloud);
     printPointCloudRange(filteredCloud);
-    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filted_cloud.pcd", *filteredCloud);
+    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filtered_cloud.pcd", *filteredCloud);
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
 
-    
-    for (size_t i = 0; i < ok_cloud.size(); ++i) {
-        for (size_t j = 0; j < ok_cloud[i].size(); ++j) {
-            cout << ok_cloud[i][j] << " ";
-        }
-        cout << endl;
-    }
-    
-
     return 0;
 }
+
