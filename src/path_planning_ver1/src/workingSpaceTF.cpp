@@ -3,8 +3,10 @@
 #include <math.h>
 #include <string.h>
 #include <vector>
+#include <fstream>
 #include <array>
 #include <iostream>
+#include <iomanip>
 
 struct Waypoint {
     double x;
@@ -28,12 +30,12 @@ void initializeWaypoints(Waypoint *waypoint) {
     waypoint->C = "CNT100";
 }
 
-std::vector<std::vector<int>> matrixMultiplication(const std::vector<std::vector<int>>& matrix1, const std::vector<std::vector<int>>& matrix2) {
+std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2) {
     int rows1 = matrix1.size();
     int cols1 = matrix1[0].size();
     int cols2 = matrix2[0].size();
 
-    std::vector<std::vector<int>> result(rows1, std::vector<int>(cols2, 0));
+    std::vector<std::vector<double>> result(rows1, std::vector<double>(cols2, 0));
 
     for (int i = 0; i < rows1; ++i) {
         for (int j = 0; j < cols2; ++j) {
@@ -46,7 +48,7 @@ std::vector<std::vector<int>> matrixMultiplication(const std::vector<std::vector
     return result;
 }
 
-void workingSpaceTF(const std::vector<std::vector<int>>& points, std::vector<Waypoint>& waypoints, double theta) {
+void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta) {
     double transition_p[3] = {350.000, 0.000, -325.827};
     double transition_v[3] = {-180, 0, 0};
 
@@ -65,8 +67,8 @@ void workingSpaceTF(const std::vector<std::vector<int>>& points, std::vector<Way
 
     for (int i = 0; i < points.size() - 2; i++) {
         // Transform points to workspace
-        std::vector<std::vector<int>> matrix_tmp = {{points[i][0], points[i][1], points[i][2]}};
-        std::vector<std::vector<int>> position_tf = matrixMultiplication(matrix_tmp, rotation_matrix);
+        std::vector<std::vector<double>> matrix_tmp = {{points[i][0], points[i][1], points[i][2]}};
+        std::vector<std::vector<double>> position_tf = matrixMultiplication(matrix_tmp, rotation_matrix);
         position_tf[0][0] += transition_p[0];
         position_tf[0][1] += transition_p[1];
         position_tf[0][2] += transition_p[2];
@@ -96,11 +98,61 @@ void workingSpaceTF(const std::vector<std::vector<int>>& points, std::vector<Way
     waypoints.push_back(endPoint);
 }
 
+int writeLsFile(const std::string& file, const std::vector<Waypoint>& waypoints) {
+    std::ofstream f(file);
+    if (!f.is_open()) {
+        std::cout << "Error opening file: " << file << std::endl;
+        return -1;
+    }
+
+    f << "/PROG  " << file << "\n";
+    f << "/ATTR\n";
+    f << "OWNER       = MNEDITOR;\n";
+    f << "COMMENT     = \"\";\n";
+    f << "PROG_SIZE   = 636;\n";
+    f << "CREATE      = DATE 23-01-07  TIME 11:59:14;\n";
+    f << "MODIFIED    = DATE 23-01-07  TIME 12:02:18;\n";
+    f << "FILE_NAME   = ;\n";
+    f << "VERSION     = 0;\n";
+    f << "LINE_COUNT  = 4;\n";
+    f << "MEMORY_SIZE = 992;\n";
+    f << "PROTECT     = READ_WRITE;\n";
+    f << "TCD:  STACK_SIZE    = 0,\n";
+    f << "      TASK_PRIORITY = 50,\n";
+    f << "      TIME_SLICE    = 0,\n";
+    f << "      BUSY_LAMP_OFF = 0,\n";
+    f << "      ABORT_REQUEST = 0,\n";
+    f << "      PAUSE_REQUEST = 0;\n";
+    f << "DEFAULT_GROUP    = 1,*,*,*,*;\n";
+    f << "CONTROL_CODE     = 00000000 00000000;\n";
+
+    f << "/MN\n";
+    f << "   1:J P[1] 100"<<"%"<<" FINE    ;\n";
+    for (size_t i = 2; i <= waypoints.size(); ++i) {
+        f << "   " << i << ":L P[" << i << "] " << waypoints[i - 1].V << "mm/sec " << waypoints[i - 1].C << "    ;\n";
+    }
+
+    f << "/POS\n";
+    for (size_t i = 1; i <= waypoints.size(); ++i) {
+        f << "P[" << i << "]{\n";
+        f << "   GP1:\n";
+        f << "    UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',\n";
+        f << "    X =  " << std::fixed << std::setprecision(3) << waypoints[i - 1].x << "  mm,    Y =   " << waypoints[i - 1].y << "  mm,    Z =   " << waypoints[i - 1].z << "  mm,\n";
+        f << "    W =  " << waypoints[i - 1].W << " deg,    P =   " << waypoints[i - 1].P << " deg,    R =   " << waypoints[i - 1].R << " deg\n";
+        f << "};\n";
+    }
+
+    f << "/END\n";
+    f.close();
+
+    return 0;
+}
+
 int main() {
-    std::vector<std::vector<int>> point_cloud = {
-        {1, 2, 3, 1, 2, 3},
-        {4, 5, 6, 4, 5, 6},
-        {7, 8, 9, 7, 8, 9}
+    std::vector<std::vector<double>> point_cloud = {
+        {1, 2, 3, 0, 0, 0},
+        {4, 5, 6, 0, 0, 0},
+        {7, 8, 9, 0, 0, 0}
     }; 
 
     std::vector<Waypoint> waypoints;
@@ -120,5 +172,12 @@ int main() {
         printf("C: %s\n", waypoints[i].C.c_str());
         printf("\n");
     }
+
+    const std::string file_path = "B0001.LS";
+    if(writeLsFile(file_path, waypoints))
+        printf("Write LS error !!!\n");
+    else
+        printf("Sucess!!!\n");
+    
     return 0;
 }
