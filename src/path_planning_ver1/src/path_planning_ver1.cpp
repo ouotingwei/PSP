@@ -9,7 +9,6 @@
 
 // define sample size
 #define WINDOW_SIZE 0.1
-
 //Filter out the workspace
 #define SEARCH_RANGE_BX 0.2
 #define SEARCH_RANGE_SX -0.25
@@ -18,8 +17,8 @@
 #define SEARCH_HEIGHT -0.485
 #define PROXIMITY_THRESHOLD 0.01
 #define DOWN_SAMPLE_SIZE 0.001
-
-float pl_Dim = 0.03;
+// path planning
+#define CLOUD_SEARCHING_RANGE 0.0035
 
 using namespace std;
 
@@ -169,13 +168,68 @@ vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud){
 
 }
 
-vector<vector<double>> PathPlanning(vector<vector<double>> cloud){
-
-}
-
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud){
+    int rounds = 12;
 
+    float max_x = cloud[0][0];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][0] > max_x) {
+            max_x = cloud[i][0];  
+        }
+    }
+
+    float min_x = cloud[0][0];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][0] < min_x) {  
+            min_x = cloud[i][0];  
+        }
+    }
+
+    float shift_distance = ( max_x - min_x ) / rounds;
+    vector<vector<double>> ok_cloud;
+
+    for(int i = 0; i <= rounds; i++){
+        float x = max_x - (shift_distance * i);
+        float up_x = x + CLOUD_SEARCHING_RANGE;
+        float low_x = x - CLOUD_SEARCHING_RANGE;
+        for(int j = 0; j < cloud.size(); j++){
+            if(cloud[j][0] > low_x && cloud[j][0] < up_x){
+                ok_cloud.push_back(cloud[j]);
+            }
+        }
+    }
+
+    return ok_cloud;
 }
+
+void PathPlanning(vector<vector<double>> cloud){
+
+    cout << "[ PathPlanning ] before filtered_cloud " << cloud.size() << endl;
+    vector<vector<double>> filtered_cloud = PathCloudFilter(cloud);
+    cout << "[ PathPlanning ] after filtered_cloud " << filtered_cloud.size() << endl;
+
+    // Convert input cloud to Open3D format
+    open3d::geometry::PointCloud open3d_cloud;
+    for (const auto& point : filtered_cloud) {
+        open3d_cloud.points_.push_back(Eigen::Vector3d(point[0], point[1], point[2]));
+    }
+
+    std::cout << "[ PathPlanning ] after filtered_cloud " << open3d_cloud.points_.size() << std::endl;
+
+    // Filter the point cloud using Open3D functions
+    open3d::geometry::PointCloud filtered_open3d_cloud = open3d_cloud;  // Perform your filtering operation here
+
+    // Visualize the filtered point cloud
+    open3d::visualization::Visualizer visualizer;
+    visualizer.CreateVisualizerWindow("Open3D Point Cloud", 1920, 1080);
+
+    std::shared_ptr<const open3d::geometry::Geometry> filtered_geometry_ptr = std::make_shared<const open3d::geometry::PointCloud>(filtered_open3d_cloud);
+    visualizer.AddGeometry(filtered_geometry_ptr);
+    visualizer.Run();
+    visualizer.DestroyVisualizerWindow();
+}
+
+
 
 int main(int argc, char** argv){
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
@@ -206,6 +260,15 @@ int main(int argc, char** argv){
     pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filtered_cloud.pcd", *filteredCloud);
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
+    // vector<vector<double>> to_ls_cloud = PathPlanning(ok_cloud);
+    PathPlanning(ok_cloud);
+
+    for (size_t i = 0; i < vectors.size(); ++i) {
+        for (size_t j = 0; j < vectors[i].size(); ++j) {
+            cout << vectors[i][j] << " ";
+        }
+        cout << endl;
+    }
 
     return 0;
 }

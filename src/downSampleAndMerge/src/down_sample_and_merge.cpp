@@ -37,10 +37,12 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    
     if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera2/cam2.pcd", *cloud2) == -1){
         cout << "Failed to load cloud2" << endl;
         return -1;
     }
+    
     
     // down sample
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr D_sample_1(new pcl::PointCloud<pcl::PointXYZRGBA>);
@@ -92,7 +94,8 @@ int main(int argc, char **argv)
     }
 
     //merge two clouds
-    *merge = *shifted_cloud1 + *cloud2_spl;
+    // *merge = *shifted_cloud1 + *cloud2_spl;
+    merge = cloud2_spl;
 
     pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *merge);
     
