@@ -19,7 +19,7 @@
 #define PROXIMITY_THRESHOLD 0.01
 #define DOWN_SAMPLE_SIZE 0.001
 // path planning
-#define CLOUD_SEARCHING_RANGE 0.0035
+#define CLOUD_SEARCHING_RANGE 0.004
 #define PLASMA_DIA 0.03
 
 using namespace std;
@@ -377,7 +377,7 @@ int main(int argc, char **argv)
         }
 
     std::vector<Waypoint> waypoints;
-    double theta = 45.0;
+    double theta = 0;
     workingSpaceTF(point_cloud, waypoints, theta);
 
     // Print waypoints
@@ -400,14 +400,14 @@ int main(int argc, char **argv)
     else
         printf("Sucess!!!\n");
 
-    for (size_t i = 0; i < vectors.size(); ++i)
-    {
-        for (size_t j = 0; j < vectors[i].size(); ++j)
-        {
-            cout << vectors[i][j] << " ";
-        }
-        cout << endl;
-    }
+    // for (size_t i = 0; i < vectors.size(); ++i)
+    // {
+    //     for (size_t j = 0; j < vectors[i].size(); ++j)
+    //     {
+    //         cout << vectors[i][j] << " ";
+    //     }
+    //     cout << endl;
+    // }
 
     return 0;
 }

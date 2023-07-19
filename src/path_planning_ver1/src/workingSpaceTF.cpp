@@ -50,7 +50,7 @@ std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vec
 }
 
 void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta) {
-    double transition_p[3] = {650.000, 0.000, -325.827};
+    double transition_p[3] = {550.000, 0.000, -325.827};
     double transition_v[3] = {-180, 0, 0};
     theta = theta * (3.1415 / 180);
     std::vector<std::vector<double>> rotation_matrix = {
