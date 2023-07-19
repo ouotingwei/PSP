@@ -7,6 +7,7 @@
 #include <array>
 #include <iostream>
 #include <iomanip>
+// #include "path_planning_ver1.cpp"
 
 struct Waypoint {
     double x;
@@ -49,9 +50,8 @@ std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vec
 }
 
 void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta) {
-    double transition_p[3] = {350.000, 0.000, -325.827};
+    double transition_p[3] = {650.000, 0.000, -325.827};
     double transition_v[3] = {-180, 0, 0};
-
     theta = theta * (3.1415 / 180);
     std::vector<std::vector<double>> rotation_matrix = {
         {cos(theta), -sin(theta), 0},
@@ -148,36 +148,36 @@ int writeLsFile(const std::string& file, const std::vector<Waypoint>& waypoints)
     return 0;
 }
 
-int main() {
-    std::vector<std::vector<double>> point_cloud = {
-        {1, 2, 3, 0, 0, 0},
-        {4, 5, 6, 0, 0, 0},
-        {7, 8, 9, 0, 0, 0}
-    }; 
+// int main() {
+//     std::vector<std::vector<double>> point_cloud = {
+//         {1, 2, 3, 0, 0, 0},
+//         {4, 5, 6, 0, 0, 0},
+//         {7, 8, 9, 0, 0, 0}
+//     }; 
 
-    std::vector<Waypoint> waypoints;
-    double theta = 45.0;
-    workingSpaceTF(point_cloud, waypoints, theta);
+//     std::vector<Waypoint> waypoints;
+//     double theta = 45.0;
+//     workingSpaceTF(point_cloud, waypoints, theta);
 
-    // Print waypoints
-    for (int i = 0; i < waypoints.size(); i++) {
-        printf("Waypoint %d:\n", i);
-        printf("x: %lf\n", waypoints[i].x);
-        printf("y: %lf\n", waypoints[i].y);
-        printf("z: %lf\n", waypoints[i].z);
-        printf("W: %lf\n", waypoints[i].W);
-        printf("P: %lf\n", waypoints[i].P);
-        printf("R: %lf\n", waypoints[i].R);
-        printf("V: %lf\n", waypoints[i].V);
-        printf("C: %s\n", waypoints[i].C.c_str());
-        printf("\n");
-    }
+//     // Print waypoints
+//     for (int i = 0; i < waypoints.size(); i++) {
+//         printf("Waypoint %d:\n", i);
+//         printf("x: %lf\n", waypoints[i].x);
+//         printf("y: %lf\n", waypoints[i].y);
+//         printf("z: %lf\n", waypoints[i].z);
+//         printf("W: %lf\n", waypoints[i].W);
+//         printf("P: %lf\n", waypoints[i].P);
+//         printf("R: %lf\n", waypoints[i].R);
+//         printf("V: %lf\n", waypoints[i].V);
+//         printf("C: %s\n", waypoints[i].C.c_str());
+//         printf("\n");
+//     }
 
-    const std::string file_path = "B0001.LS";
-    if(writeLsFile(file_path, waypoints))
-        printf("Write LS error !!!\n");
-    else
-        printf("Sucess!!!\n");
+//     const std::string file_path = "B0001.LS";
+//     if(writeLsFile(file_path, waypoints))
+//         printf("Write LS error !!!\n");
+//     else
+//         printf("Sucess!!!\n");
     
-    return 0;
-}
+//     return 0;
+// }

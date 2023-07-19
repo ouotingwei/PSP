@@ -6,6 +6,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <open3d/Open3D.h>
+#include "workingSpaceTF.cpp"
 
 // define sample size
 #define WINDOW_SIZE 0.1
@@ -22,6 +23,7 @@
 #define PLASMA_DIA 0.03
 
 using namespace std;
+    vector<vector<double>> ok_cloud_1;
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in)
 {
@@ -246,7 +248,9 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     }
 
     float shift_distance = (max_x - min_x) / rounds;
-    vector<vector<double>> ok_cloud;
+
+    vector<double> startPoint = {0, 0, 0.1, 0, 0, 0};
+    ok_cloud_1.push_back(startPoint);
 
     for (int i = 0; i <= rounds; i++)
     {
@@ -268,23 +272,23 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         if (i % 2 == 0)
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall);
-            ok_cloud.push_back(ap_max_y);
+            ok_cloud_1.push_back(ap_max_y);
 
             for (auto c : tmp_cloud)
-                ok_cloud.push_back(c);
-            ok_cloud.push_back(ap_min_y);
+                ok_cloud_1.push_back(c);
+            ok_cloud_1.push_back(ap_min_y);
         }
         else
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig);
-            ok_cloud.push_back(ap_min_y);
+            ok_cloud_1.push_back(ap_min_y);
 
             for (auto c : tmp_cloud)
-                ok_cloud.push_back(c);
-            ok_cloud.push_back(ap_max_y);
+                ok_cloud_1.push_back(c);
+            ok_cloud_1.push_back(ap_max_y);
         }
     }
-    for (auto v1 : ok_cloud)
+    for (auto v1 : ok_cloud_1)
     {
         for (auto v2 : v1)
         {
@@ -292,7 +296,10 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         }
         cout << endl;
     }
-    return ok_cloud;
+
+    ok_cloud_1.push_back(startPoint);
+
+    return ok_cloud_1;
 }
 
 void PathPlanning(vector<vector<double>> cloud)
@@ -302,7 +309,7 @@ void PathPlanning(vector<vector<double>> cloud)
     vector<vector<double>> filtered_cloud = PathCloudFilter(cloud);
     // cout << "[ PathPlanning ] after filtered_cloud " << filtered_cloud.size() << endl;
 
-    vector<vector<double>> startPoint = {{0, 0, 100, 0, 0, 0}};
+    
 
     // Convert input cloud to Open3D format
     open3d::geometry::PointCloud open3d_cloud;
@@ -359,6 +366,39 @@ int main(int argc, char **argv)
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
     // vector<vector<double>> to_ls_cloud = PathPlanning(ok_cloud);
     PathPlanning(ok_cloud);
+
+    
+    //jylong edit
+        std::vector<std::vector<double>> point_cloud = ok_cloud_1; 
+        for(auto& point:point_cloud){
+            point[0]=point[0]*1000;
+            point[1]=point[1]*1000;
+            point[2]=point[2]*1000;
+        }
+
+    std::vector<Waypoint> waypoints;
+    double theta = 45.0;
+    workingSpaceTF(point_cloud, waypoints, theta);
+
+    // Print waypoints
+    for (int i = 0; i < waypoints.size(); i++) {
+        printf("Waypoint %d:\n", i);
+        printf("x: %lf\n", waypoints[i].x);
+        printf("y: %lf\n", waypoints[i].y);
+        printf("z: %lf\n", waypoints[i].z);
+        printf("W: %lf\n", waypoints[i].W);
+        printf("P: %lf\n", waypoints[i].P);
+        printf("R: %lf\n", waypoints[i].R);
+        printf("V: %lf\n", waypoints[i].V);
+        printf("C: %s\n", waypoints[i].C.c_str());
+        printf("\n");
+    }
+
+    const std::string file_path = "B0001X1000.LS";
+    if(writeLsFile(file_path, waypoints))
+        printf("Write LS error !!!\n");
+    else
+        printf("Sucess!!!\n");
 
     for (size_t i = 0; i < vectors.size(); ++i)
     {
