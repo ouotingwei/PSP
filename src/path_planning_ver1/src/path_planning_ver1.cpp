@@ -196,14 +196,14 @@ vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud)
     return cloud;
 }
 
-bool SortXaxisBigToSmall(vector<double> a, vector<double> b)
+bool SortYaxisBigToSmall(vector<double> a, vector<double> b)
 {
-    return a[0] > b[0];
+    return a[1] > b[1];
 }
 
-bool SortXaxisSmallToBig(vector<double> a, vector<double> b)
+bool SortYaxisSmallToBig(vector<double> a, vector<double> b)
 {
-    return a[0] < b[0];
+    return a[1] < b[1];
 }
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
@@ -266,15 +266,32 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
             }
         }
         if (i % 2 == 0)
-            std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortXaxisBigToSmall);
-        else
-            std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortXaxisSmallToBig);
-        for (auto c : tmp_cloud)
-            ok_cloud.push_back(c);
-        ok_cloud.push_back(ap_max_y);
-        ok_cloud.push_back(ap_min_y);
-    }
+        {
+            std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall);
+            ok_cloud.push_back(ap_max_y);
 
+            for (auto c : tmp_cloud)
+                ok_cloud.push_back(c);
+            ok_cloud.push_back(ap_min_y);
+        }
+        else
+        {
+            std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig);
+            ok_cloud.push_back(ap_min_y);
+
+            for (auto c : tmp_cloud)
+                ok_cloud.push_back(c);
+            ok_cloud.push_back(ap_max_y);
+        }
+    }
+    for (auto v1 : ok_cloud)
+    {
+        for (auto v2 : v1)
+        {
+            cout << v2 << ", ";
+        }
+        cout << endl;
+    }
     return ok_cloud;
 }
 
