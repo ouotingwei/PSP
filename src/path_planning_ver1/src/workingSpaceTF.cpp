@@ -59,13 +59,7 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
         {0, 0, 1}
     };
 
-    // Initial position
-    Waypoint initialPoint;
-    initializeWaypoints(&initialPoint);
-    initialPoint.z = transition_p[2] + 100;
-    waypoints.push_back(initialPoint);
-
-    for (int i = 0; i < points.size() - 2; i++) {
+    for (int i = 0; i < points.size(); i++) {
         // Transform points to workspace
         std::vector<std::vector<double>> matrix_tmp = {{points[i][0], points[i][1], points[i][2]}};
         std::vector<std::vector<double>> position_tf = matrixMultiplication(matrix_tmp, rotation_matrix);
@@ -90,12 +84,6 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
         newPoint.R = vector_tf[2];
         waypoints.push_back(newPoint);
     }
-
-    // End position
-    Waypoint endPoint;
-    initializeWaypoints(&endPoint);
-    endPoint.z = transition_p[2] + 100;
-    waypoints.push_back(endPoint);
 }
 
 int writeLsFile(const std::string& file, const std::vector<Waypoint>& waypoints) {
