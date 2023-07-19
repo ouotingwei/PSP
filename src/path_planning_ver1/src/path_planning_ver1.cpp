@@ -19,6 +19,7 @@
 #define DOWN_SAMPLE_SIZE 0.001
 // path planning
 #define CLOUD_SEARCHING_RANGE 0.0035
+#define PLASMA_DIA 0.03
 
 using namespace std;
 
@@ -185,6 +186,20 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud){
         }
     }
 
+    float max_y = cloud[0][1];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][1] > max_y) {
+            max_y = cloud[i][1];  
+        }
+    }
+
+    float min_y = cloud[0][1];  
+    for (int i = 0; i < cloud.size(); i++) {
+        if (cloud[i][1] < min_y) {
+            min_y = cloud[i][1];  
+        }
+    }
+
     float shift_distance = ( max_x - min_x ) / rounds;
     vector<vector<double>> ok_cloud;
 
@@ -192,11 +207,17 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud){
         float x = max_x - (shift_distance * i);
         float up_x = x + CLOUD_SEARCHING_RANGE;
         float low_x = x - CLOUD_SEARCHING_RANGE;
+        
+        vector<double> ap_max_y = {x, max_y + PLASMA_DIA, 0, 0, 0, 0};
+        vector<double> ap_min_y = {x, min_y - PLASMA_DIA, 0, 0, 0, 0};
+
         for(int j = 0; j < cloud.size(); j++){
             if(cloud[j][0] > low_x && cloud[j][0] < up_x){
                 ok_cloud.push_back(cloud[j]);
             }
         }
+        ok_cloud.push_back(ap_max_y);
+        ok_cloud.push_back(ap_min_y);
     }
 
     return ok_cloud;
@@ -204,9 +225,11 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud){
 
 void PathPlanning(vector<vector<double>> cloud){
 
-    cout << "[ PathPlanning ] before filtered_cloud " << cloud.size() << endl;
+    // cout << "[ PathPlanning ] before filtered_cloud " << cloud.size() << endl;
     vector<vector<double>> filtered_cloud = PathCloudFilter(cloud);
-    cout << "[ PathPlanning ] after filtered_cloud " << filtered_cloud.size() << endl;
+    // cout << "[ PathPlanning ] after filtered_cloud " << filtered_cloud.size() << endl;
+
+    vector<vector<double>> startPoint = {{0, 0, 100, 0, 0, 0}};
 
     // Convert input cloud to Open3D format
     open3d::geometry::PointCloud open3d_cloud;
