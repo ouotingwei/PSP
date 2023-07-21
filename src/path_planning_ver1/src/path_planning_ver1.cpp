@@ -17,9 +17,9 @@
 #define SEARCH_RANGE_SY 0.1
 #define SEARCH_HEIGHT -0.485
 #define PROXIMITY_THRESHOLD 0.01
-#define DOWN_SAMPLE_SIZE 0.001
+#define DOWN_SAMPLE_SIZE 0.005
 // path planning
-#define CLOUD_SEARCHING_RANGE 0.004
+#define CLOUD_SEARCHING_RANGE 0.0022
 #define PLASMA_DIA 0.03
 
 using namespace std;

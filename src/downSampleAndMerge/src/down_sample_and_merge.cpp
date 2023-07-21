@@ -8,7 +8,7 @@
 #include <ros/ros.h>
 #include <string>
 
-#define FILTER 0.01f
+#define FILTER 0.005
 #define PI 3.141592653589793
 #define ANGLE 180
 #define SAM_ANG 28
@@ -16,7 +16,7 @@
 #define SHIFT_Y -0.61
 #define SHIFT_Z -0.03
 #define HIGH_THRESHOLD 0.2
-#define DOWN_SAMPLE_SIZE 0.001
+
 
 using namespace std;
 
@@ -32,13 +32,13 @@ int main(int argc, char **argv)
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr merge(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera1/cam1.pcd", *cloud1) == -1){
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera1/cam1_5.pcd", *cloud1) == -1){
         cout << "Failed to load cloud1" << endl;
         return -1;
     }
 
     
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera2/cam2.pcd", *cloud2) == -1){
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera2/cam2_5.pcd", *cloud2) == -1){
         cout << "Failed to load cloud2" << endl;
         return -1;
     }
