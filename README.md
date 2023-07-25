@@ -21,3 +21,9 @@ https://hackmd.io/@tingweiouo/BJY9HToZ2
 pcl 1.8
 visualization : open3d
 
+## Version 1
+1. Test the tensile strength of five types of shoes on reciprocating paths.
+2. Dual-camera superimposed sampling.
+3. Reciprocating spray (with normal vector).
+4. Large sole 2D sampling (vertical sampling).
+
