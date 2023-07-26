@@ -38,6 +38,7 @@ double DOWN_SAMPLE_SIZE = 0.005;
 // path planning
 double CLOUD_SEARCHING_RANGE = 0.0022;
 double PLASMA_DIA = 0.03;
+double TF_Z_BIAS=0;
 
 
 using namespace std;
@@ -67,6 +68,8 @@ int readParameters()
     DOWN_SAMPLE_SIZE = parameters["DOWN_SAMPLE_SIZE"];
     CLOUD_SEARCHING_RANGE = parameters["CLOUD_SEARCHING_RANGE"];
     PLASMA_DIA = parameters["PLASMA_DIA"];
+    TF_Z_BIAS = parameters["TF_Z_BIAS"];
+    
     return 1;
 }
 
@@ -478,7 +481,7 @@ int main(int argc, char **argv)
 
     std::vector<Waypoint> waypoints;
     double theta = 0;
-    workingSpaceTF(point_cloud, waypoints, theta);
+    workingSpaceTF(point_cloud, waypoints, theta,TF_Z_BIAS);
 
     // Print waypoints
     for (int i = 0; i < waypoints.size(); i++)
