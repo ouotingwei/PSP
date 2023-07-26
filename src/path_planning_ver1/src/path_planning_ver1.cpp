@@ -39,10 +39,10 @@ double DOWN_SAMPLE_SIZE = 0.005;
 double CLOUD_SEARCHING_RANGE = 0.0022;
 double PLASMA_DIA = 0.03;
 
-vector<vector<double>> edge_contour;
 
 using namespace std;
 using json = nlohmann::json;
+vector<vector<double>> edge_contour;
 
 int readParameters()
 {
