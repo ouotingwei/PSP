@@ -39,6 +39,7 @@ double DOWN_SAMPLE_SIZE = 0.005;
 double CLOUD_SEARCHING_RANGE = 0.0022;
 double PLASMA_DIA = 0.03;
 double TF_Z_BIAS=0;
+double nearby_distance =0.01;
 float removeBounceGate = 0.1;
 
 using namespace std;
@@ -78,6 +79,8 @@ int readParameters()
     PLASMA_DIA = parameters["PLASMA_DIA"];
     TF_Z_BIAS = parameters["TF_Z_BIAS"];
     removeBounceGate=parameters["removeBounceGate"];
+    nearby_distance=parameters["nearby_distance"];
+
     return 1;
 }
 
@@ -85,7 +88,7 @@ bool isNearEdge(vector<double> point, double &refer_height)
 {
     for (auto edge_point : edge_contour)
     {
-        if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < 0.005)
+        if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < nearby_distance)
         {
             refer_height = edge_point[2];
             return true;

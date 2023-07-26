@@ -10,5 +10,6 @@
     "CLOUD_SEARCHING_RANGE": 0.0022,
     "PLASMA_DIA": 0.03,
     "TF_Z_BIAS":0,
-    "removeBounceGate":0.1
+    "removeBounceGate":0.1,
+    "nearby_distance":0.01
   }
