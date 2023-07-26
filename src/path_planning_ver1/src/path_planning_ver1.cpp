@@ -285,11 +285,11 @@ bool SortYaxisSmallToBig(vector<double> a, vector<double> b)
 
 vector<vector<double>> removeBouncePoints(vector<vector<double>> cloud)
 {
-    float gate = 0.005;
+    float removeBounceGate = 0.1;
     float temp_z = cloud[0][2];
     for(int i = 1; i < cloud.size(); i++)
     {
-        if(abs(cloud[i][2] - temp_z) > gate)
+        if(abs(cloud[i][2] - temp_z) > removeBounceGate)
         {
             if(cloud[i][2] < temp_z)
             {
