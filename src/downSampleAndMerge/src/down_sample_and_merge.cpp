@@ -32,7 +32,7 @@ using json = nlohmann::json;
 
 int readParameters()
 {
-    std::ifstream file("parameters.json");
+    std::ifstream file("./src/downSampleAndMerge/parameters.json");
     if (!file.is_open())
     {
         std::cerr << "Error opening parameters.json" << std::endl;
