@@ -39,6 +39,8 @@ double DOWN_SAMPLE_SIZE = 0.005;
 double CLOUD_SEARCHING_RANGE = 0.0022;
 double PLASMA_DIA = 0.03;
 
+vector<vector<double>> edge_contour;
+
 using namespace std;
 using json = nlohmann::json;
 
@@ -66,6 +68,33 @@ int readParameters()
     CLOUD_SEARCHING_RANGE = parameters["CLOUD_SEARCHING_RANGE"];
     PLASMA_DIA = parameters["PLASMA_DIA"];
     return 1;
+}
+
+bool isNearEdge(vector<double> point, double &refer_height)
+{
+    for (auto edge_point : edge_contour)
+    {
+        if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < 0.005)
+        {
+            refer_height = edge_point[2];
+            return true;
+        }
+    }
+    return false;
+}
+
+vector<vector<double>> smoothEdgePointCloud(vector<vector<double>> point_cloud)
+{
+    vector<vector<double>> return_cloud = point_cloud;
+    double refer_height=0;
+    for (auto &point : return_cloud)
+    {
+        if (isNearEdge(point,refer_height))
+        {
+            point[2]=refer_height;
+        }
+    }
+    return return_cloud;
 }
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in)
@@ -316,6 +345,8 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         if (i % 2 == 0)
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall);
+            edge_contour.push_back(tmp_cloud.front());
+            edge_contour.push_back(tmp_cloud.back());
             ok_cloud_1.push_back(ap_max_y);
 
             for (auto c : tmp_cloud)
@@ -325,6 +356,8 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         else
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig);
+            edge_contour.push_back(tmp_cloud.front());
+            edge_contour.push_back(tmp_cloud.back());
             ok_cloud_1.push_back(ap_min_y);
 
             for (auto c : tmp_cloud)
@@ -412,7 +445,6 @@ int main(int argc, char **argv)
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
     // vector<vector<double>> to_ls_cloud = PathPlanning(ok_cloud);
-    
 
     // jylong edit
     std::vector<std::vector<double>> point_cloud = PathPlanning(ok_cloud);
