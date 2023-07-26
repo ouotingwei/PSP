@@ -88,7 +88,11 @@ bool isNearEdge(vector<double> point, double &refer_height)
 {
     for (auto edge_point : edge_contour)
     {
+<<<<<<< HEAD
         if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < nearby_distance)
+=======
+        if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < 0.009)
+>>>>>>> b7edeb43bf206aea89024dc1d9dd185bc2552cc4
         {
             refer_height = edge_point[2];
             return true;
@@ -498,22 +502,22 @@ int main(int argc, char **argv)
     double theta = 0;
     workingSpaceTF(point_cloud, waypoints, theta,TF_Z_BIAS);
 
-    // Print waypoints
-    for (int i = 0; i < waypoints.size(); i++)
-    {
-        printf("Waypoint %d:\n", i);
-        printf("x: %lf\n", waypoints[i].x);
-        printf("y: %lf\n", waypoints[i].y);
-        printf("z: %lf\n", waypoints[i].z);
-        printf("W: %lf\n", waypoints[i].W);
-        printf("P: %lf\n", waypoints[i].P);
-        printf("R: %lf\n", waypoints[i].R);
-        printf("V: %lf\n", waypoints[i].V);
-        printf("C: %s\n", waypoints[i].C.c_str());
-        printf("\n");
-    }
+    // // Print waypoints
+    // for (int i = 0; i < waypoints.size(); i++)
+    // {
+    //     printf("Waypoint %d:\n", i);
+    //     printf("x: %lf\n", waypoints[i].x);
+    //     printf("y: %lf\n", waypoints[i].y);
+    //     printf("z: %lf\n", waypoints[i].z);
+    //     printf("W: %lf\n", waypoints[i].W);
+    //     printf("P: %lf\n", waypoints[i].P);
+    //     printf("R: %lf\n", waypoints[i].R);
+    //     printf("V: %lf\n", waypoints[i].V);
+    //     printf("C: %s\n", waypoints[i].C.c_str());
+    //     printf("\n");
+    // }
 
-    const std::string file_path = "B0001X1000.LS";
+    const std::string file_path = "S001.LS";
     if (writeLsFile(file_path, waypoints))
         printf("Write LS error !!!\n");
     else
