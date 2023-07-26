@@ -279,6 +279,27 @@ bool SortYaxisSmallToBig(vector<double> a, vector<double> b)
 {
     return a[1] < b[1];
 }
+
+vector<vector<double>> removeBouncePoints(vector<vector<double>> cloud)
+{
+    float gate = 0.005;
+    float temp_z = cloud[0][2];
+    for(int i = 1; i < cloud.size(); i++)
+    {
+        if(abs(cloud[i][2] - temp_z) > gate)
+        {
+            if(cloud[i][2] < temp_z)
+            {
+                cloud[i][2] = temp_z;
+            }
+
+            temp_z = cloud[i][2];
+        }
+    }
+
+    return cloud;
+}
+
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
     int rounds = 12;
