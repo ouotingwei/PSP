@@ -7,6 +7,7 @@
 #include <pcl/registration/icp.h>
 #include <ros/ros.h>
 #include <string>
+#include "json.hpp"
 
 // #define FILTER 0.005
 // #define PI 3.141592653589793
@@ -27,6 +28,7 @@ double SHIFT_Z = -0.03;
 double HIGH_THRESHOLD = 0.2;
 
 using namespace std;
+using json = nlohmann::json;
 
 int readParameters()
 {
@@ -54,7 +56,7 @@ int readParameters()
 
 int main(int argc, char **argv)
 {
-    readParameters()
+    readParameters();
     
     ros::init(argc, argv, "downSampleAndMerge");
     ros::NodeHandle nh;

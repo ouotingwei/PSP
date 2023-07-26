@@ -40,7 +40,7 @@ double CLOUD_SEARCHING_RANGE = 0.0022;
 double PLASMA_DIA = 0.03;
 
 using namespace std;
-using json = nlohmann : json;
+using json = nlohmann::json;
 
 vector<vector<double>> ok_cloud_1;
 
