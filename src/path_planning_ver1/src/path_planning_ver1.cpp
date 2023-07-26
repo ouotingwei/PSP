@@ -39,7 +39,7 @@ double DOWN_SAMPLE_SIZE = 0.005;
 double CLOUD_SEARCHING_RANGE = 0.0022;
 double PLASMA_DIA = 0.03;
 double TF_Z_BIAS=0;
-
+float removeBounceGate = 0.1;
 
 using namespace std;
 using json = nlohmann::json;
@@ -77,7 +77,7 @@ int readParameters()
     CLOUD_SEARCHING_RANGE = parameters["CLOUD_SEARCHING_RANGE"];
     PLASMA_DIA = parameters["PLASMA_DIA"];
     TF_Z_BIAS = parameters["TF_Z_BIAS"];
-    
+    removeBounceGate=parameters["removeBounceGate"];
     return 1;
 }
 
@@ -293,7 +293,7 @@ bool SortYaxisSmallToBig(vector<double> a, vector<double> b)
 
 vector<vector<double>> removeBouncePoints(vector<vector<double>> cloud)
 {
-    float removeBounceGate = 0.1;
+
     float temp_z = cloud[0][2];
     for(int i = 1; i < cloud.size(); i++)
     {
