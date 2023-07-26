@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -7,23 +9,66 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <open3d/Open3D.h>
 #include "workingSpaceTF.cpp"
+#include "json.hpp"
+
+// // define sample size
+// #define WINDOW_SIZE 0.1
+// // Filter out the workspace
+// #define SEARCH_RANGE_BX 0.2
+// #define SEARCH_RANGE_SX -0.25
+// #define SEARCH_RANGE_BY 0.5
+// #define SEARCH_RANGE_SY 0.1
+// #define SEARCH_HEIGHT -0.485
+// #define PROXIMITY_THRESHOLD 0.01
+// #define DOWN_SAMPLE_SIZE 0.005
+// // path planning
+// #define CLOUD_SEARCHING_RANGE 0.0022
+// #define PLASMA_DIA 0.03
 
 // define sample size
-#define WINDOW_SIZE 0.1
+double WINDOW_SIZE = 0.1;
 // Filter out the workspace
-#define SEARCH_RANGE_BX 0.2
-#define SEARCH_RANGE_SX -0.25
-#define SEARCH_RANGE_BY 0.5
-#define SEARCH_RANGE_SY 0.1
-#define SEARCH_HEIGHT -0.485
-#define PROXIMITY_THRESHOLD 0.01
-#define DOWN_SAMPLE_SIZE 0.005
+double SEARCH_RANGE_BX = 0.2;
+double SEARCH_RANGE_SX = -0.25;
+double SEARCH_RANGE_BY = 0.5;
+double SEARCH_RANGE_SY = 0.1;
+double SEARCH_HEIGHT = -0.485;
+double PROXIMITY_THRESHOLD = 0.01;
+double DOWN_SAMPLE_SIZE = 0.005;
 // path planning
-#define CLOUD_SEARCHING_RANGE 0.0022
-#define PLASMA_DIA 0.03
+double CLOUD_SEARCHING_RANGE = 0.0022;
+double PLASMA_DIA = 0.03;
 
 using namespace std;
-    vector<vector<double>> ok_cloud_1;
+using json = nlohmann : json;
+
+vector<vector<double>> ok_cloud_1;
+
+int readParameters()
+{
+    std::ifstream file("parameters.json");
+    if (!file.is_open())
+    {
+        std::cerr << "Error opening parameters.json" << std::endl;
+        return 0;
+    }
+
+    json parameters;
+    file >> parameters;
+    file.close();
+
+    WINDOW_SIZE = parameters["WINDOW_SIZE"];
+    SEARCH_RANGE_BX = parameters["SEARCH_RANGE_BX"];
+    SEARCH_RANGE_SX = parameters["SEARCH_RANGE_SX"];
+    SEARCH_RANGE_BY = parameters["SEARCH_RANGE_BY"];
+    SEARCH_RANGE_SY = parameters["SEARCH_RANGE_SY"];
+    SEARCH_HEIGHT = parameters["SEARCH_HEIGHT"];
+    PROXIMITY_THRESHOLD = parameters["PROXIMITY_THRESHOLD"];
+    DOWN_SAMPLE_SIZE = parameters["DOWN_SAMPLE_SIZE"];
+    CLOUD_SEARCHING_RANGE = parameters["CLOUD_SEARCHING_RANGE"];
+    PLASMA_DIA = parameters["PLASMA_DIA"];
+    return 1;
+}
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in)
 {
@@ -309,8 +354,6 @@ void PathPlanning(vector<vector<double>> cloud)
     vector<vector<double>> filtered_cloud = PathCloudFilter(cloud);
     // cout << "[ PathPlanning ] after filtered_cloud " << filtered_cloud.size() << endl;
 
-    
-
     // Convert input cloud to Open3D format
     open3d::geometry::PointCloud open3d_cloud;
     for (const auto &point : filtered_cloud)
@@ -335,6 +378,9 @@ void PathPlanning(vector<vector<double>> cloud)
 
 int main(int argc, char **argv)
 {
+
+    readParameters();
+
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
     if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *cloud) == -1)
     {
@@ -367,21 +413,22 @@ int main(int argc, char **argv)
     // vector<vector<double>> to_ls_cloud = PathPlanning(ok_cloud);
     PathPlanning(ok_cloud);
 
-    
-    //jylong edit
-        std::vector<std::vector<double>> point_cloud = ok_cloud_1; 
-        for(auto& point:point_cloud){
-            point[0]=point[0]*1000;
-            point[1]=point[1]*1000;
-            point[2]=point[2]*1000;
-        }
+    // jylong edit
+    std::vector<std::vector<double>> point_cloud = ok_cloud_1;
+    for (auto &point : point_cloud)
+    {
+        point[0] = point[0] * 1000;
+        point[1] = point[1] * 1000;
+        point[2] = point[2] * 1000;
+    }
 
     std::vector<Waypoint> waypoints;
     double theta = 0;
     workingSpaceTF(point_cloud, waypoints, theta);
 
     // Print waypoints
-    for (int i = 0; i < waypoints.size(); i++) {
+    for (int i = 0; i < waypoints.size(); i++)
+    {
         printf("Waypoint %d:\n", i);
         printf("x: %lf\n", waypoints[i].x);
         printf("y: %lf\n", waypoints[i].y);
@@ -395,7 +442,7 @@ int main(int argc, char **argv)
     }
 
     const std::string file_path = "B0001X1000.LS";
-    if(writeLsFile(file_path, waypoints))
+    if (writeLsFile(file_path, waypoints))
         printf("Write LS error !!!\n");
     else
         printf("Sucess!!!\n");
