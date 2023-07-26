@@ -47,7 +47,7 @@ vector<vector<double>> edge_contour;
 
 int readParameters()
 {
-    std::ifstream file("./src/path_planning_ver1/parameters.json");
+    std::ifstream file("~/PSP/src/path_planning_ver1/src/parameters.json");
     if (!file.is_open())
     {
         std::cerr << "Error opening parameters.json" << std::endl;
