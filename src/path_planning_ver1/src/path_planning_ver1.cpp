@@ -88,11 +88,7 @@ bool isNearEdge(vector<double> point, double &refer_height)
 {
     for (auto edge_point : edge_contour)
     {
-<<<<<<< HEAD
         if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < nearby_distance)
-=======
-        if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < 0.009)
->>>>>>> b7edeb43bf206aea89024dc1d9dd185bc2552cc4
         {
             refer_height = edge_point[2];
             return true;
