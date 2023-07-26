@@ -307,6 +307,8 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
     int rounds = 12;
     vector<vector<double>> ok_cloud_1;
+    vector<vector<double>> ok_cloud_2;
+    vector<vector<double>> ok_cloud_3;
 
     float max_x = cloud[0][0];
     for (int i = 0; i < cloud.size(); i++)
@@ -399,8 +401,10 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     }
 
     ok_cloud_1.push_back(startPoint);
+    ok_cloud_2 = removeBouncePoints(ok_cloud_1);
+    ok_cloud_3 = smoothEdgePointCloud(ok_cloud_2);
 
-    return ok_cloud_1;
+    return ok_cloud_3;
 }
 
 vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
@@ -462,10 +466,10 @@ int main(int argc, char **argv)
     sor.filter(*smooth);
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud(smooth);
-    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/flip_cloud.pcd", *flipCloud);
+    //pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/flip_cloud.pcd", *flipCloud);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(flipCloud);
     printPointCloudRange(filteredCloud);
-    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filtered_cloud.pcd", *filteredCloud);
+    //pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filtered_cloud.pcd", *filteredCloud);
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
     // vector<vector<double>> to_ls_cloud = PathPlanning(ok_cloud);
