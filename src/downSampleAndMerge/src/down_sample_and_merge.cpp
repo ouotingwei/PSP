@@ -32,13 +32,13 @@ using json = nlohmann::json;
 
 int readParameters()
 {
-    const char* homeDir = getenv("HOME");
+        const char* homeDir = getenv("HOME");
     if (homeDir == nullptr) {
         std::cerr << "Failed to get the home directory." << std::endl;
         return 1;
     }
 
-    std::string filePath = std::string(homeDir) + "/PSP/src/path_planning_ver1/src/parameters.json";
+    std::string filePath = std::string(homeDir) + "/PSP/src/downSampleAndMerge/src/parameters.json";
 
     std::ifstream file(filePath);
     if (!file.is_open())
