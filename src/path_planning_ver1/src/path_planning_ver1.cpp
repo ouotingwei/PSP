@@ -42,8 +42,6 @@ double PLASMA_DIA = 0.03;
 using namespace std;
 using json = nlohmann::json;
 
-vector<vector<double>> ok_cloud_1;
-
 int readParameters()
 {
     std::ifstream file("./src/path_planning_ver1/parameters.json");
@@ -255,6 +253,7 @@ bool SortYaxisSmallToBig(vector<double> a, vector<double> b)
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
     int rounds = 12;
+    vector<vector<double>> ok_cloud_1;
 
     float max_x = cloud[0][0];
     for (int i = 0; i < cloud.size(); i++)
@@ -347,7 +346,7 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     return ok_cloud_1;
 }
 
-void PathPlanning(vector<vector<double>> cloud)
+vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
 {
 
     // cout << "[ PathPlanning ] before filtered_cloud " << cloud.size() << endl;
@@ -374,6 +373,8 @@ void PathPlanning(vector<vector<double>> cloud)
     visualizer.AddGeometry(filtered_geometry_ptr);
     visualizer.Run();
     visualizer.DestroyVisualizerWindow();
+
+    return filtered_cloud;
 }
 
 int main(int argc, char **argv)
@@ -411,10 +412,10 @@ int main(int argc, char **argv)
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
     // vector<vector<double>> to_ls_cloud = PathPlanning(ok_cloud);
-    PathPlanning(ok_cloud);
+    
 
     // jylong edit
-    std::vector<std::vector<double>> point_cloud = ok_cloud_1;
+    std::vector<std::vector<double>> point_cloud = PathPlanning(ok_cloud);
     for (auto &point : point_cloud)
     {
         point[0] = point[0] * 1000;
