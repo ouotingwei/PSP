@@ -26,7 +26,7 @@ void initializeWaypoints(Waypoint *waypoint) {
     waypoint->W = 0.000;
     waypoint->P = 0.000;
     waypoint->R = 0.000;
-    waypoint->V = 100;
+    waypoint->V = 300;
     waypoint->C = "CNT100";
 }
 
@@ -48,23 +48,27 @@ std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vec
     return result;
 }
 
-void vector2Angle(const std::vector<std::vector<double>>& points){
+void vector2Angle(std::vector<std::vector<double>>& points){
     for (int i = 0; i < points.size(); i++) {
-        double row, pich, yow;
-        row = std::atan2(points[i][4], points[i][5]);
-        pich = std::atan2(points[i][3], points[i][5]);
-        yow = std::atan2(points[i][3], points[i][4]);
+        //double row, pich, yow;
+        double row;
+        if(!points[i][4] && !points[i][5])
+            row = 0;
+        else
+            row = std::atan2(-points[i][4], -points[i][5]);
+        //pich = std::atan2(points[i][3], points[i][5]);
+        //yow = std::atan2(points[i][3], points[i][4]);
         row = row*180.0/M_PI;
-        pich = pich*180.0/M_PI;
-        yow = yow*180.0/M_PI;
+        //pich = pich*180.0/M_PI;
+        //yow = yow*180.0/M_PI;
         points[i][3] = row;
-        points[i][4] = pich;
-        points[i][5] = yow;
+        //points[i][4] = pich;
+        //points[i][5] = yow;
     }
 }
 
 void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS) {
-    double transition_p[3] = {350.000, 0.000, -325.827+TF_Z_BIAS};
+    double transition_p[3] = {400.000, 0.000, -325.827+TF_Z_BIAS};
     double transition_v[3] = {-180, 0, 0};
 
     theta = theta * (3.1415 / 180);
@@ -151,37 +155,37 @@ int writeLsFile(const std::string& file, const std::vector<Waypoint>& waypoints)
     return 0;
 }
 
-int main() {
-    std::vector<std::vector<double>> point_cloud = {
-        {1, 2, 3, 0, 0, 0},
-        {4, 5, 6, 0, 0, 0},
-        {7, 8, 9, 0, 0, 0}
-    }; 
+// int main() {
+//     std::vector<std::vector<double>> point_cloud = {
+//         {1, 2, 3, 0, 0, 0},
+//         {4, 5, 6, 0, 0, 0},
+//         {7, 8, 9, 0, 0, 0}
+//     }; 
 
-    std::vector<Waypoint> waypoints;
-    double theta = 45.0;
-    vector2Angle(point_cloud);
-    workingSpaceTF(point_cloud, waypoints, theta);
+//     std::vector<Waypoint> waypoints;
+//     double theta = 45.0;
+//     vector2Angle(point_cloud);
+//     workingSpaceTF(point_cloud, waypoints, theta);
 
-    // Print waypoints
-    for (int i = 0; i < waypoints.size(); i++) {
-        printf("Waypoint %d:\n", i);
-        printf("x: %lf\n", waypoints[i].x);
-        printf("y: %lf\n", waypoints[i].y);
-        printf("z: %lf\n", waypoints[i].z);
-        printf("W: %lf\n", waypoints[i].W);
-        printf("P: %lf\n", waypoints[i].P);
-        printf("R: %lf\n", waypoints[i].R);
-        printf("V: %lf\n", waypoints[i].V);
-        printf("C: %s\n", waypoints[i].C.c_str());
-        printf("\n");
-    }
+//     // Print waypoints
+//     for (int i = 0; i < waypoints.size(); i++) {
+//         printf("Waypoint %d:\n", i);
+//         printf("x: %lf\n", waypoints[i].x);
+//         printf("y: %lf\n", waypoints[i].y);
+//         printf("z: %lf\n", waypoints[i].z);
+//         printf("W: %lf\n", waypoints[i].W);
+//         printf("P: %lf\n", waypoints[i].P);
+//         printf("R: %lf\n", waypoints[i].R);
+//         printf("V: %lf\n", waypoints[i].V);
+//         printf("C: %s\n", waypoints[i].C.c_str());
+//         printf("\n");
+//     }
 
-    const std::string file_path = "B0001.LS";
-    if(writeLsFile(file_path, waypoints))
-        printf("Write LS error !!!\n");
-    else
-        printf("Sucess!!!\n");
+//     const std::string file_path = "B0001.LS";
+//     if(writeLsFile(file_path, waypoints))
+//         printf("Write LS error !!!\n");
+//     else
+//         printf("Sucess!!!\n");
     
-    return 0;
-}
+//     return 0;
+// }

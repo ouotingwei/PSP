@@ -27,7 +27,7 @@
 
 // define sample size
 double WINDOW_SIZE = 0.1;
-// Filter out the workspace
+// Filter out the workspacef
 double SEARCH_RANGE_BX = 0.2;
 double SEARCH_RANGE_SX = -0.25;
 double SEARCH_RANGE_BY = 0.5;
@@ -496,6 +496,7 @@ int main(int argc, char **argv)
 
     std::vector<Waypoint> waypoints;
     double theta = 0;
+    vector2Angle(point_cloud);
     workingSpaceTF(point_cloud, waypoints, theta,TF_Z_BIAS);
 
     // // Print waypoints
@@ -513,7 +514,7 @@ int main(int argc, char **argv)
     //     printf("\n");
     // }
 
-    const std::string file_path = "S001.LS";
+    const std::string file_path = "S005.LS";
     if (writeLsFile(file_path, waypoints))
         printf("Write LS error !!!\n");
     else
