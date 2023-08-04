@@ -157,7 +157,8 @@ vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr c
     }
 
     o3dCloud.normals_ = o3dNormals.points_;
-    o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d(0.0, 0.0, -10000.0));
+    // o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d::Zero());
+    o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d(0.0, 0.0, -10000));
 
     // Convert to (x, y, z, a, b, c) vector format
     vector<vector<double>> vectors;
@@ -168,6 +169,15 @@ vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr c
         vector<double> vector{point.x(), point.y(), point.z(), normal.x(), normal.y(), normal.z()};
         vectors.push_back(vector);
     }
+
+    vector<shared_ptr<const open3d::geometry::Geometry>> geometries;
+    geometries.push_back(make_shared<const open3d::geometry::PointCloud>(o3dCloud));
+
+    open3d::visualization::DrawGeometries(geometries, "result", 1920, 1080, 50, 50, true);
+    // for (const auto& normal : o3dCloud.normals_) {
+    //     cout << "Normal: " << normal << endl;
+    // }
+
 
     return vectors;
 }
@@ -368,8 +378,8 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         float up_x = x + CLOUD_SEARCHING_RANGE;
         float low_x = x - CLOUD_SEARCHING_RANGE;
 
-        vector<double> ap_max_y = {x, max_y + PLASMA_DIA, 0, 0, 0, 0};
-        vector<double> ap_min_y = {x, min_y - PLASMA_DIA, 0, 0, 0, 0};
+        vector<double> ap_max_y = {x, max_y + PLASMA_DIA+0.05, 0, 0, 0, 0};
+        vector<double> ap_min_y = {x, min_y - PLASMA_DIA-0.05, 0, 0, 0, 0};
 
         vector<vector<double>> tmp_cloud;
         for (int j = 0; j < cloud.size(); j++)
@@ -402,14 +412,14 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
             ok_cloud_1.push_back(ap_max_y);
         }
     }
-    for (auto v1 : ok_cloud_1)
-    {
-        for (auto v2 : v1)
-        {
-            cout << v2 << ", ";
-        }
-        cout << endl;
-    }
+    // for (auto v1 : ok_cloud_1)
+    // {
+    //     for (auto v2 : v1)
+    //     {
+    //         cout << v2 << ", ";
+    //     }
+    //     cout << endl;
+    // }
 
     ok_cloud_1.push_back(startPoint);
     ok_cloud_2 = removeBouncePoints(ok_cloud_1);
@@ -514,7 +524,7 @@ int main(int argc, char **argv)
     //     printf("\n");
     // }
 
-    const std::string file_path = "S005.LS";
+    const std::string file_path = "S003.LS";
     if (writeLsFile(file_path, waypoints))
         printf("Write LS error !!!\n");
     else
