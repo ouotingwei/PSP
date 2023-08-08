@@ -9,7 +9,7 @@
     "DOWN_SAMPLE_SIZE": 0.005,
     "CLOUD_SEARCHING_RANGE": 0.0022,
     "PLASMA_DIA": 0.03,
-    "TF_Z_BIAS":15,
+    "TF_Z_BIAS":999,
     "removeBounceGate":0.1,
     "nearby_distance":0.01
   }

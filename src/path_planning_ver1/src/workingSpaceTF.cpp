@@ -68,7 +68,7 @@ void vector2Angle(std::vector<std::vector<double>>& points){
 }
 
 void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS) {
-    double transition_p[3] = {420.000, 0.000, -325.827+56};
+    double transition_p[3] = {420.000, 0.000, -325.827+TF_Z_BIAS};
     double transition_v[3] = {-180, 0, 0};
 
     theta = theta * (3.1415 / 180);
