@@ -19,14 +19,14 @@ struct Waypoint {
     std::string C;
 };
 
-void initializeWaypoints(Waypoint *waypoint) {
+void initializeWaypoints(Waypoint *waypoint,double V) {
     waypoint->x = 0.000;
     waypoint->y = 0.000;
     waypoint->z = 0.000;
     waypoint->W = 0.000;
     waypoint->P = 0.000;
     waypoint->R = 0.000;
-    waypoint->V = 300;
+    waypoint->V = V;
     waypoint->C = "CNT100";
 }
 
@@ -67,7 +67,7 @@ void vector2Angle(std::vector<std::vector<double>>& points){
     }
 }
 
-void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS) {
+void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS,double vel) {
     double transition_p[3] = {420.000, 0.000, -325.827+TF_Z_BIAS};
     double transition_v[3] = {-180, 0, 0};
 
@@ -94,7 +94,7 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
 
         // Output waypoints
         Waypoint newPoint;
-        initializeWaypoints(&newPoint);
+        initializeWaypoints(&newPoint,vel);
         newPoint.x = position_tf[0][0];
         newPoint.y = position_tf[0][1];
         newPoint.z = position_tf[0][2];

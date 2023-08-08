@@ -41,6 +41,7 @@ double PLASMA_DIA = 0.03;
 double TF_Z_BIAS = 0;
 double nearby_distance = 0.01;
 float removeBounceGate = 0.1;
+double velocity = 300;
 
 using namespace std;
 using json = nlohmann::json;
@@ -81,6 +82,7 @@ int readParameters()
     TF_Z_BIAS = parameters["TF_Z_BIAS"];
     removeBounceGate = parameters["removeBounceGate"];
     nearby_distance = parameters["nearby_distance"];
+    velocity=parameters["velocity"];
 
     return 1;
 }
@@ -508,7 +510,7 @@ int main(int argc, char **argv)
     std::vector<Waypoint> waypoints;
     double theta = 0;
     vector2Angle(point_cloud);
-    workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS);
+    workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS,velocity);
 
     // // Print waypoints
     // for (int i = 0; i < waypoints.size(); i++)

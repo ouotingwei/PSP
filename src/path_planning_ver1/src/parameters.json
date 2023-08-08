@@ -11,5 +11,6 @@
     "PLASMA_DIA": 0.03,
     "TF_Z_BIAS":999,
     "removeBounceGate":0.1,
-    "nearby_distance":0.01
+    "nearby_distance":0.01,
+    "velocity":123
   }
