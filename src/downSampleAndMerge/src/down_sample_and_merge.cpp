@@ -179,7 +179,7 @@ int main(int argc, char **argv)
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr split_1(new pcl::PointCloud<pcl::PointXYZRGBA>);
     for (const pcl::PointXYZRGBA &point : shifted_cloud1->points)
     {
-        if (point.y >= CAM1_GATE)
+        if (point.y <= CAM1_GATE)
         {
             split_1->points.push_back(point);
         }
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr split_2(new pcl::PointCloud<pcl::PointXYZRGBA>);
     for (const pcl::PointXYZRGBA &point : cloud2_spl->points)
     {
-        if (point.y < CAM2_GATE)
+        if (point.y > CAM2_GATE)
         {
             split_2->points.push_back(point);
         }

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include<math.h>
+#include <math.h>
 #include <string>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
@@ -11,6 +11,7 @@
 #include <open3d/Open3D.h>
 #include "workingSpaceTF.cpp"
 #include "json.hpp"
+#include <queue>
 
 // // define sample size
 // #define WINDOW_SIZE 0.1
@@ -27,27 +28,29 @@
 // #define PLASMA_DIA 0.03
 
 #define PI 3.14159
+#define REI_B 0.04
+#define REI_H 0.01
 
 // define sample size
 double WINDOW_SIZE = 0.1;
 // Filter out the workspacef
-double SEARCH_RANGE_BX = 0.2;
-double SEARCH_RANGE_SX = -0.25;
-double SEARCH_RANGE_BY = 0.5;
+double SEARCH_RANGE_BX = 0.4;
+double SEARCH_RANGE_SX = -0.5;
+double SEARCH_RANGE_BY = 0.8;
 double SEARCH_RANGE_SY = 0.1;
 double SEARCH_HEIGHT = -0.485;
 double PROXIMITY_THRESHOLD = 0.01;
 double DOWN_SAMPLE_SIZE = 0.005;
 // path planning
 double CLOUD_SEARCHING_RANGE = 0.0022;
-double PLASMA_DIA = 0.03;
+double PLASMA_DIA = 0.05;
 double TF_Z_BIAS = 0;
 double nearby_distance = 0.01;
 float removeBounceGate = 0.1;
 double velocity = 300;
-double camera_x=0;
-double camera_y=0;
-double camera_z=0;
+double camera_x = 0;
+double camera_y = 0;
+double camera_z = 0;
 
 using namespace std;
 using json = nlohmann::json;
@@ -88,12 +91,25 @@ int readParameters()
     TF_Z_BIAS = parameters["TF_Z_BIAS"];
     removeBounceGate = parameters["removeBounceGate"];
     nearby_distance = parameters["nearby_distance"];
-    velocity=parameters["velocity"];
-    camera_x=parameters["camera_x"];
-    camera_y=parameters["camera_y"];
-    camera_z=parameters["camera_z"];
+    velocity = parameters["velocity"];
+    camera_x = parameters["camera_x"];
+    camera_y = parameters["camera_y"];
+    camera_z = parameters["camera_z"];
 
     return 1;
+}
+
+double midHighestHeightOfShoe(vector<vector<double>> point_cloud)
+{
+    priority_queue<double> pq;
+
+    for (auto point : point_cloud)
+    {
+        pq.push(point[2]);
+    }
+    for(int i=0;i<point_cloud.size()/2;i++)
+        pq.pop();
+    return pq.top();
 }
 
 bool isNearEdge(vector<double> point, double &refer_height)
@@ -102,7 +118,7 @@ bool isNearEdge(vector<double> point, double &refer_height)
     {
         if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < nearby_distance)
         {
-            refer_height = edge_point[2];
+            // refer_height = edge_point[2];
             return true;
         }
     }
@@ -111,8 +127,9 @@ bool isNearEdge(vector<double> point, double &refer_height)
 
 vector<vector<double>> smoothEdgePointCloud(vector<vector<double>> point_cloud)
 {
+    double refer_height = midHighestHeightOfShoe(point_cloud);
+    cout << "The refer height is " << refer_height << endl;
     vector<vector<double>> return_cloud = point_cloud;
-    double refer_height = 0;
     for (auto &point : return_cloud)
     {
         if (isNearEdge(point, refer_height))
@@ -345,42 +362,63 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
     vector<vector<double>> ring_shaped;
     vector<vector<double>> rt_ring;
     vector<vector<double>> arrange;
-    for(int i = 0; i < cloud.size(); i++){
+    for (int i = 0; i < cloud.size(); i++)
+    {
         double r = sqrt(pow(cloud[i][0], 2) + pow(cloud[i][1], 2));
-        int angle = 180*atan2(cloud[i][1], cloud[i][0]) / PI;
+        int angle = 180 * atan2(cloud[i][1], cloud[i][0]) / PI;
         vector<double> temp = {cloud[i][0], cloud[i][1], cloud[i][2], cloud[i][3], cloud[i][4], cloud[i][5], r, static_cast<double>(angle)};
         arrange.push_back(temp);
-
     }
 
     sort(arrange.begin(), arrange.end(), customCompare);
 
-    for(int now_ang = 180; now_ang >= -180; now_ang--){
+    for (int i = 0; i < arrange.size(); i++)
+    {
+        cout << arrange[i][7] << endl;
+    }
+
+    for (int now_ang = 180; now_ang >= -180; now_ang = now_ang - 5)
+    {
         vector<double> temp = {0, 0, 0, 0, 0, 0, -10, 0};
-        for(int i = 0; i < arrange.size(); i++){
-            
-            if(static_cast<int>(arrange[i][7]) == now_ang && arrange[i][6] > temp[6]){
+        for (int i = 0; i < arrange.size(); i++)
+        {
+
+            if (static_cast<int>(arrange[i][7]) == now_ang && arrange[i][6] > temp[6])
+            {
                 temp = {arrange[i][0], arrange[i][1], arrange[i][2], arrange[i][3], arrange[i][4], arrange[i][5], arrange[i][6], arrange[i][7]};
             }
         }
 
-        if(temp[6] != -10){
+        if (temp[6] != -10)
+        {
             ring_shaped.push_back(temp);
         }
-
     }
 
-    for(int i = 0; i < ring_shaped.size()-1; i++){
-        if(ring_shaped[i][7] < 15 && ring_shaped[i][7] > -15 && abs(ring_shaped[i][6] - ring_shaped[i][6]) < 0.001){
-            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], ring_shaped[i][2], ring_shaped[i][3], ring_shaped[i][4], ring_shaped[i][5]};
+    for (int i = 0; i < ring_shaped.size(); i++)
+    {
+        if (ring_shaped[i][7] < 30 && ring_shaped[i][7] > -30 && ring_shaped[i][2] < 0.02)
+        {
+            cout << "[1]" << ring_shaped[i][2] << endl;
+            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_B, ring_shaped[i][3], ring_shaped[i][4], ring_shaped[i][5]};
             rt_ring.push_back(temp);
         }
-            
+    }
+
+    for (int i = 0; i < ring_shaped.size(); i++)
+    {
+        if ((ring_shaped[i][7] < -150 || ring_shaped[i][7] > 150) && ring_shaped[i][2] < 0.02)
+        {
+            cout << "[1]" << ring_shaped[i][2] << endl;
+            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_H, ring_shaped[i][3], ring_shaped[i][4], ring_shaped[i][5]};
+            rt_ring.push_back(temp);
+        }
     }
 
     // Visualization using Open3D
     open3d::geometry::PointCloud pcd;
-    for (const auto& point : rt_ring) {
+    for (const auto &point : rt_ring)
+    {
         pcd.points_.push_back({point[0], point[1], point[2]});
     }
     open3d::visualization::DrawGeometries({make_shared<open3d::geometry::PointCloud>(pcd)});
@@ -388,14 +426,14 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
     return rt_ring;
 }
 
-
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
     int rounds = 12;
     vector<vector<double>> ok_cloud_1;
     vector<vector<double>> ok_cloud_2;
     vector<vector<double>> ok_cloud_3;
-    vector<vector<double>> ring = BorderReinforcement(cloud);;
+    vector<vector<double>> ring = BorderReinforcement(cloud);
+    ;
 
     float max_x = cloud[0][0];
     for (int i = 0; i < cloud.size(); i++)
@@ -436,11 +474,12 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     float shift_distance = (max_x - min_x) / rounds;
 
     vector<double> startPoint = {0, 0, 0.1, 0, 0, 0};
-    
-    //path
+
+    // path
     ok_cloud_1.push_back(startPoint);
 
-    for(int i = 0; i < ring.size(); i++){
+    for (int i = 0; i < ring.size(); i++)
+    {
         ok_cloud_1.push_back(ring[i]);
     }
 
@@ -464,7 +503,7 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall);
             vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.05, tmp_cloud[0][2], 0, 0, 0};
-            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.05, tmp_cloud[tmp_cloud.size()-1][2], 0, 0, 0};
+            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.05, tmp_cloud[tmp_cloud.size() - 1][2], 0, 0, 0};
             edge_contour.push_back(tmp_cloud.front());
             edge_contour.push_back(tmp_cloud.back());
             ok_cloud_1.push_back(ap_max_y);
@@ -476,7 +515,7 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         else
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig);
-            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.05, tmp_cloud[tmp_cloud.size()-1][2], 0, 0, 0};
+            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.05, tmp_cloud[tmp_cloud.size() - 1][2], 0, 0, 0};
             vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.05, tmp_cloud[0][2], 0, 0, 0};
             edge_contour.push_back(tmp_cloud.front());
             edge_contour.push_back(tmp_cloud.back());
@@ -503,7 +542,6 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     return ok_cloud_3;
 }
 
-
 vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
 {
 
@@ -518,7 +556,7 @@ vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
         open3d_cloud.points_.push_back(Eigen::Vector3d(point[0], point[1], point[2]));
     }
 
-    //std::cout << "[ PathPlanning ] after filtered_cloud " << open3d_cloud.points_.size() << std::endl;
+    // std::cout << "[ PathPlanning ] after filtered_cloud " << open3d_cloud.points_.size() << std::endl;
 
     // Filter the point cloud using Open3D functions
     open3d::geometry::PointCloud filtered_open3d_cloud = open3d_cloud; // Perform your filtering operation here
@@ -565,7 +603,7 @@ int main(int argc, char **argv)
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud(smooth);
     // pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/flip_cloud.pcd", *flipCloud);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(flipCloud);
-    //printPointCloudRange(filteredCloud);
+    printPointCloudRange(filteredCloud);
     // pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filtered_cloud.pcd", *filteredCloud);
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
@@ -583,7 +621,7 @@ int main(int argc, char **argv)
     std::vector<Waypoint> waypoints;
     double theta = 0;
     vector2Angle(point_cloud);
-    workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS,velocity);
+    workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS, velocity);
 
     // // Print waypoints
     // for (int i = 0; i < waypoints.size(); i++)
@@ -600,7 +638,7 @@ int main(int argc, char **argv)
     //     printf("\n");
     // }
 
-    const std::string file_path = "S003.LS";
+    const std::string file_path = "S001.LS";
     if (writeLsFile(file_path, waypoints))
         printf("Write LS error !!!\n");
     else
