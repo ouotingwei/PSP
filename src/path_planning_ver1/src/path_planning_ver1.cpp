@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include<math.h>
 #include <string>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
@@ -25,6 +26,8 @@
 // #define CLOUD_SEARCHING_RANGE 0.0022
 // #define PLASMA_DIA 0.03
 
+#define PI 3.14159
+
 // define sample size
 double WINDOW_SIZE = 0.1;
 // Filter out the workspacef
@@ -42,6 +45,9 @@ double TF_Z_BIAS = 0;
 double nearby_distance = 0.01;
 float removeBounceGate = 0.1;
 double velocity = 300;
+double camera_x=0;
+double camera_y=0;
+double camera_z=0;
 
 using namespace std;
 using json = nlohmann::json;
@@ -83,6 +89,9 @@ int readParameters()
     removeBounceGate = parameters["removeBounceGate"];
     nearby_distance = parameters["nearby_distance"];
     velocity=parameters["velocity"];
+    camera_x=parameters["camera_x"];
+    camera_y=parameters["camera_y"];
+    camera_z=parameters["camera_z"];
 
     return 1;
 }
@@ -161,7 +170,7 @@ vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr c
 
     o3dCloud.normals_ = o3dNormals.points_;
     // o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d::Zero());
-    o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d(0.0, 0.0, -10000));
+    o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d(camera_x, camera_y, camera_z));
 
     // Convert to (x, y, z, a, b, c) vector format
     vector<vector<double>> vectors;
@@ -326,12 +335,37 @@ vector<vector<double>> removeBouncePoints(vector<vector<double>> cloud)
     return cloud;
 }
 
+void BorderReinforcement(vector<vector<double>> cloud)
+{
+    vector<vector<double>> ring_shaped;
+    vector<vector<double>> arrange;
+    for(int i = 0; i < cloud.size(); i++){
+        arrange[i][0] = cloud[i][0];
+        arrange[i][1] = cloud[i][1];
+        arrange[i][2] = cloud[i][2];
+        arrange[i][3] = cloud[i][3];
+        arrange[i][4] = cloud[i][4];
+        arrange[i][5] = cloud[i][5];
+        arrange[i][6] = sqrt(pow(cloud[i][0], 2) + pow(cloud[i][1], 2));    // r
+        arrange[i][7] = 180*atan2(cloud[i][1], cloud[i][0]) / PI;
+
+    }
+
+    for(int i = 0; i < cloud.size(); i++)
+    {
+        cout << arrange[i][6] << " " << arrange[i][7] << endl;
+    }
+}
+
+
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
     int rounds = 12;
     vector<vector<double>> ok_cloud_1;
     vector<vector<double>> ok_cloud_2;
     vector<vector<double>> ok_cloud_3;
+
+    BorderReinforcement(cloud);
 
     float max_x = cloud[0][0];
     for (int i = 0; i < cloud.size(); i++)
@@ -430,6 +464,7 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 
     return ok_cloud_3;
 }
+
 
 vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
 {

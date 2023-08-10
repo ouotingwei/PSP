@@ -12,5 +12,8 @@
     "TF_Z_BIAS":999,
     "removeBounceGate":0.1,
     "nearby_distance":0.01,
-    "velocity":123
+    "velocity":123,
+    "camera_x":0,
+    "camera_y":0.3,
+    "camera_z":-0.47
   }
