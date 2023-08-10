@@ -400,7 +400,7 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
         if (ring_shaped[i][7] < 30 && ring_shaped[i][7] > -30 && ring_shaped[i][2] < 0.02)
         {
             cout << "[1]" << ring_shaped[i][2] << endl;
-            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_B, -1*ring_shaped[i][3], -1*ring_shaped[i][4], -1*ring_shaped[i][5]};
+            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_B, 0, 0, 0};   // normal
             rt_ring.push_back(temp);
         }
     }
@@ -410,7 +410,7 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
         if ((ring_shaped[i][7] < -150 || ring_shaped[i][7] > 150) && ring_shaped[i][2] < 0.02)
         {
             cout << "[1]" << ring_shaped[i][2] << endl;
-            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_H, -1*ring_shaped[i][3], -1*ring_shaped[i][4], -1*ring_shaped[i][5]};
+            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_H, 0, 0, 0};
             rt_ring.push_back(temp);
         }
     }
