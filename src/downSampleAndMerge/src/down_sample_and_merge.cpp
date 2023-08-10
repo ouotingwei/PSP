@@ -18,6 +18,9 @@
 // #define SHIFT_Z -0.03
 // #define HIGH_THRESHOLD 0.2
 
+#define CAM1_GATE -0.3
+#define CAM2_GATE -0.3
+
 double FILTER = 0.005;
 double PI = 3.141592653589793;
 double ANGLE = 180.0;
@@ -60,6 +63,37 @@ int readParameters()
     SHIFT_Z = parameters["SHIFT_Z"];
     HIGH_THRESHOLD = parameters["HIGH_THRESHOLD"];
     return 1;
+}
+
+void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
+{
+    float min_x = std::numeric_limits<float>::max();
+    float max_x = -std::numeric_limits<float>::max();
+    float min_y = std::numeric_limits<float>::max();
+    float max_y = -std::numeric_limits<float>::max();
+    float min_z = std::numeric_limits<float>::max();
+    float max_z = -std::numeric_limits<float>::max();
+
+    for (const pcl::PointXYZRGBA &point : cloud->points)
+    {
+        if (point.x < min_x)
+            min_x = point.x;
+        if (point.x > max_x)
+            max_x = point.x;
+        if (point.y < min_y)
+            min_y = point.y;
+        if (point.y > max_y)
+            max_y = point.y;
+        if (point.z < min_z)
+            min_z = point.z;
+        if (point.z > max_z)
+            max_z = point.z;
+    }
+
+    std::cout << "Point Cloud Range:" << std::endl;
+    std::cout << "X: " << min_x << " to " << max_x << std::endl;
+    std::cout << "Y: " << min_y << " to " << max_y << std::endl;
+    std::cout << "Z: " << min_z << " to " << max_z << std::endl;
 }
 
 int main(int argc, char **argv)
@@ -139,9 +173,34 @@ int main(int argc, char **argv)
         point.b = 0;
     }
 
+    printPointCloudRange(shifted_cloud1);
+    printPointCloudRange(cloud2_spl);
+
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr split_1(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    for (const pcl::PointXYZRGBA &point : shifted_cloud1->points)
+    {
+        if (point.y >= CAM1_GATE)
+        {
+            split_1->points.push_back(point);
+        }
+    }
+
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr split_2(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    for (const pcl::PointXYZRGBA &point : cloud2_spl->points)
+    {
+        if (point.y < CAM2_GATE)
+        {
+            split_2->points.push_back(point);
+        }
+    }
+
+    split_2->width = split_2->points.size();
+    split_2->height = 1;
+
     // merge two clouds
-    //  *merge = *shifted_cloud1 + *cloud2_spl;
-    merge = cloud2_spl;
+    //*merge = *shifted_cloud1 + *cloud2_spl;
+    *merge = *split_1 + *split_2;
+    // merge = cloud2_spl;
 
     pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *merge);
 
