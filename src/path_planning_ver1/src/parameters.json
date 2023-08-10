@@ -15,5 +15,5 @@
     "velocity":300,
     "camera_x":0,
     "camera_y":0.3,
-    "camera_z":-0.47
+    "camera_z":-10000
   }
