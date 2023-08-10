@@ -355,127 +355,127 @@ P[2]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  539.852  mm,    Y =   57.456  mm,    Z =   -229.827  mm,
-    W =  -358.907 deg,    P =   0.019 deg,    R =   0.999 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[3]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  553.101  mm,    Y =   49.967  mm,    Z =   -257.526  mm,
-    W =  -359.685 deg,    P =   0.005 deg,    R =   0.999 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[4]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  566.505  mm,    Y =   39.622  mm,    Z =   -229.827  mm,
-    W =  -0.141 deg,    P =   -0.002 deg,    R =   0.997 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[5]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  574.941  mm,    Y =   27.910  mm,    Z =   -257.526  mm,
-    W =  -180.737 deg,    P =   0.013 deg,    R =   -0.996 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[6]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  579.655  mm,    Y =   16.391  mm,    Z =   -229.827  mm,
-    W =  -1.247 deg,    P =   -0.022 deg,    R =   0.995 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[7]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  574.914  mm,    Y =   -0.336  mm,    Z =   -257.526  mm,
-    W =  -182.324 deg,    P =   0.040 deg,    R =   -0.996 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[8]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  573.754  mm,    Y =   -16.082  mm,    Z =   -229.827  mm,
-    W =  -3.254 deg,    P =   -0.057 deg,    R =   0.995 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[9]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  564.886  mm,    Y =   -26.844  mm,    Z =   -229.827  mm,
-    W =  -3.715 deg,    P =   -0.065 deg,    R =   0.996 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[10]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  551.011  mm,    Y =   -35.889  mm,    Z =   -257.526  mm,
-    W =  -184.519 deg,    P =   0.079 deg,    R =   -0.996 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[11]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  537.049  mm,    Y =   -42.857  mm,    Z =   -229.827  mm,
-    W =  -5.639 deg,    P =   -0.098 deg,    R =   0.995 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[12]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  516.524  mm,    Y =   -45.477  mm,    Z =   -229.827  mm,
-    W =  -7.246 deg,    P =   -0.126 deg,    R =   0.992 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[13]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  271.911  mm,    Y =   11.060  mm,    Z =   -259.827  mm,
-    W =  -181.569 deg,    P =   0.027 deg,    R =   -0.994 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[14]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  266.574  mm,    Y =   25.301  mm,    Z =   -259.827  mm,
-    W =  -180.980 deg,    P =   0.017 deg,    R =   -0.994 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[15]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  261.141  mm,    Y =   41.528  mm,    Z =   -257.526  mm,
-    W =  -180.379 deg,    P =   0.007 deg,    R =   -0.993 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[16]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  265.622  mm,    Y =   54.869  mm,    Z =   -259.827  mm,
-    W =  -179.858 deg,    P =   -0.002 deg,    R =   -0.993 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[17]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  286.261  mm,    Y =   61.027  mm,    Z =   -257.526  mm,
-    W =  -179.443 deg,    P =   -0.010 deg,    R =   -0.996 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[18]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  301.398  mm,    Y =   -54.434  mm,    Z =   -259.827  mm,
-    W =  -184.064 deg,    P =   0.071 deg,    R =   -0.995 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[19]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  286.488  mm,    Y =   -48.581  mm,    Z =   -257.526  mm,
-    W =  -184.251 deg,    P =   0.074 deg,    R =   -0.993 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[20]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  275.604  mm,    Y =   -36.338  mm,    Z =   -259.827  mm,
-    W =  -183.885 deg,    P =   0.067 deg,    R =   -0.991 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[21]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  285.740  mm,    Y =   -22.783  mm,    Z =   -259.827  mm,
-    W =  -182.780 deg,    P =   0.048 deg,    R =   -0.995 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[22]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  280.802  mm,    Y =   -10.160  mm,    Z =   -259.827  mm,
-    W =  -182.331 deg,    P =   0.040 deg,    R =   -0.995 deg
+    W =  -180.000 deg,    P =   0.000 deg,    R =   0.000 deg
 };
 P[23]{
    GP1:
@@ -493,7 +493,7 @@ P[25]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  578.110  mm,    Y =   25.467  mm,    Z =   -257.526  mm,
-    W =  -0.651 deg,    P =   -0.011 deg,    R =   0.995 deg
+    W =  -180.651 deg,    P =   0.011 deg,    R =   -0.995 deg
 };
 P[26]{
    GP1:
@@ -505,7 +505,7 @@ P[27]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  579.655  mm,    Y =   16.391  mm,    Z =   -267.948  mm,
-    W =  -1.247 deg,    P =   -0.022 deg,    R =   0.995 deg
+    W =  -181.247 deg,    P =   0.022 deg,    R =   -0.995 deg
 };
 P[28]{
    GP1:
@@ -517,13 +517,13 @@ P[29]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  578.097  mm,    Y =   4.811  mm,    Z =   -267.076  mm,
-    W =  -2.007 deg,    P =   -0.035 deg,    R =   0.995 deg
+    W =  -182.007 deg,    P =   0.035 deg,    R =   -0.995 deg
 };
 P[30]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  577.814  mm,    Y =   -5.772  mm,    Z =   -257.526  mm,
-    W =  -2.702 deg,    P =   -0.047 deg,    R =   0.995 deg
+    W =  -182.702 deg,    P =   0.047 deg,    R =   -0.995 deg
 };
 P[31]{
    GP1:
@@ -661,13 +661,13 @@ P[53]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  554.895  mm,    Y =   48.678  mm,    Z =   -257.526  mm,
-    W =  -359.735 deg,    P =   0.005 deg,    R =   0.998 deg
+    W =  -179.735 deg,    P =   -0.005 deg,    R =   -0.998 deg
 };
 P[54]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  553.101  mm,    Y =   49.967  mm,    Z =   -257.526  mm,
-    W =  -359.685 deg,    P =   0.005 deg,    R =   0.999 deg
+    W =  -179.685 deg,    P =   -0.005 deg,    R =   -0.999 deg
 };
 P[55]{
    GP1:
@@ -679,7 +679,7 @@ P[56]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  550.879  mm,    Y =   50.835  mm,    Z =   -257.526  mm,
-    W =  -359.666 deg,    P =   0.006 deg,    R =   0.999 deg
+    W =  -179.666 deg,    P =   -0.006 deg,    R =   -0.999 deg
 };
 P[57]{
    GP1:
@@ -697,13 +697,13 @@ P[59]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  526.288  mm,    Y =   59.378  mm,    Z =   -257.526  mm,
-    W =  -358.721 deg,    P =   0.022 deg,    R =   1.000 deg
+    W =  -178.721 deg,    P =   -0.022 deg,    R =   -1.000 deg
 };
 P[60]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  525.906  mm,    Y =   59.086  mm,    Z =   -257.526  mm,
-    W =  -358.755 deg,    P =   0.022 deg,    R =   1.000 deg
+    W =  -178.755 deg,    P =   -0.022 deg,    R =   -1.000 deg
 };
 P[61]{
    GP1:
@@ -847,13 +847,13 @@ P[84]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  526.069  mm,    Y =   -45.026  mm,    Z =   -257.526  mm,
-    W =  -6.416 deg,    P =   -0.112 deg,    R =   0.994 deg
+    W =  -186.416 deg,    P =   0.112 deg,    R =   -0.994 deg
 };
 P[85]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  526.227  mm,    Y =   -45.158  mm,    Z =   -257.526  mm,
-    W =  -6.422 deg,    P =   -0.112 deg,    R =   0.994 deg
+    W =  -186.422 deg,    P =   0.112 deg,    R =   -0.994 deg
 };
 P[86]{
    GP1:
@@ -871,7 +871,7 @@ P[88]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  501.313  mm,    Y =   -47.361  mm,    Z =   -257.526  mm,
-    W =  -7.508 deg,    P =   -0.131 deg,    R =   0.991 deg
+    W =  -187.508 deg,    P =   0.131 deg,    R =   -0.991 deg
 };
 P[89]{
    GP1:
@@ -1033,19 +1033,19 @@ P[115]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  501.446  mm,    Y =   59.099  mm,    Z =   -257.526  mm,
-    W =  -358.599 deg,    P =   0.024 deg,    R =   0.999 deg
+    W =  -178.599 deg,    P =   -0.024 deg,    R =   -0.999 deg
 };
 P[116]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  501.153  mm,    Y =   59.142  mm,    Z =   -257.526  mm,
-    W =  -358.621 deg,    P =   0.024 deg,    R =   0.999 deg
+    W =  -178.621 deg,    P =   -0.024 deg,    R =   -0.999 deg
 };
 P[117]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  501.323  mm,    Y =   59.776  mm,    Z =   -257.526  mm,
-    W =  -358.544 deg,    P =   0.025 deg,    R =   0.999 deg
+    W =  -178.544 deg,    P =   -0.025 deg,    R =   -0.999 deg
 };
 P[118]{
    GP1:
@@ -1063,31 +1063,31 @@ P[120]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.650  mm,    Y =   54.075  mm,    Z =   -257.526  mm,
-    W =  -359.506 deg,    P =   0.009 deg,    R =   0.998 deg
+    W =  -179.506 deg,    P =   -0.009 deg,    R =   -0.998 deg
 };
 P[121]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  474.577  mm,    Y =   53.558  mm,    Z =   -257.526  mm,
-    W =  -359.385 deg,    P =   0.011 deg,    R =   0.998 deg
+    W =  -179.385 deg,    P =   -0.011 deg,    R =   -0.998 deg
 };
 P[122]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  473.780  mm,    Y =   50.641  mm,    Z =   -257.526  mm,
-    W =  -0.198 deg,    P =   -0.003 deg,    R =   0.998 deg
+    W =  -180.198 deg,    P =   0.003 deg,    R =   -0.998 deg
 };
 P[123]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.116  mm,    Y =   50.553  mm,    Z =   -257.526  mm,
-    W =  -0.399 deg,    P =   -0.007 deg,    R =   0.998 deg
+    W =  -180.399 deg,    P =   0.007 deg,    R =   -0.998 deg
 };
 P[124]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.831  mm,    Y =   49.180  mm,    Z =   -257.526  mm,
-    W =  -0.558 deg,    P =   -0.010 deg,    R =   0.998 deg
+    W =  -180.558 deg,    P =   0.010 deg,    R =   -0.998 deg
 };
 P[125]{
    GP1:
@@ -1117,49 +1117,49 @@ P[129]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.232  mm,    Y =   11.242  mm,    Z =   -254.168  mm,
-    W =  -2.148 deg,    P =   -0.037 deg,    R =   0.998 deg
+    W =  -182.148 deg,    P =   0.037 deg,    R =   -0.998 deg
 };
 P[130]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  473.927  mm,    Y =   7.806  mm,    Z =   -255.456  mm,
-    W =  -2.210 deg,    P =   -0.039 deg,    R =   0.998 deg
+    W =  -182.210 deg,    P =   0.039 deg,    R =   -0.998 deg
 };
 P[131]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.167  mm,    Y =   4.129  mm,    Z =   -255.639  mm,
-    W =  -2.244 deg,    P =   -0.039 deg,    R =   0.998 deg
+    W =  -182.244 deg,    P =   0.039 deg,    R =   -0.998 deg
 };
 P[132]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.586  mm,    Y =   0.880  mm,    Z =   -255.677  mm,
-    W =  -2.307 deg,    P =   -0.040 deg,    R =   0.998 deg
+    W =  -182.307 deg,    P =   0.040 deg,    R =   -0.998 deg
 };
 P[133]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  472.173  mm,    Y =   -4.730  mm,    Z =   -257.433  mm,
-    W =  -2.364 deg,    P =   -0.041 deg,    R =   0.998 deg
+    W =  -182.364 deg,    P =   0.041 deg,    R =   -0.998 deg
 };
 P[134]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.445  mm,    Y =   -9.206  mm,    Z =   -257.201  mm,
-    W =  -2.508 deg,    P =   -0.044 deg,    R =   0.998 deg
+    W =  -182.508 deg,    P =   0.044 deg,    R =   -0.998 deg
 };
 P[135]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.288  mm,    Y =   -14.994  mm,    Z =   -255.937  mm,
-    W =  -2.762 deg,    P =   -0.048 deg,    R =   0.997 deg
+    W =  -182.762 deg,    P =   0.048 deg,    R =   -0.997 deg
 };
 P[136]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.140  mm,    Y =   -20.623  mm,    Z =   -254.840  mm,
-    W =  -2.994 deg,    P =   -0.052 deg,    R =   0.997 deg
+    W =  -182.994 deg,    P =   0.052 deg,    R =   -0.997 deg
 };
 P[137]{
    GP1:
@@ -1195,7 +1195,7 @@ P[142]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  471.518  mm,    Y =   -47.478  mm,    Z =   -257.526  mm,
-    W =  -5.133 deg,    P =   -0.089 deg,    R =   0.994 deg
+    W =  -185.133 deg,    P =   0.089 deg,    R =   -0.994 deg
 };
 P[143]{
    GP1:
@@ -1213,13 +1213,13 @@ P[145]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.274  mm,    Y =   -47.434  mm,    Z =   -257.526  mm,
-    W =  -3.607 deg,    P =   -0.063 deg,    R =   0.997 deg
+    W =  -183.607 deg,    P =   0.063 deg,    R =   -0.997 deg
 };
 P[146]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.407  mm,    Y =   -45.805  mm,    Z =   -257.526  mm,
-    W =  -3.410 deg,    P =   -0.059 deg,    R =   0.997 deg
+    W =  -183.410 deg,    P =   0.059 deg,    R =   -0.997 deg
 };
 P[147]{
    GP1:
@@ -1261,37 +1261,37 @@ P[153]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.247  mm,    Y =   -14.944  mm,    Z =   -257.413  mm,
-    W =  -2.808 deg,    P =   -0.049 deg,    R =   0.997 deg
+    W =  -182.808 deg,    P =   0.049 deg,    R =   -0.997 deg
 };
 P[154]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.231  mm,    Y =   -8.569  mm,    Z =   -258.247  mm,
-    W =  -2.691 deg,    P =   -0.047 deg,    R =   0.997 deg
+    W =  -182.691 deg,    P =   0.047 deg,    R =   -0.997 deg
 };
 P[155]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.225  mm,    Y =   -4.040  mm,    Z =   -257.349  mm,
-    W =  -2.616 deg,    P =   -0.046 deg,    R =   0.997 deg
+    W =  -182.616 deg,    P =   0.046 deg,    R =   -0.997 deg
 };
 P[156]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.222  mm,    Y =   0.769  mm,    Z =   -255.500  mm,
-    W =  -2.514 deg,    P =   -0.044 deg,    R =   0.997 deg
+    W =  -182.514 deg,    P =   0.044 deg,    R =   -0.997 deg
 };
 P[157]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.145  mm,    Y =   4.281  mm,    Z =   -255.126  mm,
-    W =  -2.487 deg,    P =   -0.043 deg,    R =   0.997 deg
+    W =  -182.487 deg,    P =   0.043 deg,    R =   -0.997 deg
 };
 P[158]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  445.033  mm,    Y =   7.806  mm,    Z =   -255.456  mm,
-    W =  -2.437 deg,    P =   -0.042 deg,    R =   0.998 deg
+    W =  -182.437 deg,    P =   0.042 deg,    R =   -0.998 deg
 };
 P[159]{
    GP1:
@@ -1345,31 +1345,31 @@ P[167]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.121  mm,    Y =   43.742  mm,    Z =   -257.526  mm,
-    W =  -1.508 deg,    P =   -0.026 deg,    R =   0.998 deg
+    W =  -181.508 deg,    P =   0.026 deg,    R =   -0.998 deg
 };
 P[168]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  447.793  mm,    Y =   46.176  mm,    Z =   -257.526  mm,
-    W =  -1.361 deg,    P =   -0.024 deg,    R =   0.998 deg
+    W =  -181.361 deg,    P =   0.024 deg,    R =   -0.998 deg
 };
 P[169]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.376  mm,    Y =   46.600  mm,    Z =   -257.526  mm,
-    W =  -1.397 deg,    P =   -0.024 deg,    R =   0.998 deg
+    W =  -181.397 deg,    P =   0.024 deg,    R =   -0.998 deg
 };
 P[170]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.077  mm,    Y =   48.620  mm,    Z =   -257.526  mm,
-    W =  -1.155 deg,    P =   -0.020 deg,    R =   0.998 deg
+    W =  -181.155 deg,    P =   0.020 deg,    R =   -0.998 deg
 };
 P[171]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  446.310  mm,    Y =   49.625  mm,    Z =   -257.526  mm,
-    W =  -1.126 deg,    P =   -0.020 deg,    R =   0.998 deg
+    W =  -181.126 deg,    P =   0.020 deg,    R =   -0.998 deg
 };
 P[172]{
    GP1:
@@ -1387,13 +1387,13 @@ P[174]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  421.466  mm,    Y =   48.791  mm,    Z =   -257.526  mm,
-    W =  -1.696 deg,    P =   -0.030 deg,    R =   0.998 deg
+    W =  -181.696 deg,    P =   0.030 deg,    R =   -0.998 deg
 };
 P[175]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  420.799  mm,    Y =   46.502  mm,    Z =   -257.526  mm,
-    W =  -1.874 deg,    P =   -0.033 deg,    R =   0.998 deg
+    W =  -181.874 deg,    P =   0.033 deg,    R =   -0.998 deg
 };
 P[176]{
    GP1:
@@ -1429,61 +1429,61 @@ P[181]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  421.317  mm,    Y =   24.003  mm,    Z =   -256.253  mm,
-    W =  -2.284 deg,    P =   -0.040 deg,    R =   0.998 deg
+    W =  -182.284 deg,    P =   0.040 deg,    R =   -0.998 deg
 };
 P[182]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  421.498  mm,    Y =   20.444  mm,    Z =   -258.400  mm,
-    W =  -2.264 deg,    P =   -0.039 deg,    R =   0.998 deg
+    W =  -182.264 deg,    P =   0.039 deg,    R =   -0.998 deg
 };
 P[183]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  420.828  mm,    Y =   15.970  mm,    Z =   -262.062  mm,
-    W =  -2.295 deg,    P =   -0.040 deg,    R =   0.998 deg
+    W =  -182.295 deg,    P =   0.040 deg,    R =   -0.998 deg
 };
 P[184]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  418.124  mm,    Y =   11.808  mm,    Z =   -266.644  mm,
-    W =  -2.231 deg,    P =   -0.039 deg,    R =   0.998 deg
+    W =  -182.231 deg,    P =   0.039 deg,    R =   -0.998 deg
 };
 P[185]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  421.174  mm,    Y =   10.474  mm,    Z =   -265.368  mm,
-    W =  -2.285 deg,    P =   -0.040 deg,    R =   0.998 deg
+    W =  -182.285 deg,    P =   0.040 deg,    R =   -0.998 deg
 };
 P[186]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  421.438  mm,    Y =   4.849  mm,    Z =   -267.097  mm,
-    W =  -2.288 deg,    P =   -0.040 deg,    R =   0.998 deg
+    W =  -182.288 deg,    P =   0.040 deg,    R =   -0.998 deg
 };
 P[187]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  420.522  mm,    Y =   -4.444  mm,    Z =   -267.684  mm,
-    W =  -2.274 deg,    P =   -0.040 deg,    R =   0.998 deg
+    W =  -182.274 deg,    P =   0.040 deg,    R =   -0.998 deg
 };
 P[188]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  421.694  mm,    Y =   -15.309  mm,    Z =   -268.438  mm,
-    W =  -2.406 deg,    P =   -0.042 deg,    R =   0.998 deg
+    W =  -182.406 deg,    P =   0.042 deg,    R =   -0.998 deg
 };
 P[189]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  419.450  mm,    Y =   -20.652  mm,    Z =   -266.182  mm,
-    W =  -2.425 deg,    P =   -0.042 deg,    R =   0.998 deg
+    W =  -182.425 deg,    P =   0.042 deg,    R =   -0.998 deg
 };
 P[190]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  421.346  mm,    Y =   -24.754  mm,    Z =   -262.275  mm,
-    W =  -2.573 deg,    P =   -0.045 deg,    R =   0.998 deg
+    W =  -182.573 deg,    P =   0.045 deg,    R =   -0.998 deg
 };
 P[191]{
    GP1:
@@ -1519,13 +1519,13 @@ P[196]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  421.423  mm,    Y =   -54.574  mm,    Z =   -257.526  mm,
-    W =  -3.809 deg,    P =   -0.066 deg,    R =   0.997 deg
+    W =  -183.809 deg,    P =   0.066 deg,    R =   -0.997 deg
 };
 P[197]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  420.312  mm,    Y =   -58.568  mm,    Z =   -257.526  mm,
-    W =  -3.358 deg,    P =   -0.059 deg,    R =   0.998 deg
+    W =  -183.358 deg,    P =   0.059 deg,    R =   -0.998 deg
 };
 P[198]{
    GP1:
@@ -1543,13 +1543,13 @@ P[200]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  391.530  mm,    Y =   -63.473  mm,    Z =   -257.526  mm,
-    W =  -2.725 deg,    P =   -0.048 deg,    R =   0.999 deg
+    W =  -182.725 deg,    P =   0.048 deg,    R =   -0.999 deg
 };
 P[201]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  395.513  mm,    Y =   -59.503  mm,    Z =   -257.526  mm,
-    W =  -3.236 deg,    P =   -0.056 deg,    R =   0.998 deg
+    W =  -183.236 deg,    P =   0.056 deg,    R =   -0.998 deg
 };
 P[202]{
    GP1:
@@ -1573,25 +1573,25 @@ P[205]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  391.251  mm,    Y =   -29.245  mm,    Z =   -262.697  mm,
-    W =  -2.509 deg,    P =   -0.044 deg,    R =   0.999 deg
+    W =  -182.509 deg,    P =   0.044 deg,    R =   -0.999 deg
 };
 P[206]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  393.400  mm,    Y =   -20.652  mm,    Z =   -266.182  mm,
-    W =  -2.310 deg,    P =   -0.040 deg,    R =   0.999 deg
+    W =  -182.310 deg,    P =   0.040 deg,    R =   -0.999 deg
 };
 P[207]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  391.292  mm,    Y =   -0.121  mm,    Z =   -264.213  mm,
-    W =  -2.091 deg,    P =   -0.036 deg,    R =   0.999 deg
+    W =  -182.091 deg,    P =   0.036 deg,    R =   -0.999 deg
 };
 P[208]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  391.679  mm,    Y =   29.843  mm,    Z =   -256.602  mm,
-    W =  -1.734 deg,    P =   -0.030 deg,    R =   0.999 deg
+    W =  -181.734 deg,    P =   0.030 deg,    R =   -0.999 deg
 };
 P[209]{
    GP1:
@@ -1627,13 +1627,13 @@ P[214]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  391.570  mm,    Y =   52.589  mm,    Z =   -257.526  mm,
-    W =  -1.162 deg,    P =   -0.020 deg,    R =   0.999 deg
+    W =  -181.162 deg,    P =   0.020 deg,    R =   -0.999 deg
 };
 P[215]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  391.732  mm,    Y =   56.310  mm,    Z =   -257.526  mm,
-    W =  -1.182 deg,    P =   -0.021 deg,    R =   0.999 deg
+    W =  -181.182 deg,    P =   0.021 deg,    R =   -0.999 deg
 };
 P[216]{
    GP1:
@@ -1651,25 +1651,25 @@ P[218]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.537  mm,    Y =   65.579  mm,    Z =   -257.526  mm,
-    W =  -0.532 deg,    P =   -0.009 deg,    R =   1.000 deg
+    W =  -180.532 deg,    P =   0.009 deg,    R =   -1.000 deg
 };
 P[219]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  367.296  mm,    Y =   63.609  mm,    Z =   -257.526  mm,
-    W =  -0.743 deg,    P =   -0.013 deg,    R =   1.000 deg
+    W =  -180.743 deg,    P =   0.013 deg,    R =   -1.000 deg
 };
 P[220]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.071  mm,    Y =   62.658  mm,    Z =   -257.526  mm,
-    W =  -0.806 deg,    P =   -0.014 deg,    R =   1.000 deg
+    W =  -180.806 deg,    P =   0.014 deg,    R =   -1.000 deg
 };
 P[221]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  365.959  mm,    Y =   60.296  mm,    Z =   -257.526  mm,
-    W =  -0.876 deg,    P =   -0.015 deg,    R =   1.000 deg
+    W =  -180.876 deg,    P =   0.015 deg,    R =   -1.000 deg
 };
 P[222]{
    GP1:
@@ -1693,25 +1693,25 @@ P[225]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  365.647  mm,    Y =   35.563  mm,    Z =   -257.260  mm,
-    W =  -0.808 deg,    P =   -0.014 deg,    R =   1.000 deg
+    W =  -180.808 deg,    P =   0.014 deg,    R =   -1.000 deg
 };
 P[226]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.180  mm,    Y =   30.240  mm,    Z =   -258.953  mm,
-    W =  -1.194 deg,    P =   -0.021 deg,    R =   0.999 deg
+    W =  -181.194 deg,    P =   0.021 deg,    R =   -0.999 deg
 };
 P[227]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.776  mm,    Y =   25.820  mm,    Z =   -258.947  mm,
-    W =  -1.432 deg,    P =   -0.025 deg,    R =   0.999 deg
+    W =  -181.432 deg,    P =   0.025 deg,    R =   -0.999 deg
 };
 P[228]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.060  mm,    Y =   19.638  mm,    Z =   -257.783  mm,
-    W =  -1.703 deg,    P =   -0.030 deg,    R =   0.999 deg
+    W =  -181.703 deg,    P =   0.030 deg,    R =   -0.999 deg
 };
 P[229]{
    GP1:
@@ -1735,19 +1735,19 @@ P[232]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.209  mm,    Y =   0.801  mm,    Z =   -259.079  mm,
-    W =  -1.948 deg,    P =   -0.034 deg,    R =   0.999 deg
+    W =  -181.948 deg,    P =   0.034 deg,    R =   -0.999 deg
 };
 P[233]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  365.668  mm,    Y =   -4.778  mm,    Z =   -258.771  mm,
-    W =  -2.037 deg,    P =   -0.036 deg,    R =   0.999 deg
+    W =  -182.037 deg,    P =   0.036 deg,    R =   -0.999 deg
 };
 P[234]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.385  mm,    Y =   -9.206  mm,    Z =   -257.992  mm,
-    W =  -2.113 deg,    P =   -0.037 deg,    R =   0.999 deg
+    W =  -182.113 deg,    P =   0.037 deg,    R =   -0.999 deg
 };
 P[235]{
    GP1:
@@ -1759,37 +1759,37 @@ P[236]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.156  mm,    Y =   -20.106  mm,    Z =   -258.530  mm,
-    W =  -2.388 deg,    P =   -0.042 deg,    R =   0.999 deg
+    W =  -182.388 deg,    P =   0.042 deg,    R =   -0.999 deg
 };
 P[237]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.307  mm,    Y =   -25.024  mm,    Z =   -260.012  mm,
-    W =  -2.561 deg,    P =   -0.045 deg,    R =   0.999 deg
+    W =  -182.561 deg,    P =   0.045 deg,    R =   -0.999 deg
 };
 P[238]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.483  mm,    Y =   -30.008  mm,    Z =   -261.341  mm,
-    W =  -2.709 deg,    P =   -0.047 deg,    R =   0.999 deg
+    W =  -182.709 deg,    P =   0.047 deg,    R =   -0.999 deg
 };
 P[239]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.125  mm,    Y =   -34.905  mm,    Z =   -261.302  mm,
-    W =  -3.009 deg,    P =   -0.052 deg,    R =   0.998 deg
+    W =  -183.009 deg,    P =   0.052 deg,    R =   -0.998 deg
 };
 P[240]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.194  mm,    Y =   -41.187  mm,    Z =   -260.615  mm,
-    W =  -3.679 deg,    P =   -0.064 deg,    R =   0.998 deg
+    W =  -183.679 deg,    P =   0.064 deg,    R =   -0.998 deg
 };
 P[241]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  365.478  mm,    Y =   -43.528  mm,    Z =   -260.224  mm,
-    W =  -3.788 deg,    P =   -0.066 deg,    R =   0.998 deg
+    W =  -183.788 deg,    P =   0.066 deg,    R =   -0.998 deg
 };
 P[242]{
    GP1:
@@ -1801,31 +1801,31 @@ P[243]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.344  mm,    Y =   -51.973  mm,    Z =   -260.411  mm,
-    W =  -3.441 deg,    P =   -0.060 deg,    R =   0.998 deg
+    W =  -183.441 deg,    P =   0.060 deg,    R =   -0.998 deg
 };
 P[244]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.140  mm,    Y =   -55.102  mm,    Z =   -260.068  mm,
-    W =  -3.241 deg,    P =   -0.057 deg,    R =   0.998 deg
+    W =  -183.241 deg,    P =   0.057 deg,    R =   -0.998 deg
 };
 P[245]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  365.944  mm,    Y =   -59.300  mm,    Z =   -257.526  mm,
-    W =  -3.009 deg,    P =   -0.052 deg,    R =   0.999 deg
+    W =  -183.009 deg,    P =   0.052 deg,    R =   -0.999 deg
 };
 P[246]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.021  mm,    Y =   -63.804  mm,    Z =   -257.526  mm,
-    W =  -2.801 deg,    P =   -0.049 deg,    R =   0.999 deg
+    W =  -182.801 deg,    P =   0.049 deg,    R =   -0.999 deg
 };
 P[247]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  366.096  mm,    Y =   -67.176  mm,    Z =   -257.526  mm,
-    W =  -2.741 deg,    P =   -0.048 deg,    R =   0.999 deg
+    W =  -182.741 deg,    P =   0.048 deg,    R =   -0.999 deg
 };
 P[248]{
    GP1:
@@ -1843,37 +1843,37 @@ P[250]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  341.185  mm,    Y =   -69.245  mm,    Z =   -257.526  mm,
-    W =  -3.651 deg,    P =   -0.064 deg,    R =   0.998 deg
+    W =  -183.651 deg,    P =   0.064 deg,    R =   -0.998 deg
 };
 P[251]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  341.194  mm,    Y =   -67.776  mm,    Z =   -257.526  mm,
-    W =  -3.625 deg,    P =   -0.063 deg,    R =   0.998 deg
+    W =  -183.625 deg,    P =   0.063 deg,    R =   -0.998 deg
 };
 P[252]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  340.980  mm,    Y =   -63.367  mm,    Z =   -257.526  mm,
-    W =  -3.362 deg,    P =   -0.059 deg,    R =   0.998 deg
+    W =  -183.362 deg,    P =   0.059 deg,    R =   -0.998 deg
 };
 P[253]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  340.888  mm,    Y =   -59.213  mm,    Z =   -262.618  mm,
-    W =  -3.055 deg,    P =   -0.053 deg,    R =   0.998 deg
+    W =  -183.055 deg,    P =   0.053 deg,    R =   -0.998 deg
 };
 P[254]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  341.405  mm,    Y =   -56.125  mm,    Z =   -262.644  mm,
-    W =  -3.120 deg,    P =   -0.054 deg,    R =   0.998 deg
+    W =  -183.120 deg,    P =   0.054 deg,    R =   -0.998 deg
 };
 P[255]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  341.532  mm,    Y =   -52.461  mm,    Z =   -261.293  mm,
-    W =  -3.148 deg,    P =   -0.055 deg,    R =   0.998 deg
+    W =  -183.148 deg,    P =   0.055 deg,    R =   -0.998 deg
 };
 P[256]{
    GP1:
@@ -1903,13 +1903,13 @@ P[260]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  340.153  mm,    Y =   -31.274  mm,    Z =   -260.401  mm,
-    W =  -2.724 deg,    P =   -0.048 deg,    R =   0.999 deg
+    W =  -182.724 deg,    P =   0.048 deg,    R =   -0.999 deg
 };
 P[261]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  341.273  mm,    Y =   -24.899  mm,    Z =   -260.229  mm,
-    W =  -2.027 deg,    P =   -0.035 deg,    R =   0.999 deg
+    W =  -182.027 deg,    P =   0.035 deg,    R =   -0.999 deg
 };
 P[262]{
    GP1:
@@ -2011,13 +2011,13 @@ P[278]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  341.010  mm,    Y =   67.076  mm,    Z =   -257.526  mm,
-    W =  -0.031 deg,    P =   -0.001 deg,    R =   0.999 deg
+    W =  -180.031 deg,    P =   0.001 deg,    R =   -0.999 deg
 };
 P[279]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  341.468  mm,    Y =   69.056  mm,    Z =   -257.526  mm,
-    W =  -359.884 deg,    P =   0.002 deg,    R =   0.999 deg
+    W =  -179.884 deg,    P =   -0.002 deg,    R =   -0.999 deg
 };
 P[280]{
    GP1:
@@ -2059,7 +2059,7 @@ P[286]{
    GP1:
     UF : 0, UT : 6,      CONFIG : 'N U T, 0, 0, 0',
     X =  315.248  mm,    Y =   -11.707  mm,    Z =   -261.426  mm,
-    W =  -1.682 deg,    P =   -0.029 deg,    R =   0.999 deg
+    W =  -181.682 deg,    P =   0.029 deg,    R =   -0.999 deg
 };
 P[287]{
    GP1:
