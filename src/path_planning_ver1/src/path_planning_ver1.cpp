@@ -638,7 +638,7 @@ int main(int argc, char **argv)
     //     printf("\n");
     // }
 
-    const std::string file_path = "S001.LS";
+    const std::string file_path = "S003.LS";
     if (writeLsFile(file_path, waypoints))
         printf("Write LS error !!!\n");
     else
