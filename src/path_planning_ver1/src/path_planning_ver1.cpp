@@ -335,26 +335,57 @@ vector<vector<double>> removeBouncePoints(vector<vector<double>> cloud)
     return cloud;
 }
 
-void BorderReinforcement(vector<vector<double>> cloud)
+bool customCompare(const vector<double> &a, const vector<double> &b)
+{
+    return a[7] > b[7];
+}
+
+vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
 {
     vector<vector<double>> ring_shaped;
+    vector<vector<double>> rt_ring;
     vector<vector<double>> arrange;
     for(int i = 0; i < cloud.size(); i++){
-        arrange[i][0] = cloud[i][0];
-        arrange[i][1] = cloud[i][1];
-        arrange[i][2] = cloud[i][2];
-        arrange[i][3] = cloud[i][3];
-        arrange[i][4] = cloud[i][4];
-        arrange[i][5] = cloud[i][5];
-        arrange[i][6] = sqrt(pow(cloud[i][0], 2) + pow(cloud[i][1], 2));    // r
-        arrange[i][7] = 180*atan2(cloud[i][1], cloud[i][0]) / PI;
+        double r = sqrt(pow(cloud[i][0], 2) + pow(cloud[i][1], 2));
+        int angle = 180*atan2(cloud[i][1], cloud[i][0]) / PI;
+        vector<double> temp = {cloud[i][0], cloud[i][1], cloud[i][2], cloud[i][3], cloud[i][4], cloud[i][5], r, static_cast<double>(angle)};
+        arrange.push_back(temp);
 
     }
 
-    for(int i = 0; i < cloud.size(); i++)
-    {
-        cout << arrange[i][6] << " " << arrange[i][7] << endl;
+    sort(arrange.begin(), arrange.end(), customCompare);
+
+    for(int now_ang = 180; now_ang >= -180; now_ang--){
+        vector<double> temp = {0, 0, 0, 0, 0, 0, -10, 0};
+        for(int i = 0; i < arrange.size(); i++){
+            
+            if(static_cast<int>(arrange[i][7]) == now_ang && arrange[i][6] > temp[6]){
+                temp = {arrange[i][0], arrange[i][1], arrange[i][2], arrange[i][3], arrange[i][4], arrange[i][5], arrange[i][6], arrange[i][7]};
+            }
+        }
+
+        if(temp[6] != -10){
+            ring_shaped.push_back(temp);
+        }
+
     }
+
+    for(int i = 0; i < ring_shaped.size()-1; i++){
+        if(ring_shaped[i][7] < 15 && ring_shaped[i][7] > -15 && abs(ring_shaped[i][6] - ring_shaped[i][6]) < 0.001){
+            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], ring_shaped[i][2], ring_shaped[i][3], ring_shaped[i][4], ring_shaped[i][5]};
+            rt_ring.push_back(temp);
+        }
+            
+    }
+
+    // Visualization using Open3D
+    open3d::geometry::PointCloud pcd;
+    for (const auto& point : rt_ring) {
+        pcd.points_.push_back({point[0], point[1], point[2]});
+    }
+    open3d::visualization::DrawGeometries({make_shared<open3d::geometry::PointCloud>(pcd)});
+
+    return rt_ring;
 }
 
 
@@ -364,8 +395,7 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     vector<vector<double>> ok_cloud_1;
     vector<vector<double>> ok_cloud_2;
     vector<vector<double>> ok_cloud_3;
-
-    BorderReinforcement(cloud);
+    vector<vector<double>> ring = BorderReinforcement(cloud);;
 
     float max_x = cloud[0][0];
     for (int i = 0; i < cloud.size(); i++)
@@ -406,6 +436,14 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     float shift_distance = (max_x - min_x) / rounds;
 
     vector<double> startPoint = {0, 0, 0.1, 0, 0, 0};
+    
+    //path
+    ok_cloud_1.push_back(startPoint);
+
+    for(int i = 0; i < ring.size(); i++){
+        ok_cloud_1.push_back(ring[i]);
+    }
+
     ok_cloud_1.push_back(startPoint);
 
     for (int i = 0; i <= rounds; i++)
@@ -480,7 +518,7 @@ vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
         open3d_cloud.points_.push_back(Eigen::Vector3d(point[0], point[1], point[2]));
     }
 
-    std::cout << "[ PathPlanning ] after filtered_cloud " << open3d_cloud.points_.size() << std::endl;
+    //std::cout << "[ PathPlanning ] after filtered_cloud " << open3d_cloud.points_.size() << std::endl;
 
     // Filter the point cloud using Open3D functions
     open3d::geometry::PointCloud filtered_open3d_cloud = open3d_cloud; // Perform your filtering operation here
@@ -527,7 +565,7 @@ int main(int argc, char **argv)
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud(smooth);
     // pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/flip_cloud.pcd", *flipCloud);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(flipCloud);
-    printPointCloudRange(filteredCloud);
+    //printPointCloudRange(filteredCloud);
     // pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filtered_cloud.pcd", *filteredCloud);
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);

@@ -110,13 +110,13 @@ int main(int argc, char **argv)
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr merge(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera1/cam1_3.pcd", *cloud1) == -1)
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera1/cam1.pcd", *cloud1) == -1)
     {
         cout << "Failed to load cloud1" << endl;
         return -1;
     }
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera2/cam2_3.pcd", *cloud2) == -1)
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera2/cam2.pcd", *cloud2) == -1)
     {
         cout << "Failed to load cloud2" << endl;
         return -1;
