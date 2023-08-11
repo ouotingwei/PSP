@@ -397,7 +397,7 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
 
     for (int i = 0; i < ring_shaped.size(); i++)
     {
-        if (ring_shaped[i][7] < 30 && ring_shaped[i][7] > -30 && ring_shaped[i][2] < 0.02)
+        if (ring_shaped[i][7] < 40 && ring_shaped[i][7] > -40 && ring_shaped[i][2] < 0.02)
         {
             cout << "[1]" << ring_shaped[i][2] << endl;
             vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_B, 0, 0, 0};   // normal
@@ -405,9 +405,12 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
         }
     }
 
+    vector<double> startPoint = {0, 0, 0.1, 0, 0, 0};
+    rt_ring.push_back(startPoint);
+
     for (int i = 0; i < ring_shaped.size(); i++)
     {
-        if ((ring_shaped[i][7] < -150 || ring_shaped[i][7] > 150) && ring_shaped[i][2] < 0.02)
+        if ((ring_shaped[i][7] < -140 || ring_shaped[i][7] > 140) && ring_shaped[i][2] < 0.02)
         {
             cout << "[1]" << ring_shaped[i][2] << endl;
             vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_H, 0, 0, 0};
@@ -502,8 +505,8 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         if (i % 2 == 0)
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall);
-            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.05, tmp_cloud[0][2], 0, 0, 0};
-            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.05, tmp_cloud[tmp_cloud.size() - 1][2], 0, 0, 0};
+            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.02, tmp_cloud[0][2]+0.03, 0, 0, 0};
+            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.02, tmp_cloud[tmp_cloud.size() - 1][2]+0.03, 0, 0, 0};
             edge_contour.push_back(tmp_cloud.front());
             edge_contour.push_back(tmp_cloud.back());
             ok_cloud_1.push_back(ap_max_y);
@@ -515,8 +518,8 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         else
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig);
-            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.05, tmp_cloud[tmp_cloud.size() - 1][2], 0, 0, 0};
-            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.05, tmp_cloud[0][2], 0, 0, 0};
+            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.02, tmp_cloud[tmp_cloud.size() - 1][2], 0, 0, 0};
+            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.02, tmp_cloud[0][2], 0, 0, 0};
             edge_contour.push_back(tmp_cloud.front());
             edge_contour.push_back(tmp_cloud.back());
             ok_cloud_1.push_back(ap_min_y);
@@ -638,7 +641,7 @@ int main(int argc, char **argv)
     //     printf("\n");
     // }
 
-    const std::string file_path = "S004.LS";
+    const std::string file_path = "S001.LS";
     if (writeLsFile(file_path, waypoints))
         printf("Write LS error !!!\n");
     else
