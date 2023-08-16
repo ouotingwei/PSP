@@ -9,10 +9,11 @@
     "DOWN_SAMPLE_SIZE": 0.005,
     "CLOUD_SEARCHING_RANGE": 0.0022,
     "PLASMA_DIA": 0.04,
-    "TF_Z_BIAS":60,
+    "TF_Z_BIAS":58,  
+    "last tf":60,
     "removeBounceGate":0.1,
     "nearby_distance":0.01,
-    "velocity":300,
+    "velocity":150 ,
     "camera_x":0,
     "camera_y":0.3,
     "camera_z":-10000
