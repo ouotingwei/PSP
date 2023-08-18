@@ -13,7 +13,7 @@
     "last tf":60,
     "removeBounceGate":0.1,
     "nearby_distance":0.01,
-    "velocity":150 ,
+    "velocity":300 ,
     "camera_x":0,
     "camera_y":0.3,
     "camera_z":-10000
