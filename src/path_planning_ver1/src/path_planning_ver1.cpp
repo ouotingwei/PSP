@@ -107,7 +107,7 @@ double midHighestHeightOfShoe(vector<vector<double>> point_cloud)
     {
         pq.push(point[2]);
     }
-    for(int i=0;i<point_cloud.size()/2;i++)
+    for (int i = 0; i < point_cloud.size() / 2; i++)
         pq.pop();
     return pq.top();
 }
@@ -400,7 +400,7 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
         if (ring_shaped[i][7] < 40 && ring_shaped[i][7] > -40 && ring_shaped[i][2] < 0.02)
         {
             cout << "[1]" << ring_shaped[i][2] << endl;
-            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_B, 0, 0, 0};   // normal
+            vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_B, 0, 0, 0}; // normal
             rt_ring.push_back(temp);
         }
     }
@@ -427,6 +427,25 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
     open3d::visualization::DrawGeometries({make_shared<open3d::geometry::PointCloud>(pcd)});
 
     return rt_ring;
+}
+
+double polar_angle(vector<double> center, vector<double> p)
+{
+    return atan2(p[1] - center[1], p[0] - center[0]);
+}
+
+vector<vector<double>> GenerateSquarePath(vector<vector<double>> cloud)
+{
+    vector<vector<double>> square_path;
+    vector<vector<double>> contour = edge_contour;
+    /*Approach 1: Zoom the size*/
+
+
+
+    /*Approach 2: Find the edge contour iterativly*/
+    A.erase(std::remove_if(A.begin(), A.end(), [&](int element)
+                           { return std::find(B.begin(), B.end(), element) != B.end(); }),
+            A.end());
 }
 
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
@@ -505,8 +524,8 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         if (i % 2 == 0)
         {
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall);
-            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.02, tmp_cloud[0][2]+0.03, 0, 0, 0};
-            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.02, tmp_cloud[tmp_cloud.size() - 1][2]+0.03, 0, 0, 0};
+            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.02, tmp_cloud[0][2] + 0.03, 0, 0, 0};
+            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.02, tmp_cloud[tmp_cloud.size() - 1][2] + 0.03, 0, 0, 0};
             edge_contour.push_back(tmp_cloud.front());
             edge_contour.push_back(tmp_cloud.back());
             ok_cloud_1.push_back(ap_max_y);
