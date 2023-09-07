@@ -440,10 +440,10 @@ vector<vector<double>> GenerateSquarePath(vector<vector<double>> cloud)
     vector<vector<double>> contour = edge_contour;
 
     /*Approach 1: Zoom the size*/
-    double center_x = (contour[contour.size()][0] + contour[contour.size() + 1][0]) / 2;
-    double center_y = (contour[contour.size()][1] + contour[contour.size() + 1][1]) / 2;
+    double center_x = (contour[contour.size()][0] + contour[contour.size() - 1][0]) / 2;
+    double center_y = (contour[contour.size()][1] + contour[contour.size() - 1][1]) / 2;
     vector<double> center{center_x, center_y};
-    sort(contour.begin(), contour.end(), [&](const Point &a, const Point &b)
+    sort(contour.begin(), contour.end(), [&](const vector<double> &a, const vector<double> &b)
          { return polar_angle(center, a) < polar_angle(center, b); });
     square_path.push_back(contour);
 
