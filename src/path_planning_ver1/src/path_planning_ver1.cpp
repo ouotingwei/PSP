@@ -446,6 +446,9 @@ vector<vector<double>> GenerateSquarePath(vector<vector<double>> cloud)
     A.erase(std::remove_if(A.begin(), A.end(), [&](int element)
                            { return std::find(B.begin(), B.end(), element) != B.end(); }),
             A.end());
+
+    
+    return square_path;
 }
 
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
