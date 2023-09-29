@@ -434,37 +434,37 @@ double polar_angle(vector<double> center, vector<double> p)
     return atan2(p[1] - center[1], p[0] - center[0]);
 }
 
-vector<vector<double>> GenerateSquarePath(vector<vector<double>> cloud)
-{
-    vector<vector<double>> square_path;
-    vector<vector<double>> contour = edge_contour;
+// vector<vector<double>> GenerateSquarePath(vector<vector<double>> cloud)
+// {
+//     vector<vector<double>> square_path;
+//     vector<vector<double>> contour = edge_contour;
 
-    /*Approach 1: Zoom the size*/
-    double center_x = (contour[contour.size()][0] + contour[contour.size() - 1][0]) / 2;
-    double center_y = (contour[contour.size()][1] + contour[contour.size() - 1][1]) / 2;
-    vector<double> center{center_x, center_y};
-    sort(contour.begin(), contour.end(), [&](const vector<double> &a, const vector<double> &b)
-         { return polar_angle(center, a) < polar_angle(center, b); });
-    square_path.push_back(contour);
+//     /*Approach 1: Zoom the size*/
+//     double center_x = (contour[contour.size()][0] + contour[contour.size() - 1][0]) / 2;
+//     double center_y = (contour[contour.size()][1] + contour[contour.size() - 1][1]) / 2;
+//     vector<double> center{center_x, center_y};
+//     sort(contour.begin(), contour.end(), [&](const vector<double> &a, const vector<double> &b)
+//          { return polar_angle(center, a) < polar_angle(center, b); });
+//     square_path.push_back(contour);
 
-    int rounds_of_square_path = 4;
+//     int rounds_of_square_path = 4;
 
-    for (int i = 1; i < rounds_of_square_path; i++)
-    {
-        for (auto point : contour)
-        {
-            point[0] = center[0] + (point[0] - center[0]) * i/rounds_of_square_path;
-            point[1] = center[1] + (point[1] - center[1]) * i/rounds_of_square_path;
-            square_path.push_back(point);
-        }
-    }
+//     for (int i = 1; i < rounds_of_square_path; i++)
+//     {
+//         for (auto point : contour)
+//         {
+//             point[0] = center[0] + (point[0] - center[0]) * i/rounds_of_square_path;
+//             point[1] = center[1] + (point[1] - center[1]) * i/rounds_of_square_path;
+//             square_path.push_back(point);
+//         }
+//     }
 
-    /*Approach 2: Find the edge contour iterativly, pcl concave hull*/
-    // A.erase(std::remove_if(A.begin(), A.end(), [&](int element)
-    //                        { return std::find(B.begin(), B.end(), element) != B.end(); }),
-    //         A.end());
-    return square_path;
-}
+//     /*Approach 2: Find the edge contour iterativly, pcl concave hull*/
+//     // A.erase(std::remove_if(A.begin(), A.end(), [&](int element)
+//     //                        { return std::find(B.begin(), B.end(), element) != B.end(); }),
+//     //         A.end());
+//     return square_path;
+// }
 
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
