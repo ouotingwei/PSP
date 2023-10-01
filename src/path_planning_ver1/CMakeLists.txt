@@ -6,13 +6,25 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=/usr/lib/gcc/x8
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   pcl_ros
+  message_generation
+)
+
+add_service_files(
+  FILES
+  path_planning_ver1.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  sensor_msgs
 )
 
 find_package(Open3D REQUIRED)
 
 catkin_package(
-  CATKIN_DEPENDS roscpp
-)
+  CATKIN_DEPENDS roscpp message_runtime
+) 
 
 include_directories(
   ${catkin_INCLUDE_DIRS}

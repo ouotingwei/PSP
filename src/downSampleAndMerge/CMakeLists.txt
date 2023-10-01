@@ -12,6 +12,18 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   pcl_ros
+  message_generation
+)
+
+add_service_files(
+  FILES
+  downSampleAndMerge.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  sensor_msgs
 )
 
 catkin_package(
@@ -43,7 +55,9 @@ link_directories(
 add_definitions(${PCL_DEFINITIONS})
 
 # Declare catkin package
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS message_runtime
+)
 
 # Build executable
 add_executable(down_sample_and_merge src/down_sample_and_merge.cpp)

@@ -13,6 +13,9 @@
 #include "json.hpp"
 #include <queue>
 
+#include <ros/ros.h>
+#include <path_planning_ver1/path_planning_ver1.h>
+
 // // define sample size
 // #define WINDOW_SIZE 0.1
 // // Filter out the workspace
@@ -613,16 +616,12 @@ vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
     return filtered_cloud;
 }
 
-int main(int argc, char **argv)
-{
-
-    readParameters();
-
+void the_origin_main_function(){
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
     if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *cloud) == -1)
     {
         cout << "Failed to load point cloud." << endl;
-        return -1;
+        //return -1;
     }
 
     // Downsample
@@ -663,35 +662,39 @@ int main(int argc, char **argv)
     vector2Angle(point_cloud);
     workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS, velocity);
 
-    // // Print waypoints
-    // for (int i = 0; i < waypoints.size(); i++)
-    // {
-    //     printf("Waypoint %d:\n", i);
-    //     printf("x: %lf\n", waypoints[i].x);
-    //     printf("y: %lf\n", waypoints[i].y);
-    //     printf("z: %lf\n", waypoints[i].z);
-    //     printf("W: %lf\n", waypoints[i].W);
-    //     printf("P: %lf\n", waypoints[i].P);
-    //     printf("R: %lf\n", waypoints[i].R);
-    //     printf("V: %lf\n", waypoints[i].V);
-    //     printf("C: %s\n", waypoints[i].C.c_str());
-    //     printf("\n");
-    // }
-
     const std::string file_path = "S003.LS";
     if (writeLsFile(file_path, waypoints))
         printf("Write LS error !!!\n");
     else
         printf("Sucess!!!\n");
+}
 
-    // for (size_t i = 0; i < vectors.size(); ++i)
-    // {
-    //     for (size_t j = 0; j < vectors[i].size(); ++j)
-    //     {
-    //         cout << vectors[i][j] << " ";
-    //     }
-    //     cout << endl;
-    // }
+bool server_callback(path_planning_ver1::path_planning_ver1::Request &req, path_planning_ver1::path_planning_ver1::Response &res){
+    if(req.REQU_PP == true){
+        the_origin_main_function();
+        res.RESP_PP = true;
+    }else{
+        res.RESP_PP = false;
+    }
+
+    return true;
+}
+
+int main(int argc, char **argv)
+{
+    readParameters();
+
+    ros::init(argc, argv, "path_planning_ver1");
+    ros::NodeHandle nh;
+
+    ros::Rate loop_rate(30);
+
+    ros::ServiceServer service = nh.advertiseService("path_planning_ver1", server_callback);
+
+    while(ros::ok()){
+        loop_rate.sleep();
+        ros::spinOnce();
+    }
 
     return 0;
 }

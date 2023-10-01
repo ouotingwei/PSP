@@ -9,6 +9,8 @@
 #include <string>
 #include "json.hpp"
 
+#include <down_sample_and_merge/downSampleAndMerge.h>
+
 // #define FILTER 0.005
 // #define PI 3.141592653589793
 // #define ANGLE 180
@@ -96,16 +98,7 @@ void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
     std::cout << "Z: " << min_z << " to " << max_z << std::endl;
 }
 
-int main(int argc, char **argv)
-{
-    readParameters();
-    
-    ros::init(argc, argv, "downSampleAndMerge");
-    ros::NodeHandle nh;
-    ros::Rate loop_rate(30);
-
-    auto total_start = std::chrono::high_resolution_clock::now();
-
+void merge_and_save(){
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud1(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr merge(new pcl::PointCloud<pcl::PointXYZRGBA>);
@@ -113,13 +106,13 @@ int main(int argc, char **argv)
     if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera1/cam1_1.pcd", *cloud1) == -1)
     {
         cout << "Failed to load cloud1" << endl;
-        return -1;
+        
     }
 
     if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera2/cam2_1.pcd", *cloud2) == -1)
     {
         cout << "Failed to load cloud2" << endl;
-        return -1;
+        
     }
 
     // down sample
@@ -203,12 +196,34 @@ int main(int argc, char **argv)
     // merge = cloud2_spl;
 
     pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *merge);
+}
 
-    auto merge_end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> merge_diff = merge_end - total_start;
-    std::cout << "Time to run the code: " << merge_diff.count() << " s\n";
+bool server_callback(down_sample_and_merge::downSampleAndMerge::Request &req, down_sample_and_merge::downSampleAndMerge::Response &res){
+    if(req.REQU_DSAM == true){
+        merge_and_save();
+        res.RESP_DSAM = true;
+    }else{
+        res.RESP_DSAM = false;
+    }
 
-    ros::spinOnce();
+    return true;
+}
+
+int main(int argc, char **argv)
+{
+    readParameters();
+    
+    ros::init(argc, argv, "downSampleAndMerge");
+    ros::NodeHandle nh;
+
+    ros::Rate loop_rate(30);
+
+    ros::ServiceServer service = nh.advertiseService("downSampleAndMerge", server_callback);
+
+    while(ros::ok()){
+        loop_rate.sleep();
+        ros::spinOnce();
+    }
 
     return 0;
 }
