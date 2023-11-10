@@ -13,7 +13,7 @@ void Callback_cam1(const sensor_msgs::PointCloud2ConstPtr& msg)
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::fromROSMsg(*msg, *cloud);
     string scanfile_dir = "./scan/camera1/";
-    string filename = "cam1_5.pcd";
+    string filename = "cam1.pcd";
     pcl::io::savePCDFileASCII(scanfile_dir + filename, *cloud);
     ROS_INFO_STREAM("Saved " << cloud->points.size() << " data points to " << filename);
 }
@@ -23,7 +23,7 @@ void Callback_cam2(const sensor_msgs::PointCloud2ConstPtr& msg)
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::fromROSMsg(*msg, *cloud);
     string scanfile_dir = "./scan/camera2/";
-    string filename = "cam2_5.pcd";
+    string filename = "cam2.pcd";
     pcl::io::savePCDFileASCII(scanfile_dir + filename, *cloud);
     ROS_INFO_STREAM("Saved " << cloud->points.size() << " data points to " << filename);
 }
