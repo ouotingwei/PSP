@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-from getpcd.srv import REQU_PCD, RESP_PCD
-from dsam.srv import REQU_DSAM, RESP_DSAM
-from path_planning_ver1 import REQU_PP, RESP_PP
 import rospy
+from dsam.srv import dsam
+from path_planning_ver1.srv import path_planning_ver1
+from getpcd.srv import getpcd
+
 
 class main_controller():
     def __init__(self):
         rospy.init_node('main')
 
-        self.getpcd_proxy = rospy.ServiceProxy('getpcd_service', REQU_PCD)
-        self.dsam_proxy = rospy.ServiceProxy('dsam_service', REQU_DSAM)
-        self.pp_proxy = rospy.ServiceProxy('path_planning_ver1_service', REQU_PP)
+        self.getpcd_proxy = rospy.ServiceProxy('getpcd_service', getpcd)
+        self.dsam_proxy = rospy.ServiceProxy('dsam_service', dsam)
+        self.pp_proxy = rospy.ServiceProxy('path_planning_ver1_service', path_planning_ver1)
 
         rospy.wait_for_service('getpcd_service')
         rospy.wait_for_service('dsam_service')
