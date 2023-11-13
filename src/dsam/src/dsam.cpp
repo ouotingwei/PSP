@@ -9,7 +9,7 @@
 #include <string>
 #include "json.hpp"
 
-#include <down_sample_and_merge/downSampleAndMerge.h>
+#include <dsam/dsam.h>
 
 // #define FILTER 0.005
 // #define PI 3.141592653589793
@@ -43,7 +43,7 @@ int readParameters()
         return 1;
     }
 
-    std::string filePath = std::string(homeDir) + "/PSP/src/downSampleAndMerge/src/parameters.json";
+    std::string filePath = std::string(homeDir) + "/PSP/src/dsam/src/parameters.json";
 
     std::ifstream file(filePath);
     if (!file.is_open())
@@ -198,7 +198,7 @@ void merge_and_save(){
     pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *merge);
 }
 
-bool server_callback(down_sample_and_merge::downSampleAndMerge::Request &req, down_sample_and_merge::downSampleAndMerge::Response &res){
+bool server_callback(dsam::dsam::Request &req, dsam::dsam::Response &res){
     if(req.REQU_DSAM == true){
         merge_and_save();
         res.RESP_DSAM = true;
@@ -213,12 +213,12 @@ int main(int argc, char **argv)
 {
     readParameters();
     
-    ros::init(argc, argv, "downSampleAndMerge");
+    ros::init(argc, argv, "dsam");
     ros::NodeHandle nh;
 
     ros::Rate loop_rate(30);
 
-    ros::ServiceServer service = nh.advertiseService("downSampleAndMerge", server_callback);
+    ros::ServiceServer service = nh.advertiseService("dsam", server_callback);
 
     while(ros::ok()){
         loop_rate.sleep();

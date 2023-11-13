@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(down_sample_and_merge)
+project(dsam)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_service_files(
   FILES
-  downSampleAndMerge.srv
+  dsam.srv
 )
 
 generate_messages(
@@ -28,7 +28,7 @@ generate_messages(
 
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES downSampleAndMerge
+#  LIBRARIES dsam
 #  CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
 )
@@ -60,10 +60,10 @@ catkin_package(
 )
 
 # Build executable
-add_executable(down_sample_and_merge src/down_sample_and_merge.cpp)
+add_executable(dsam src/dsam.cpp)
 
 # Link libraries
-target_link_libraries(down_sample_and_merge
+target_link_libraries(dsam
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
 )

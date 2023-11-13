@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="getpcd" type="getpcd" name="getpcd" output="screen"/>
+    <node pkg="dsam" type="dsam" name="dsam" output="screen"/>
+    <node pkg="path_planning_ver1" type="path_planning_ver1" name="path_planning_ver1" output="screen"/>
+    <node pkg="main" type="main.py" name="main" output="screen"/>
+</launch>

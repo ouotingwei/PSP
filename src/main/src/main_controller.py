@@ -1,24 +1,25 @@
-import rospy
+#!/usr/bin/env python3
 from getpcd.srv import REQU_PCD, RESP_PCD
-from downSampleAndMerge.srv import REQU_DSAM, RESP_DSAM
+from dsam.srv import REQU_DSAM, RESP_DSAM
 from path_planning_ver1 import REQU_PP, RESP_PP
+import rospy
 
 class main_controller():
     def __init__(self):
-        rospy.init_node('main_control')
+        rospy.init_node('main')
 
         self.getpcd_proxy = rospy.ServiceProxy('getpcd_service', REQU_PCD)
-        self.dsam_proxy = rospy.ServiceProxy('downSampleAndMerge_service', REQU_PCD)
-        self.pp_proxy = rospy.ServiceProxy('path_planning_ver1_service', REQU_PCD)
+        self.dsam_proxy = rospy.ServiceProxy('dsam_service', REQU_DSAM)
+        self.pp_proxy = rospy.ServiceProxy('path_planning_ver1_service', REQU_PP)
 
         rospy.wait_for_service('getpcd_service')
-        rospy.wait_for_service('downSampleAndMerge_service')
+        rospy.wait_for_service('dsam_service')
         rospy.wait_for_service('path_planning_ver1_service')
         
     def getpcd_fn(self, request):
         try:
             response = self.getpcd_proxy(request)
-            if response.RESP:
+            if response:
                 rospy.loginfo("getpcd_successfully completed !")
                 request = False
         
@@ -28,7 +29,7 @@ class main_controller():
     def dsam_fn(self, request):
         try:
             response = self.dsam_proxy(request)
-            if response.RESP:
+            if response:
                 rospy.loginfo("down sample and merge successfully completed !")
                 request = False
         
@@ -38,7 +39,7 @@ class main_controller():
     def pp_fn(self, request):
         try:
             response = self.pp_proxy(request)
-            if response.RESP:
+            if response:
                 rospy.loginfo("path planning successfullly completed !")
                 request = False
         
@@ -57,7 +58,3 @@ class main_controller():
         self.getpcd_fn(request)
         self.dsam_fn(request)
         self.pp_fn(request)
-
-if __name__ == "__main__":
-    mc = main_controller()
-    mc.run()
