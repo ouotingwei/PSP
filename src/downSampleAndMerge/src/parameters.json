@@ -1,0 +1,15 @@
+{
+    "FILTER": 0.005,
+    "PI": 3.141592653589793,
+    "ANGLE": 180.0,
+    "SAM_ANG": 28,
+    "SHIFT_X": 0.065,
+    "SHIFT_Y": -0.5,
+
+    "origin": -0.61,
+    "SHIFT_Z": -0.03,
+    "HIGH_THRESHOLD": 0.2,
+    "CAM1_GATE":-0.2,
+    "CAM2_GATE":-0.2
+  }
+  
