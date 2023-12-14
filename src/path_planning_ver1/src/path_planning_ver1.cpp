@@ -37,10 +37,10 @@
 // define sample size
 double WINDOW_SIZE = 0.1;
 // Filter out the workspacef
-double SEARCH_RANGE_BX = 0.4;
-double SEARCH_RANGE_SX = -0.5;
-double SEARCH_RANGE_BY = 0.8;
-double SEARCH_RANGE_SY = 0.1;
+double SEARCH_RANGE_BX = 10;
+double SEARCH_RANGE_SX = -10;
+double SEARCH_RANGE_BY = 10;
+double SEARCH_RANGE_SY = -10;
 double SEARCH_HEIGHT = -0.485;
 double PROXIMITY_THRESHOLD = 0.01;
 double DOWN_SAMPLE_SIZE = 0.005;
@@ -69,7 +69,7 @@ int readParameters()
     }
 
     std::string filePath = std::string(homeDir) + "/PSP/src/path_planning_ver1/src/parameters.json";
-    cout << filePath << endl;
+    //cout << filePath << endl;
     std::ifstream file(filePath);
     if (!file.is_open())
     {
@@ -131,7 +131,7 @@ bool isNearEdge(vector<double> point, double &refer_height)
 vector<vector<double>> smoothEdgePointCloud(vector<vector<double>> point_cloud)
 {
     double refer_height = midHighestHeightOfShoe(point_cloud);
-    cout << "The refer height is " << refer_height << endl;
+    //cout << "The refer height is " << refer_height << endl;
     vector<vector<double>> return_cloud = point_cloud;
     for (auto &point : return_cloud)
     {
@@ -238,10 +238,10 @@ void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
             max_z = point.z;
     }
 
-    std::cout << "Point Cloud Range:" << std::endl;
-    std::cout << "X: " << min_x << " to " << max_x << std::endl;
-    std::cout << "Y: " << min_y << " to " << max_y << std::endl;
-    std::cout << "Z: " << min_z << " to " << max_z << std::endl;
+    // std::cout << "Point Cloud Range:" << std::endl;
+    // std::cout << "X: " << min_x << " to " << max_x << std::endl;
+    // std::cout << "Y: " << min_y << " to " << max_y << std::endl;
+    // std::cout << "Z: " << min_z << " to " << max_z << std::endl;
 }
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr searchAndFilterItems(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
@@ -310,7 +310,7 @@ vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud)
         }
     }
 
-    cout << max_x << " " << min_x << " " << max_y << " " << min_y << " " << low_z << endl;
+    //cout << max_x << " " << min_x << " " << max_y << " " << min_y << " " << low_z << endl;
 
     center_x = (max_x + min_x) / 2;
     center_y = (max_y + min_y) / 2;
@@ -377,7 +377,7 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
 
     for (int i = 0; i < arrange.size(); i++)
     {
-        cout << arrange[i][7] << endl;
+        //cout << arrange[i][7] << endl;
     }
 
     for (int now_ang = 180; now_ang >= -180; now_ang = now_ang - 5)
@@ -402,7 +402,7 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
     {
         if (ring_shaped[i][7] < 40 && ring_shaped[i][7] > -40 && ring_shaped[i][2] < 0.02)
         {
-            cout << "[1]" << ring_shaped[i][2] << endl;
+            //cout << "[1]" << ring_shaped[i][2] << endl;
             vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_B, 0, 0, 0}; // normal
             rt_ring.push_back(temp);
         }
@@ -415,7 +415,7 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
     {
         if ((ring_shaped[i][7] < -140 || ring_shaped[i][7] > 140) && ring_shaped[i][2] < 0.02)
         {
-            cout << "[1]" << ring_shaped[i][2] << endl;
+            //cout << "[1]" << ring_shaped[i][2] << endl;
             vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_H, 0, 0, 0};
             rt_ring.push_back(temp);
         }
@@ -618,9 +618,9 @@ vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
 
 void the_origin_main_function(){
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *cloud) == -1)
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("/home/honglang/PSP/scan/merge/merged.pcd", *cloud) == -1)
     {
-        cout << "Failed to load point cloud." << endl;
+        //cout << "Failed to load point cloud." << endl;
         //return -1;
     }
 
@@ -661,9 +661,10 @@ void the_origin_main_function(){
     double theta = 0;
     vector2Angle(point_cloud);
     workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS, velocity);
+    const std::string absfile_path = "/home/honglang/PSP/testingFile/B003.LS";
 
-    const std::string file_path = "S003.LS";
-    if (writeLsFile(file_path, waypoints))
+    const std::string file_path = "B003.LS";
+    if (writeLsFile(absfile_path,file_path ,waypoints))
         printf("Write LS error !!!\n");
     else
         printf("Sucess!!!\n");

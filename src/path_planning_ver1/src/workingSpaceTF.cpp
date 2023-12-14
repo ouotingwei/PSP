@@ -105,8 +105,8 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
     }
 }
 
-int writeLsFile(const std::string& file, const std::vector<Waypoint>& waypoints) {
-    std::ofstream f(file);
+int writeLsFile(const std::string& absfile, const std::string& file, const std::vector<Waypoint>& waypoints) {
+    std::ofstream f(absfile);
     if (!f.is_open()) {
         std::cout << "Error opening file: " << file << std::endl;
         return -1;

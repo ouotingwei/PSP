@@ -3,59 +3,97 @@ import rospy
 from dsam.srv import dsam
 from path_planning_ver1.srv import path_planning_ver1
 from getpcd.srv import getpcd
+from communication.srv import ModbusPLC, ModbusRobot, Ftp
 
+request = False
 
 class main_controller():
     def __init__(self):
         rospy.init_node('main')
 
-        self.getpcd_proxy = rospy.ServiceProxy('getpcd_service', getpcd)
-        self.dsam_proxy = rospy.ServiceProxy('dsam_service', dsam)
-        self.pp_proxy = rospy.ServiceProxy('path_planning_ver1_service', path_planning_ver1)
+        self.getpcd_proxy = rospy.ServiceProxy('getpcd', getpcd)
+        self.dsam_proxy = rospy.ServiceProxy('dsam', dsam)
+        self.pp_proxy = rospy.ServiceProxy('path_planning_ver1', path_planning_ver1)
+        #self.funuc_proxy = rospy.ServiceProxy('modbus_robot_control', ModbusRobot)
+        #self.plc_proxy = rospy.ServiceProxy('modbus_plc_control', ModbusPLC)
+        #self.ftp_proxy = rospy.ServiceProxy('ftp_transfer', Ftp)
 
-        rospy.wait_for_service('getpcd_service')
-        rospy.wait_for_service('dsam_service')
-        rospy.wait_for_service('path_planning_ver1_service')
-        
+    
     def getpcd_fn(self, request):
+        rospy.wait_for_service('getpcd')
+
         try:
             response = self.getpcd_proxy(request)
             if response:
-                rospy.loginfo("getpcd_successfully completed !")
+                rospy.loginfo("[!] getpcd_successfully completed !")
                 request = False
         
         except rospy.ServiceException as e:
-            rospy.logerr(f"Error sending getpcd service request: {e}")
+            rospy.logerr(f"[!] Error sending getpcd service request: {e}")
 
     def dsam_fn(self, request):
+        rospy.wait_for_service('dsam')
+
         try:
             response = self.dsam_proxy(request)
             if response:
-                rospy.loginfo("down sample and merge successfully completed !")
+                rospy.loginfo("[!] down sample and merge successfully completed !")
                 request = False
         
         except rospy.ServiceException as e:
-            rospy.logerr(f"Error sending dsam service request: {e}")
+            rospy.logerr(f"[!] rror sending dsam service request: {e}")
 
     def pp_fn(self, request):
+        rospy.wait_for_service('path_planning_ver1')
+
         try:
             response = self.pp_proxy(request)
             if response:
-                rospy.loginfo("path planning successfullly completed !")
+                rospy.loginfo("[!] path planning successfullly completed !")
                 request = False
         
         except rospy.ServiceException as e:
-            rospy.logerr(f"Error sending pp service request: {e}")
-        ...
+            rospy.logerr(f"[!] Error sending pp service request: {e}")
+        
+    
+    # def tfFile_fn(self, host, path):  
+    #     rospy.wait_for_service('ftp_transfer')
 
-    def plc_fn(self):  
-        ...
+    #     try:
+    #         response = self.ftp_proxy(host, path)
+    #         if response:
+    #             rospy.loginfo("file transfer successfullly completed !")
+    #             request = False
+        
+    #     except rospy.ServiceException as e:
+    #         rospy.logerr(f"Error sending pp service request: {e}")
 
-    def fanuc_fn(self):
-        ...
+    # def plc_fn(self):  
+    #     try:
+    #         response = self.pp_proxy(request)
+    #         if response:
+    #             rospy.loginfo("path planning successfullly completed !")
+    #             request = False
+        
+    #     except rospy.ServiceException as e:
+    #         rospy.logerr(f"Error sending pp service request: {e}")
+        
+
+    # def fanuc_fn(self):
+    #     try:
+    #         response = self.pp_proxy(request)
+    #         if response:
+    #             rospy.loginfo("path planning successfullly completed !")
+    #             request = False
+        
+    #     except rospy.ServiceException as e:
+    #         rospy.logerr(f"Error sending pp service request: {e}")
+    
 
     def run(self):
-        request = True
-        self.getpcd_fn(request)
-        self.dsam_fn(request)
-        self.pp_fn(request)
+        self.getpcd_fn(True)
+        self.dsam_fn(True)
+        self.pp_fn(True)
+        self.tfFile_fn('192.168.255.200', '/home/honglang/PSP/testingFile/S003.LS')
+
+        

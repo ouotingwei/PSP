@@ -92,10 +92,10 @@ void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
             max_z = point.z;
     }
 
-    std::cout << "Point Cloud Range:" << std::endl;
-    std::cout << "X: " << min_x << " to " << max_x << std::endl;
-    std::cout << "Y: " << min_y << " to " << max_y << std::endl;
-    std::cout << "Z: " << min_z << " to " << max_z << std::endl;
+    //std::cout << "Point Cloud Range:" << std::endl;
+    //std::cout << "X: " << min_x << " to " << max_x << std::endl;
+    //std::cout << "Y: " << min_y << " to " << max_y << std::endl;
+    //std::cout << "Z: " << min_z << " to " << max_z << std::endl;
 }
 
 void merge_and_save(){
@@ -103,15 +103,15 @@ void merge_and_save(){
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr merge(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera1/cam1_1.pcd", *cloud1) == -1)
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("/home/honglang/PSP/scan/camera1/cam1.pcd", *cloud1) == -1)
     {
-        cout << "Failed to load cloud1" << endl;
+       // cout << "Failed to load cloud1" << endl;
         
     }
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("./scan/camera2/cam2_1.pcd", *cloud2) == -1)
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("/home/honglang/PSP/scan/camera2/cam2.pcd", *cloud2) == -1)
     {
-        cout << "Failed to load cloud2" << endl;
+        //cout << "Failed to load cloud2" << endl;
         
     }
 
@@ -195,7 +195,7 @@ void merge_and_save(){
     *merge = *split_1 + *split_2;
     // merge = cloud2_spl;
 
-    pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/merged_cloud.pcd", *merge);
+    pcl::io::savePCDFile<pcl::PointXYZRGBA>("/home/honglang/PSP/scan/merge/merged.pcd", *merge);
 }
 
 bool server_callback(dsam::dsam::Request &req, dsam::dsam::Response &res){
@@ -224,6 +224,7 @@ int main(int argc, char **argv)
         loop_rate.sleep();
         ros::spinOnce();
     }
+
 
     return 0;
 }
