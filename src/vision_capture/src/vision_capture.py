@@ -9,9 +9,10 @@ import sensor_msgs.point_cloud2 as pc2
 import pcl
 import open3d as o3d
 
+
 class Detection: 
     def __init__(self):
-        self.camera_params = (623.6932761844039, 624.1571561352914, 329.01981432231025, 235.02669920374768)
+        self.camera_params = (650.520775, 650.612282, 325.925185, 237.863254)
         self.tag_size = 0.059
         self.tag_rotation = None
         self.tag_translation = None
@@ -44,18 +45,15 @@ class Detection:
         return self.tag_rotation, self.tag_translation
 
 class CloudFilter():
-    def __init__(self, rotation, translation):
-        self.R = rotation
-        self.T = translation
-
+    def __init__(self):
+        self.loop_rate = rospy.Rate(1)
         self.cloud_subscriber = rospy.Subscriber("/camera/depth/color/points", PointCloud2, self.callback)
         self.cloud_data = None
     
     def callback(self, msg):
         self.cloud_data = msg
-        self.save_point_cloud_as_pcd()
         
-    def save_point_cloud_as_pcd(self):
+    def save_point_cloud_as_pcd(self, rotation, translation):
         if self.cloud_data is not None:
             # Convert PointCloud2 to numpy array
             pc_np = pc2.read_points(self.cloud_data, field_names=("x", "y", "z"), skip_nans=True)
@@ -64,16 +62,30 @@ class CloudFilter():
             pcd = o3d.geometry.PointCloud()
             pcd.points = o3d.utility.Vector3dVector(pc_np)
 
+            # Apply rotation
+            pcd.rotate(np.linalg.inv(rotation), center=(0, 0, 0))
+            
+            # Apply translation
+            pcd.translate(-1*np.linalg.inv(rotation)@translation)
+
+            bounding_box = o3d.geometry.AxisAlignedBoundingBox(
+                min_bound=[0, 0, -0.1],
+                max_bound=[0.22, 0.35, -0.035]
+            )
+
+            cropped_pcd = pcd.crop(bounding_box)
+
             # Save PointCloud as PCD file
-            o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", pcd)
+            o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", cropped_pcd)
             rospy.loginfo("Point cloud saved as point_cloud.pcd")
     
 
 if __name__ == '__main__':
     rospy.init_node("vision_capture")
     pose_detect = Detection()
+    cloud_filter = CloudFilter()
 
     while not rospy.is_shutdown():
         rotation, translation = pose_detect.get_pose()
-        cloud_filter = CloudFilter(rotation, translation)
+        cloud_filter.save_point_cloud_as_pcd(rotation, translation)
         pose_detect.loop_rate.sleep()
