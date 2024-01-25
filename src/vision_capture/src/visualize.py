@@ -1,7 +1,7 @@
 import open3d as o3d
 import numpy as np
 
-cropped_pcd = o3d.io.read_point_cloud("/home/wei/PSP/files/point_cloud.pcd")
+cropped_pcd = o3d.io.read_point_cloud("/home/wei/PSP/files/down_sampled.pcd")
 
 axes = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1, origin=np.zeros(3))
 

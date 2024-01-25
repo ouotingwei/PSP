@@ -64,7 +64,10 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "core": "cpp",
+        "numericaldiff": "cpp",
+        "unordered_set": "cpp"
     },
     "cmake.sourceDirectory": "/home/parallels/PSP/src/downSampleAndMerge"
 }
