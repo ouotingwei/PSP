@@ -114,7 +114,8 @@ void merge_and_save(){
     }
 
     std::string pointCloudPath = std::string(homeDir) + "/PSP/files/point_cloud.pcd";
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(pointCloudPath, *cloud2) == -1)
+    pointCloudPath = "/home/wei/PSP/files/point_cloud.pcd";
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("/home/wei/PSP/files/point_cloud.pcd", *cloud2) == -1)
     {
         //cout << "Failed to load cloud2" << endl;
         
