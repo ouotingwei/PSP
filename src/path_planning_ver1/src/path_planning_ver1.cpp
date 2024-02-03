@@ -140,7 +140,7 @@ vector<double> getRANSACPlane(){
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
-    std::string downSampledPath = std::string(homeDir) + "/PSP/files/down_sampled.pcd";
+    std::string downSampledPath = std::string(homeDir) + "/PSP/files/point_cloud.pcd";
 
 	if (pcl::io::loadPCDFile(downSampledPath, *cloud) < 0)
 	{
@@ -690,7 +690,7 @@ void the_origin_main_function(){
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
-    std::string pointCloudPath = std::string(homeDir) + "/PSP/files/down_sampled.pcd";
+    std::string pointCloudPath = std::string(homeDir) + "/PSP/files/point_cloud.pcd";
 
 
     if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(pointCloudPath, *cloud) == -1)

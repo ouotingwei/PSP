@@ -52,41 +52,26 @@ class CloudFilter():
     
     def callback(self, msg):
         self.cloud_data = msg
+
+    def center_point_cloud(self, point_cloud):
+
+        centroid = np.mean(np.asarray(point_cloud.points), axis=0)
+
+
+        translated_pcd = point_cloud.translate(-centroid)
+
+        return translated_pcd
         
-    # def save_point_cloud_as_pcd(self, rotation, translation):
-    #     if self.cloud_data is not None:
-
-    #         pc_np = pc2.read_points(self.cloud_data, field_names=("x", "y", "z"), skip_nans=True)
-            
-    #         pcd = o3d.geometry.PointCloud()
-    #         pcd.points = o3d.utility.Vector3dVector(pc_np)
-
-    #         pcd.rotate(np.linalg.inv(rotation), center=(0, 0, 0))
-    #         pcd.translate(-1*np.linalg.inv(rotation)@translation)
-
-    #         bounding_box = o3d.geometry.AxisAlignedBoundingBox(
-    #             min_bound=[0, 0, -0.1],
-    #             max_bound=[0.22, 0.35, -0.05]
-    #         )
-
-    #         cropped_pcd = pcd.crop(bounding_box)
-
-    #         o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", cropped_pcd)
-    #         rospy.loginfo("Point cloud saved as point_cloud.pcd")
-    
-
     def save_point_cloud_as_pcd(self, rotation, translation):
         if self.cloud_data is not None:
-            pc_np = np.array(list(pc2.read_points(self.cloud_data, field_names=("x", "y", "z", "r","g","b","a"), skip_nans=True)))
 
-            # pc_np = pc2.read_points(self.cloud_data, field_names=("x", "y", "z", "rgba"), skip_nans=True)
-
+            pc_np = pc2.read_points(self.cloud_data, field_names=("x", "y", "z"), skip_nans=True)
+            
             pcd = o3d.geometry.PointCloud()
-            pcd.points = o3d.utility.Vector3dVector(pc_np[:, :3])  # Extracting only XYZ coordinates
-            # pcd.colors = o3d.utility.Vector3dVector(pc_np[:, 3:6] )  # Assuming RGBA values are in the range [0, 255]
+            pcd.points = o3d.utility.Vector3dVector(pc_np)
 
             pcd.rotate(np.linalg.inv(rotation), center=(0, 0, 0))
-            pcd.translate(-1 * np.linalg.inv(rotation) @ translation)
+            pcd.translate(-1*np.linalg.inv(rotation)@translation)
 
             bounding_box = o3d.geometry.AxisAlignedBoundingBox(
                 min_bound=[0, 0, -0.1],
@@ -95,7 +80,11 @@ class CloudFilter():
 
             cropped_pcd = pcd.crop(bounding_box)
 
-            o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", cropped_pcd)
+            downsampled_pcd = cropped_pcd.voxel_down_sample(voxel_size=0.005)
+
+            centroid_pcd = self.center_point_cloud(downsampled_pcd)
+
+            o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", centroid_pcd)
             rospy.loginfo("Point cloud saved as point_cloud.pcd")
 
 
