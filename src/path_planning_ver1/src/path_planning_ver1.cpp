@@ -68,7 +68,7 @@ int readParameters()
     if (homeDir == nullptr)
     {
         std::cerr << "Failed to get the home directory." << std::endl;
-        return 1;
+
     }
 
     std::string filePath = std::string(homeDir) + "/PSP/src/path_planning_ver1/src/parameters.json";
@@ -134,7 +134,15 @@ bool isNearEdge(vector<double> point, double &refer_height)
 vector<double> getRANSACPlane(){
     //-----------------------------读取点云----------------------------
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	if (pcl::io::loadPCDFile("/home/wei/PSP/files/down_sampled.pcd", *cloud) < 0)
+
+      const char* homeDir = getenv("HOME");
+    if (homeDir == nullptr) {
+        std::cerr << "Failed to get the home directory." << std::endl;
+    }
+
+    std::string downSampledPath = std::string(homeDir) + "/PSP/files/down_sampled.pcd";
+
+	if (pcl::io::loadPCDFile(downSampledPath, *cloud) < 0)
 	{
 		PCL_ERROR("点云读取失败！\n");
 	}
@@ -676,7 +684,16 @@ void the_origin_main_function(){
     std::cout<<"I'm in 0"<<std::endl;
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("/home/wei/PSP/files/down_sampled.pcd", *cloud) == -1)
+
+    const char* homeDir = getenv("HOME");
+    if (homeDir == nullptr) {
+        std::cerr << "Failed to get the home directory." << std::endl;
+    }
+
+    std::string pointCloudPath = std::string(homeDir) + "/PSP/files/down_sampled.pcd";
+
+
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(pointCloudPath, *cloud) == -1)
     {
         //cout << "Failed to load point cloud." << endl;
         //return -1;
@@ -720,7 +737,14 @@ void the_origin_main_function(){
     double theta = 0;
     vector2Angle(point_cloud);
     workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS, velocity);
-    const std::string absfile_path = "/home/wei/PSP/testingFile/B003.LS";
+
+    
+    // const char* homeDir = getenv("HOME");
+    if (homeDir == nullptr) {
+        std::cerr << "Failed to get the home directory." << std::endl;
+    }
+
+    std::string absfile_path = std::string(homeDir) + "/PSP/testingFile/B003.LS";
 
     const std::string file_path = "B003.LS";
     if (writeLsFile(absfile_path,file_path ,waypoints))

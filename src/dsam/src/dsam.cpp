@@ -40,7 +40,7 @@ int readParameters()
         const char* homeDir = getenv("HOME");
     if (homeDir == nullptr) {
         std::cerr << "Failed to get the home directory." << std::endl;
-        return 1;
+
     }
 
     std::string filePath = std::string(homeDir) + "/PSP/src/dsam/src/parameters.json";
@@ -108,8 +108,13 @@ void merge_and_save(){
     //    // cout << "Failed to load cloud1" << endl;
         
     // }
+    const char* homeDir = getenv("HOME");
+    if (homeDir == nullptr) {
+        std::cerr << "Failed to get the home directory." << std::endl;
+    }
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>("/home/wei/PSP/files/point_cloud.pcd", *cloud2) == -1)
+    std::string pointCloudPath = std::string(homeDir) + "/PSP/files/point_cloud.pcd";
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(pointCloudPath, *cloud2) == -1)
     {
         //cout << "Failed to load cloud2" << endl;
         
@@ -204,7 +209,13 @@ void merge_and_save(){
     *merge = *split_2;
     // merge = cloud2_spl;
 
-    pcl::io::savePCDFile<pcl::PointXYZRGBA>("/home/wei/PSP/files/down_sampled.pcd", *merge);
+    //  const char* homeDir = getenv("HOME");
+    if (homeDir == nullptr) {
+        std::cerr << "Failed to get the home directory." << std::endl;
+    }
+
+    std::string savePath = std::string(homeDir) +"/PSP/files/down_sampled.pcd";
+    pcl::io::savePCDFile<pcl::PointXYZRGBA>(savePath, *merge);
 }
 
 bool server_callback(dsam::dsam::Request &req, dsam::dsam::Response &res){
