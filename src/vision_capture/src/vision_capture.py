@@ -97,7 +97,7 @@ class CloudFilter():
 
             bounding_box = o3d.geometry.AxisAlignedBoundingBox(
                 min_bound=[0, 0, -0.1],
-                max_bound=[0.22, 0.35, -0.05]
+                max_bound=[0.22, 0.35, -0.03]
             )
 
             cropped_pcd = pcd.crop(bounding_box)
@@ -117,6 +117,5 @@ if __name__ == '__main__':
 
     while not rospy.is_shutdown():
         rotation, translation = pose_detect.get_pose()
-        if rotation != None and translation != None:
-            cloud_filter.save_point_cloud_as_pcd(rotation, translation)
+        cloud_filter.save_point_cloud_as_pcd(rotation, translation)
         pose_detect.loop_rate.sleep()
