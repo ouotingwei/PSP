@@ -11,8 +11,8 @@ import open3d as o3d
 
 class Detection: 
     def __init__(self):
-        self.camera_params = (650.520775, 650.612282, 325.925185, 237.863254)
-        self.tag_size = 0.059
+        self.camera_params = (604.373076, 608.179768, 317.741819, 247.792564)
+        self.tag_size = 0.0596
         self.tag_rotation = None
         self.tag_translation = None
 
@@ -29,6 +29,8 @@ class Detection:
             rospy.logerr("CvBridgeError:")
 
     def get_pose(self):
+        sample = 0
+
         if self.image is not None:
             at_detector = Detector(families='tag36h11')
             gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -41,11 +43,17 @@ class Detection:
 
             else:
                 for tag in tags:
-                    if 0 == tag.tag_id:
+                    if 1 == tag.tag_id:
+                        sample = 1
+
+                for tag in tags:
+                    if 0 == tag.tag_id and sample == 1:
                         self.tag_rotation = tag.pose_R
                         self.tag_translation = tag.pose_t
-
-                print('\033[92m' + " [-] POSE_ERROR: No APRILTAG detected." +  '\033[0m')
+                        print('\033[92m' + " [-] POSE OK." +  '\033[0m')
+                    elif 0 == tag.tag_id and sample == 0:
+                        print('\033[91m' + " [-] POSE_ERROR: No APRILTAG detected." +  '\033[0m')
+                        self.LOGGING(state="   [e]No ")
 
         return self.tag_rotation, self.tag_translation
 

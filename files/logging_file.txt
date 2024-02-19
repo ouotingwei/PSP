@@ -1,10 +1,1 @@
 [No.test]
-   [e]No APRILTAG detected
-   [e]No APRILTAG detected
-   [e]No APRILTAG detected
-   [e]No APRILTAG detected
-   [e]No APRILTAG detected
-   [e]No APRILTAG detected
-   [e]No APRILTAG detected
-   [e]No APRILTAG detected
-   [e]No APRILTAG detected
