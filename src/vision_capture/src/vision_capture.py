@@ -1,12 +1,11 @@
 import cv2
 import numpy as np
 from pupil_apriltags import Detector
-from cv_bridge import CvBridge, CvBridgeError
+from cv_bridge import CvBridge
 import rospy
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import PointCloud2
 import sensor_msgs.point_cloud2 as pc2
-import pcl
 import open3d as o3d
 
 
@@ -35,14 +34,29 @@ class Detection:
             gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
             tags = at_detector.detect(gray_image, estimate_tag_pose=True, camera_params=self.camera_params, tag_size=self.tag_size)
 
-            for tag in tags:
-                if 0 == tag.tag_id:
-                    print("Pose Rotation Matrix:\n", tag.pose_R)
-                    print("Pose Translation Vector:\n", tag.pose_t)
-                    self.tag_rotation = tag.pose_R
-                    self.tag_translation = tag.pose_t
+            if len(tags) == 0:
+                print('\033[91m' + " [-] POSE_ERROR: No APRILTAG detected." +  '\033[0m')
+                self.LOGGING(state="   [e]No APRILTAG detected")
+                return None, None
+
+            else:
+                for tag in tags:
+                    if 0 == tag.tag_id:
+                        self.tag_rotation = tag.pose_R
+                        self.tag_translation = tag.pose_t
+
+                print('\033[92m' + " [-] POSE_ERROR: No APRILTAG detected." +  '\033[0m')
 
         return self.tag_rotation, self.tag_translation
+
+    def LOGGING(self, state):
+        file_loc = '/home/wei/PSP/files/logging_file.txt'
+        
+        with open(file_loc, 'a') as file: 
+            if file.tell() != 0: 
+                file.write('\n') 
+            file.write(state)
+
 
 class CloudFilter():
     def __init__(self):
@@ -95,5 +109,6 @@ if __name__ == '__main__':
 
     while not rospy.is_shutdown():
         rotation, translation = pose_detect.get_pose()
-        cloud_filter.save_point_cloud_as_pcd(rotation, translation)
+        if rotation != None and translation != None:
+            cloud_filter.save_point_cloud_as_pcd(rotation, translation)
         pose_detect.loop_rate.sleep()
