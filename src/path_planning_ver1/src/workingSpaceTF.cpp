@@ -8,7 +8,8 @@
 #include <iostream>
 #include <iomanip>
 
-struct Waypoint {
+struct Waypoint
+{
     double x;
     double y;
     double z;
@@ -19,7 +20,8 @@ struct Waypoint {
     std::string C;
 };
 
-void initializeWaypoints(Waypoint *waypoint,double V) {
+void initializeWaypoints(Waypoint *waypoint,double V)
+{
     waypoint->x = 0.000;
     waypoint->y = 0.000;
     waypoint->z = 0.000;
@@ -30,7 +32,8 @@ void initializeWaypoints(Waypoint *waypoint,double V) {
     waypoint->C = "CNT100";
 }
 
-std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2) {
+std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2)
+{
     int rows1 = matrix1.size();
     int cols1 = matrix1[0].size();
     int cols2 = matrix2[0].size();
@@ -48,7 +51,8 @@ std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vec
     return result;
 }
 
-void vector2Angle(std::vector<std::vector<double>>& points){
+void vector2Angle(std::vector<std::vector<double>>& points)
+{
     for (int i = 0; i < points.size(); i++) {
         //double row, pich, yow;
         double row;
@@ -67,7 +71,8 @@ void vector2Angle(std::vector<std::vector<double>>& points){
     }
 }
 
-void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS,double vel) {
+void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS,double vel) 
+{
     double transition_p[3] = {420.000, 0.000, -325.827+TF_Z_BIAS};
     double transition_v[3] = {-180, 0, 0};
 
@@ -105,7 +110,8 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
     }
 }
 
-int writeLsFile(const std::string& absfile, const std::string& file, const std::vector<Waypoint>& waypoints) {
+int writeLsFile(const std::string& absfile, const std::string& file, const std::vector<Waypoint>& waypoints) 
+{
     std::ofstream f(absfile);
     if (!f.is_open()) {
         std::cout << "Error opening file: " << file << std::endl;

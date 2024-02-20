@@ -14,24 +14,10 @@
 #include <queue>
 
 #include <pcl/sample_consensus/ransac.h>
-#include <pcl/sample_consensus/sac_model_plane.h> // 拟合平面
+#include <pcl/sample_consensus/sac_model_plane.h>
 
 #include <ros/ros.h>
 #include <path_planning_ver1/path_planning_ver1.h>
-
-// // define sample size
-// #define WINDOW_SIZE 0.1
-// // Filter out the workspace
-// #define SEARCH_RANGE_BX 0.2
-// #define SEARCH_RANGE_SX -0.25
-// #define SEARCH_RANGE_BY 0.5
-// #define SEARCH_RANGE_SY 0.1
-// #define SEARCH_HEIGHT -0.485
-// #define PROXIMITY_THRESHOLD 0.01
-// #define DOWN_SAMPLE_SIZE 0.005
-// // path planning
-// #define CLOUD_SEARCHING_RANGE 0.0022
-// #define PLASMA_DIA 0.03
 
 #define PI 3.14159
 #define REI_B 0.04
@@ -65,17 +51,13 @@ vector<vector<double>> edge_contour;
 int readParameters()
 {
     const char *homeDir = getenv("HOME");
-    if (homeDir == nullptr)
-    {
+    if (homeDir == nullptr){
         std::cerr << "Failed to get the home directory." << std::endl;
-
     }
 
     std::string filePath = std::string(homeDir) + "/PSP/src/path_planning_ver1/src/parameters.json";
-    //cout << filePath << endl;
     std::ifstream file(filePath);
-    if (!file.is_open())
-    {
+    if (!file.is_open()){
         std::cerr << "Error opening parameters.json" << std::endl;
         return 0;
     }
@@ -109,43 +91,41 @@ double midHighestHeightOfShoe(vector<vector<double>> point_cloud)
 {
     priority_queue<double> pq;
 
-    for (auto point : point_cloud)
-    {
+    for (auto point : point_cloud){
         pq.push(point[2]);
     }
-    for (int i = 0; i < point_cloud.size() / 2; i++)
-        pq.pop();
+
+    for (int i = 0; i < point_cloud.size() / 2; i++){
+         pq.pop();
+    }
+       
     return pq.top();
 }
 
 bool isNearEdge(vector<double> point, double &refer_height)
 {
-    for (auto edge_point : edge_contour)
-    {
-        if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < nearby_distance)
-        {
-            // refer_height = edge_point[2];
+    for (auto edge_point : edge_contour){
+        if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < nearby_distance){
             return true;
         }
     }
+
     return false;
 }
 
-vector<double> getRANSACPlane(){
-    //-----------------------------读取点云----------------------------
+vector<double> getRANSACPlane()
+{
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-
-      const char* homeDir = getenv("HOME");
+    const char* homeDir = getenv("HOME");
     if (homeDir == nullptr) {
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
     std::string downSampledPath = std::string(homeDir) + "/PSP/files/point_cloud.pcd";
-
-	if (pcl::io::loadPCDFile(downSampledPath, *cloud) < 0)
-	{
+	if (pcl::io::loadPCDFile(downSampledPath, *cloud) < 0){
 		PCL_ERROR("点云读取失败！\n");
 	}
+
     //--------------------------RANSAC拟合平面--------------------------
 	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr model_plane(new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(cloud));
 	pcl::RandomSampleConsensus<pcl::PointXYZ> ransac(model_plane);	
@@ -159,34 +139,28 @@ vector<double> getRANSACPlane(){
 	//----------------------------输出模型参数---------------------------
 	Eigen::VectorXf coefficient;
 	ransac.getModelCoefficients(coefficient);
-	std::cout << "平面方程为：\n" << coefficient[0] << "x + " << coefficient[1] << "y + " << coefficient[2] << "z + "
-		<< coefficient[3] << " = 0" << std::endl;
+	std::cout << "平面方程为：\n" << coefficient[0] << "x + " << coefficient[1] << "y + " << coefficient[2] << "z + " << coefficient[3] << " = 0" << std::endl;
     vector<double> result{coefficient[0],coefficient[1],coefficient[2],coefficient[3]};
     return result;
 }
 
 vector<vector<double>> smoothEdgePointCloud(vector<vector<double>> point_cloud)
 {
-    // vector<double> plane=getRANSACPlane(); // cloud
     double refer_height = midHighestHeightOfShoe(point_cloud);
-    //cout << "The refer height is " << refer_height << endl;
     vector<vector<double>> return_cloud = point_cloud;
-    for (auto &point : return_cloud)
-    {
-        if (isNearEdge(point, refer_height))
-        {
+    for (auto &point : return_cloud){
+        if (isNearEdge(point, refer_height)){
             point[2] = refer_height;
         }
     }
+
     return return_cloud;
 }
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in)
 {
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipped_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
-
-    for (const pcl::PointXYZRGBA &point : *cloud_in)
-    {
+    for (const pcl::PointXYZRGBA &point : *cloud_in){
         pcl::PointXYZRGBA flipped_point;
 
         flipped_point.x = -point.x;
@@ -214,15 +188,13 @@ vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr c
 
     // Convert to Open3D's PointCloud format
     open3d::geometry::PointCloud o3dCloud;
-    for (const auto &point : cloud->points)
-    {
+    for (const auto &point : cloud->points){
         o3dCloud.points_.push_back(Eigen::Vector3d(point.x, point.y, point.z));
     }
 
     // Adjusting the normal directions
     open3d::geometry::PointCloud o3dNormals;
-    for (const auto &normal : normals->points)
-    {
+    for (const auto &normal : normals->points){
         o3dNormals.points_.push_back(Eigen::Vector3d(normal.normal_x, normal.normal_y, normal.normal_z));
     }
 
@@ -232,8 +204,7 @@ vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr c
 
     // Convert to (x, y, z, a, b, c) vector format
     vector<vector<double>> vectors;
-    for (size_t i = 0; i < o3dCloud.points_.size(); ++i)
-    {
+    for (size_t i = 0; i < o3dCloud.points_.size(); ++i){
         const auto &point = o3dCloud.points_[i];
         const auto &normal = o3dCloud.normals_[i];
         vector<double> vector{point.x(), point.y(), point.z(), normal.x(), normal.y(), normal.z()};
@@ -244,9 +215,6 @@ vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr c
     geometries.push_back(make_shared<const open3d::geometry::PointCloud>(o3dCloud));
 
     open3d::visualization::DrawGeometries(geometries, "result", 1920, 1080, 50, 50, true);
-    // for (const auto& normal : o3dCloud.normals_) {
-    //     cout << "Normal: " << normal << endl;
-    // }
 
     return vectors;
 }
@@ -260,35 +228,38 @@ void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
     float min_z = std::numeric_limits<float>::max();
     float max_z = -std::numeric_limits<float>::max();
 
-    for (const pcl::PointXYZRGBA &point : cloud->points)
-    {
-        if (point.x < min_x)
+    for (const pcl::PointXYZRGBA &point : cloud->points){
+        if (point.x < min_x){
             min_x = point.x;
-        if (point.x > max_x)
-            max_x = point.x;
-        if (point.y < min_y)
-            min_y = point.y;
-        if (point.y > max_y)
-            max_y = point.y;
-        if (point.z < min_z)
-            min_z = point.z;
-        if (point.z > max_z)
-            max_z = point.z;
-    }
+        }
 
-    // std::cout << "Point Cloud Range:" << std::endl;
-    // std::cout << "X: " << min_x << " to " << max_x << std::endl;
-    // std::cout << "Y: " << min_y << " to " << max_y << std::endl;
-    // std::cout << "Z: " << min_z << " to " << max_z << std::endl;
+        if (point.x > max_x){
+            max_x = point.x;
+        }
+
+        if (point.y < min_y){
+            min_y = point.y;
+        }
+            
+        if (point.y > max_y){
+            max_y = point.y;
+        }
+            
+        if (point.z < min_z){
+            min_z = point.z;
+        }
+            
+        if (point.z > max_z){
+            max_z = point.z;
+        }  
+    }
 }
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr searchAndFilterItems(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
 {
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    for (const pcl::PointXYZRGBA &point : cloud->points)
-    {
-        if (point.x >= SEARCH_RANGE_SX && point.x <= SEARCH_RANGE_BX && point.y >= SEARCH_RANGE_SY && point.y <= SEARCH_RANGE_BY && point.z >= SEARCH_HEIGHT)
-        {
+    for (const pcl::PointXYZRGBA &point : cloud->points){
+        if (point.x >= SEARCH_RANGE_SX && point.x <= SEARCH_RANGE_BX && point.y >= SEARCH_RANGE_SY && point.y <= SEARCH_RANGE_BY && point.z >= SEARCH_HEIGHT){
             filteredCloud->points.push_back(point);
         }
     }
@@ -302,59 +273,45 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr searchAndFilterItems(pcl::PointCloud<pcl
 vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud)
 {
     float center_x, center_y, low_z, max_x, min_x, max_y, min_y = 0;
-
     max_x = cloud[0][0];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][0] > max_x)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][0] > max_x){
             max_x = cloud[i][0];
         }
     }
 
     min_x = cloud[0][0];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][0] < min_x)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][0] < min_x){
             min_x = cloud[i][0];
         }
     }
 
     max_y = cloud[0][1];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][1] > max_y)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][1] > max_y){
             max_y = cloud[i][1];
         }
     }
 
     min_y = cloud[0][1];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][1] < min_y)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][1] < min_y){
             min_y = cloud[i][1];
         }
     }
 
     low_z = cloud[0][2];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][2] < low_z)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][2] < low_z){
             low_z = cloud[i][2];
         }
     }
 
-    //cout << max_x << " " << min_x << " " << max_y << " " << min_y << " " << low_z << endl;
-
     center_x = (max_x + min_x) / 2;
     center_y = (max_y + min_y) / 2;
 
-    for (int i = 0; i < cloud.size(); i++)
-    {
+    for (int i = 0; i < cloud.size(); i++){
         cloud[i][0] = cloud[i][0] - center_x;
         cloud[i][1] = cloud[i][1] - center_y;
         cloud[i][2] = cloud[i][2] - low_z;
@@ -372,20 +329,19 @@ bool SortYaxisSmallToBig(vector<double> a, vector<double> b)
 {
     return a[1] < b[1];
 }
+
 double polar_angle(vector<double> center, vector<double> p)
 {
     return atan2(p[1] - center[1], p[0] - center[0]);
 }
+
 vector<vector<double>> removeBouncePoints(vector<vector<double>> cloud)
 {
 
     float temp_z = cloud[0][2];
-    for (int i = 1; i < cloud.size(); i++)
-    {
-        if (abs(cloud[i][2] - temp_z) > removeBounceGate)
-        {
-            if (cloud[i][2] < temp_z)
-            {
+    for (int i = 1; i < cloud.size(); i++){
+        if (abs(cloud[i][2] - temp_z) > removeBounceGate){
+            if (cloud[i][2] < temp_z){
                 cloud[i][2] = temp_z;
             }
 
@@ -404,74 +360,6 @@ bool customCompare(const vector<double> &a, const vector<double> &b)
 
 vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
 {
-    // vector<vector<double>> ring_shaped;
-    // vector<vector<double>> rt_ring;
-    // vector<vector<double>> arrange;
-    // for (int i = 0; i < cloud.size(); i++)
-    // {
-    //     double r = sqrt(pow(cloud[i][0], 2) + pow(cloud[i][1], 2));
-    //     int angle = 180 * atan2(cloud[i][1], cloud[i][0]) / PI;
-    //     vector<double> temp = {cloud[i][0], cloud[i][1], cloud[i][2], cloud[i][3], cloud[i][4], cloud[i][5], r, static_cast<double>(angle)};
-    //     arrange.push_back(temp);
-    // }
-
-    // sort(arrange.begin(), arrange.end(), customCompare);
-
-    // for (int i = 0; i < arrange.size(); i++)
-    // {
-    //     //cout << arrange[i][7] << endl;
-    // }
-
-    // for (int now_ang = 180; now_ang >= -180; now_ang = now_ang - 5)
-    // {
-    //     vector<double> temp = {0, 0, 0, 0, 0, 0, -10, 0};
-    //     for (int i = 0; i < arrange.size(); i++)
-    //     {
-
-    //         if (static_cast<int>(arrange[i][7]) == now_ang && arrange[i][6] > temp[6])
-    //         {
-    //             temp = {arrange[i][0], arrange[i][1], arrange[i][2], arrange[i][3], arrange[i][4], arrange[i][5], arrange[i][6], arrange[i][7]};
-    //         }
-    //     }
-
-    //     if (temp[6] != -10)
-    //     {
-    //         ring_shaped.push_back(temp);
-    //     }
-    // }
-
-    // for (int i = 0; i < ring_shaped.size(); i++)
-    // {
-    //     if (ring_shaped[i][7] < 40 && ring_shaped[i][7] > -40 && ring_shaped[i][2] < 0.02)
-    //     {
-    //         //cout << "[1]" << ring_shaped[i][2] << endl;
-    //         vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_B, 0, 0, 0}; // normal
-    //         rt_ring.push_back(temp);
-    //     }
-    // }
-
-    // vector<double> startPoint = {0, 0, 0.1, 0, 0, 0};
-    // rt_ring.push_back(startPoint);
-
-    // for (int i = 0; i < ring_shaped.size(); i++)
-    // {
-    //     if ((ring_shaped[i][7] < -140 || ring_shaped[i][7] > 140) && ring_shaped[i][2] < 0.02)
-    //     {
-    //         //cout << "[1]" << ring_shaped[i][2] << endl;
-    //         vector<double> temp = {ring_shaped[i][0], ring_shaped[i][1], REI_H, 0, 0, 0};
-    //         rt_ring.push_back(temp);
-    //     }
-    // }
-
-    // // Visualization using Open3D
-    // for (const auto &point : rt_ring)
-    // {
-    //     pcd.points_.push_back({point[0], point[1], point[2]});
-    // }
-    // std::cout<<"The pcd size is "<< pcd.points_.size()<<std::endl;
-    // open3d::visualization::DrawGeometries({make_shared<open3d::geometry::PointCloud>(pcd)});
-
-
     open3d::geometry::PointCloud pcd;
     vector<vector<double>> square_path;
     vector<vector<double>> contour = edge_contour;
@@ -480,53 +368,17 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
     double center_y = (contour[contour.size()-1][1] + contour[contour.size() - 2][1]) / 2;
     vector<double> center{center_x, center_y};
 
-    sort(contour.begin(), contour.end(), [&](const vector<double> &a, const vector<double> &b)
-         { return polar_angle(center, a) < polar_angle(center, b); });
-
+    sort(contour.begin(), contour.end(), [&](const vector<double> &a, const vector<double> &b){ return polar_angle(center, a) < polar_angle(center, b); });
     for(auto& point: contour){
         point[2]+=0.03;
         pcd.points_.push_back({point[0], point[1], point[2]});
-        }
+    }
+
     open3d::visualization::DrawGeometries({make_shared<open3d::geometry::PointCloud>(pcd)});
-
-
 
     return contour;
 }
 
-
-
-// vector<vector<double>> GenerateSquarePath(vector<vector<double>> cloud)
-// {
-//     vector<vector<double>> square_path;
-//     vector<vector<double>> contour = edge_contour;
-
-//     /*Approach 1: Zoom the size*/
-//     double center_x = (contour[contour.size()][0] + contour[contour.size() - 1][0]) / 2;
-//     double center_y = (contour[contour.size()][1] + contour[contour.size() - 1][1]) / 2;
-//     vector<double> center{center_x, center_y};
-//     sort(contour.begin(), contour.end(), [&](const vector<double> &a, const vector<double> &b)
-//          { return polar_angle(center, a) < polar_angle(center, b); });
-//     square_path.push_back(contour);
-
-//     int rounds_of_square_path = 4;
-
-//     for (int i = 1; i < rounds_of_square_path; i++)
-//     {
-//         for (auto point : contour)
-//         {
-//             point[0] = center[0] + (point[0] - center[0]) * i/rounds_of_square_path;
-//             point[1] = center[1] + (point[1] - center[1]) * i/rounds_of_square_path;
-//             square_path.push_back(point);
-//         }
-//     }
-
-//     /*Approach 2: Find the edge contour iterativly, pcl concave hull*/
-//     // A.erase(std::remove_if(A.begin(), A.end(), [&](int element)
-//     //                        { return std::find(B.begin(), B.end(), element) != B.end(); }),
-//     //         A.end());
-//     return square_path;
-// }
 
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
@@ -535,40 +387,30 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     vector<vector<double>> ok_cloud_1;
     vector<vector<double>> ok_cloud_2;
     vector<vector<double>> ok_cloud_3;
-    
-
     float max_x = cloud[0][0];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][0] > max_x)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][0] > max_x){
             max_x = cloud[i][0];
         }
     }
 
     float min_x = cloud[0][0];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][0] < min_x)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][0] < min_x){
             min_x = cloud[i][0];
         }
     }
 
     float max_y = cloud[0][1];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][1] > max_y)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][1] > max_y){
             max_y = cloud[i][1];
         }
     }
 
     float min_y = cloud[0][1];
-    for (int i = 0; i < cloud.size(); i++)
-    {
-        if (cloud[i][1] < min_y)
-        {
+    for (int i = 0; i < cloud.size(); i++){
+        if (cloud[i][1] < min_y){
             min_y = cloud[i][1];
         }
     }
@@ -576,27 +418,22 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     float shift_distance = (max_x - min_x) / rounds;
 
     vector<double> startPoint = {0, 0, 0.1, 0, 0, 0};
-
-    // path
     
     ok_cloud_1.push_back(startPoint);
 
-    for (int i = 0; i <= rounds; i++)
-    {
+    for (int i = 0; i <= rounds; i++){
         float x = max_x - (shift_distance * i);
         float up_x = x + CLOUD_SEARCHING_RANGE;
         float low_x = x - CLOUD_SEARCHING_RANGE;
 
         vector<vector<double>> tmp_cloud;
-        for (int j = 0; j < cloud.size(); j++)
-        {
-            if (cloud[j][0] > low_x && cloud[j][0] < up_x)
-            {
+        for (int j = 0; j < cloud.size(); j++){
+            if (cloud[j][0] > low_x && cloud[j][0] < up_x){
                 tmp_cloud.push_back(cloud[j]);
             }
         }
-        if (i % 2 == 0)
-        {
+
+        if (i % 2 == 0){
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall);
             vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.02, tmp_cloud[0][2] + 0.03, 0, 0, 0};
             vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.02, tmp_cloud[tmp_cloud.size() - 1][2] + 0.03, 0, 0, 0};
@@ -604,12 +441,13 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
             edge_contour.push_back(tmp_cloud.back());
             ok_cloud_1.push_back(ap_max_y);
 
-            for (auto c : tmp_cloud)
+            for (auto c : tmp_cloud){
                 ok_cloud_1.push_back(c);
+            }
+                
             ok_cloud_1.push_back(ap_min_y);
-        }
-        else
-        {
+
+        }else{
             std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig);
             vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.02, tmp_cloud[tmp_cloud.size() - 1][2], 0, 0, 0};
             vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.02, tmp_cloud[0][2], 0, 0, 0};
@@ -617,53 +455,37 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
             edge_contour.push_back(tmp_cloud.front());
             ok_cloud_1.push_back(ap_min_y);
 
-            for (auto c : tmp_cloud)
+            for (auto c : tmp_cloud){
                 ok_cloud_1.push_back(c);
+            }
+                
             ok_cloud_1.push_back(ap_max_y);
         }
     }
 
-        vector<vector<double>> ring = BorderReinforcement(cloud);
-ok_cloud_1.push_back(startPoint);
+    vector<vector<double>> ring = BorderReinforcement(cloud);
 
-    for (int i = 0; i < ring.size(); i++)
-    {
+    ok_cloud_1.push_back(startPoint);
+
+    for (int i = 0; i < ring.size(); i++){
         ok_cloud_1.push_back(ring[i]);
     }
 
-    // for (auto v1 : ok_cloud_1)
-    // {
-    //     for (auto v2 : v1)
-    //     {
-    //         cout << v2 << ", ";
-    //     }
-    //     cout << endl;
-    // }
-    std::cout<<"I'm in middle of pathcloudfilter"<<std::endl;
-
     ok_cloud_1.push_back(startPoint);
-    // ok_cloud_2 = removeBouncePoints(ok_cloud_1);
-    // ok_cloud_3 = smoothEdgePointCloud(ok_cloud_2);
-    std::cout<<"I'm in end of pathcloudfilter"<<std::endl;
 
     return ok_cloud_1;
 }
 
+
 vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
 {
-
-    // cout << "[ PathPlanning ] before filtered_cloud " << cloud.size() << endl;
     vector<vector<double>> filtered_cloud = PathCloudFilter(cloud);
-    // cout << "[ PathPlanning ] after filtered_cloud " << filtered_cloud.size() << endl;
 
     // Convert input cloud to Open3D format
     open3d::geometry::PointCloud open3d_cloud;
-    for (const auto &point : filtered_cloud)
-    {
+    for (const auto &point : filtered_cloud){
         open3d_cloud.points_.push_back(Eigen::Vector3d(point[0], point[1], point[2]));
     }
-
-    // std::cout << "[ PathPlanning ] after filtered_cloud " << open3d_cloud.points_.size() << std::endl;
 
     // Filter the point cloud using Open3D functions
     open3d::geometry::PointCloud filtered_open3d_cloud = open3d_cloud; // Perform your filtering operation here
@@ -680,25 +502,19 @@ vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
     return filtered_cloud;
 }
 
-void the_origin_main_function(){
-    std::cout<<"I'm in 0"<<std::endl;
 
+void the_origin_main_function()
+{
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
     const char* homeDir = getenv("HOME");
-    if (homeDir == nullptr) {
+    if (homeDir == nullptr){
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
     std::string pointCloudPath = std::string(homeDir) + "/PSP/files/point_cloud.pcd";
 
-
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(pointCloudPath, *cloud) == -1)
-    {
-        //cout << "Failed to load point cloud." << endl;
-        //return -1;
-    }
-    std::cout<<"I'm in 1"<<std::endl;
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(pointCloudPath, *cloud) == -1){}
 
     // Downsample
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr downsampledCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
@@ -716,18 +532,15 @@ void the_origin_main_function(){
     sor.filter(*smooth);
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud(smooth);
-    // pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/flip_cloud.pcd", *flipCloud);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(flipCloud);
     printPointCloudRange(filteredCloud);
-    // pcl::io::savePCDFile<pcl::PointXYZRGBA>("./scan/merge/filtered_cloud.pcd", *filteredCloud);
+
     vector<vector<double>> vectors = estimateNormals(filteredCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
-    // vector<vector<double>> to_ls_cloud = PathPlanning(ok_cloud);
 
     // jylong edit
     std::vector<std::vector<double>> point_cloud = PathPlanning(ok_cloud);
-    for (auto &point : point_cloud)
-    {
+    for (auto &point : point_cloud){
         point[0] = point[0] * 1000;
         point[1] = point[1] * 1000;
         point[2] = point[2] * 1000;
@@ -738,22 +551,22 @@ void the_origin_main_function(){
     vector2Angle(point_cloud);
     workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS, velocity);
 
-    
-    // const char* homeDir = getenv("HOME");
-    if (homeDir == nullptr) {
+    if (homeDir == nullptr){
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
     std::string absfile_path = std::string(homeDir) + "/PSP/testingFile/B003.LS";
 
     const std::string file_path = "B003.LS";
-    if (writeLsFile(absfile_path,file_path ,waypoints))
+    if (writeLsFile(absfile_path,file_path ,waypoints)){
         printf("Write LS error !!!\n");
-    else
+    }else{
         printf("Sucess!!!\n");
+    }
 }
 
-bool server_callback(path_planning_ver1::path_planning_ver1::Request &req, path_planning_ver1::path_planning_ver1::Response &res){
+bool server_callback(path_planning_ver1::path_planning_ver1::Request &req, path_planning_ver1::path_planning_ver1::Response &res)
+{
     if(req.REQU_PP == true){
         the_origin_main_function();
         res.RESP_PP = true;
