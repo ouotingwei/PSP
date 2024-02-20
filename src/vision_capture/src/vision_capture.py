@@ -8,7 +8,6 @@ from sensor_msgs.msg import PointCloud2
 import sensor_msgs.point_cloud2 as pc2
 import open3d as o3d
 
-
 class Detection: 
     def __init__(self):
         self.camera_params = (604.373076, 608.179768, 317.741819, 247.792564)
@@ -16,7 +15,6 @@ class Detection:
         self.tag_rotation = None
         self.tag_translation = None
 
-        
         self.loop_rate = rospy.Rate(1)
         self.bridge = CvBridge()
         self.image = None
@@ -76,10 +74,7 @@ class CloudFilter():
         self.cloud_data = msg
 
     def center_point_cloud(self, point_cloud):
-
         centroid = np.mean(np.asarray(point_cloud.points), axis=0)
-
-
         translated_pcd = point_cloud.translate(-centroid)
 
         return translated_pcd
@@ -116,6 +111,6 @@ if __name__ == '__main__':
     cloud_filter = CloudFilter()
 
     while not rospy.is_shutdown():
-        rotation, translation = pose_detect.get_pose()
+        rotation, translation  = pose_detect.get_pose()
         cloud_filter.save_point_cloud_as_pcd(rotation, translation)
         pose_detect.loop_rate.sleep()

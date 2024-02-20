@@ -579,8 +579,6 @@ bool server_callback(path_planning_ver1::path_planning_ver1::Request &req, path_
 
 int main(int argc, char **argv)
 {
-    std::cout<<"I'm in 1324"<<std::endl;
-
     readParameters();
     the_origin_main_function();
 
