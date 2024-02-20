@@ -52,7 +52,8 @@ class Detection:
                     elif 0 == tag.tag_id and sample == 0:
                         print('\033[91m' + " [-] POSE_ERROR: No APRILTAG detected." +  '\033[0m')
                         self.LOGGING(state="   [e]No ")
-
+        
+        self.TF(self.tag_rotation, self.tag_translation)
         return self.tag_rotation, self.tag_translation
 
     def LOGGING(self, state):
@@ -62,6 +63,26 @@ class Detection:
             if file.tell() != 0: 
                 file.write('\n') 
             file.write(state)
+        
+    def TF(self, rotation, transition):
+        if rotation is None or transition is None:
+            print("Error: Rotation or translation is None.")
+            return
+        
+        file_loc = '/home/wei/PSP/files/TF.txt'
+        tf = []
+        for i in range(3):
+            for j in range(3):
+                tf.append(rotation[i][j])
+        
+        for i in range(3):
+            tf.append(transition[i][0])
+        
+        with open(file_loc, 'w') as file: 
+            for i in range(len(tf)):
+                file.write(str(tf[i]))  # Convert to string before writing
+                file.write('\n')
+
 
 
 class CloudFilter():
