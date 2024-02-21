@@ -8,6 +8,8 @@ from sensor_msgs.msg import PointCloud2
 import sensor_msgs.point_cloud2 as pc2
 import open3d as o3d
 
+from vision_capture.srv import VisionCapture, VisionCaptureResponse
+
 class Detection: 
     def __init__(self):
         self.camera_params = (604.373076, 608.179768, 317.741819, 247.792564)
@@ -84,7 +86,6 @@ class Detection:
                 file.write('\n')
 
 
-
 class CloudFilter():
     def __init__(self):
         self.loop_rate = rospy.Rate(1)
@@ -125,13 +126,21 @@ class CloudFilter():
             o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", centroid_pcd)
             rospy.loginfo("Point cloud saved as point_cloud.pcd")
 
+def capture(req):
+    if req.scan == True:
+        pose_detect = Detection()
+        cloud_filter = CloudFilter()
 
-if __name__ == '__main__':
-    rospy.init_node("vision_capture")
-    pose_detect = Detection()
-    cloud_filter = CloudFilter()
-
-    while not rospy.is_shutdown():
         rotation, translation  = pose_detect.get_pose()
         cloud_filter.save_point_cloud_as_pcd(rotation, translation)
-        pose_detect.loop_rate.sleep()
+
+        return VisionCaptureResponse(True)
+    
+
+def ros_server():
+    rospy.init_node('vision_capture')
+    s = rospy.Service('/vision_capture', VisionCapture , capture)
+    rospy.spin()
+
+if __name__ == '__main__':
+    ros_server()

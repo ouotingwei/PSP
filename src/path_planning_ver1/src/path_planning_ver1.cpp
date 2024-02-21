@@ -23,26 +23,18 @@
 #define REI_B 0.04
 #define REI_H 0.01
 
-// define sample size
-double WINDOW_SIZE = 0.1;
 // Filter out the workspacef
-double SEARCH_RANGE_BX = 10;
-double SEARCH_RANGE_SX = -10;
-double SEARCH_RANGE_BY = 10;
-double SEARCH_RANGE_SY = -10;
-double SEARCH_HEIGHT = -0.485;
-double PROXIMITY_THRESHOLD = 0.01;
 double DOWN_SAMPLE_SIZE = 0.005;
 // path planning
-double CLOUD_SEARCHING_RANGE = 0.0022;
+double CLOUD_SEARCHING_RANGE = 0.002;
 double PLASMA_DIA = 0.05;
 double TF_Z_BIAS = 0;
-double nearby_distance = 0.01;
+double nearby_distance = 0.022;
 float removeBounceGate = 0.1;
 double velocity = 300;
 double camera_x = 0;
 double camera_y = 0;
-double camera_z = 0;
+double camera_z = -100;
 
 using namespace std;
 using json = nlohmann::json;
@@ -66,23 +58,11 @@ int readParameters()
     file >> parameters;
     file.close();
 
-    WINDOW_SIZE = parameters["WINDOW_SIZE"];
-    SEARCH_RANGE_BX = parameters["SEARCH_RANGE_BX"];
-    SEARCH_RANGE_SX = parameters["SEARCH_RANGE_SX"];
-    SEARCH_RANGE_BY = parameters["SEARCH_RANGE_BY"];
-    SEARCH_RANGE_SY = parameters["SEARCH_RANGE_SY"];
-    SEARCH_HEIGHT = parameters["SEARCH_HEIGHT"];
-    PROXIMITY_THRESHOLD = parameters["PROXIMITY_THRESHOLD"];
-    DOWN_SAMPLE_SIZE = parameters["DOWN_SAMPLE_SIZE"];
-    CLOUD_SEARCHING_RANGE = parameters["CLOUD_SEARCHING_RANGE"];
     PLASMA_DIA = parameters["PLASMA_DIA"];
     TF_Z_BIAS = parameters["TF_Z_BIAS"];
     removeBounceGate = parameters["removeBounceGate"];
     nearby_distance = parameters["nearby_distance"];
     velocity = parameters["velocity"];
-    camera_x = parameters["camera_x"];
-    camera_y = parameters["camera_y"];
-    camera_z = parameters["camera_z"];
 
     return 1;
 }
@@ -157,25 +137,6 @@ vector<vector<double>> smoothEdgePointCloud(vector<vector<double>> point_cloud)
     return return_cloud;
 }
 
-pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in)
-{
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipped_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    for (const pcl::PointXYZRGBA &point : *cloud_in){
-        pcl::PointXYZRGBA flipped_point;
-
-        flipped_point.x = -point.x;
-        flipped_point.y = -point.y;
-        flipped_point.z = -point.z;
-        flipped_point.r = point.r;
-        flipped_point.g = point.g;
-        flipped_point.b = point.b;
-        flipped_point.a = point.a;
-
-        flipped_cloud->push_back(flipped_point);
-    }
-
-    return flipped_cloud;
-}
 
 vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
 {
@@ -214,7 +175,7 @@ vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr c
     vector<shared_ptr<const open3d::geometry::Geometry>> geometries;
     geometries.push_back(make_shared<const open3d::geometry::PointCloud>(o3dCloud));
 
-    open3d::visualization::DrawGeometries(geometries, "result", 1920, 1080, 50, 50, true);
+    //open3d::visualization::DrawGeometries(geometries, "result", 800, 800, 50, 50, true);
 
     return vectors;
 }
@@ -253,21 +214,6 @@ void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
             max_z = point.z;
         }  
     }
-}
-
-pcl::PointCloud<pcl::PointXYZRGBA>::Ptr searchAndFilterItems(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
-{
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    for (const pcl::PointXYZRGBA &point : cloud->points){
-        if (point.x >= SEARCH_RANGE_SX && point.x <= SEARCH_RANGE_BX && point.y >= SEARCH_RANGE_SY && point.y <= SEARCH_RANGE_BY && point.z >= SEARCH_HEIGHT){
-            filteredCloud->points.push_back(point);
-        }
-    }
-
-    filteredCloud->width = filteredCloud->points.size();
-    filteredCloud->height = 1;
-
-    return filteredCloud;
 }
 
 vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud)
@@ -382,8 +328,7 @@ vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
 
 vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
 {
-    std::cout<<"I'm in pathcloudfilter"<<std::endl;
-    int rounds = 12;
+    int rounds = 6;
     vector<vector<double>> ok_cloud_1;
     vector<vector<double>> ok_cloud_2;
     vector<vector<double>> ok_cloud_3;
@@ -463,6 +408,7 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
         }
     }
 
+    /*
     vector<vector<double>> ring = BorderReinforcement(cloud);
 
     ok_cloud_1.push_back(startPoint);
@@ -470,12 +416,12 @@ vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
     for (int i = 0; i < ring.size(); i++){
         ok_cloud_1.push_back(ring[i]);
     }
+    */
 
     ok_cloud_1.push_back(startPoint);
 
     return ok_cloud_1;
 }
-
 
 vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
 {
@@ -489,19 +435,41 @@ vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
 
     // Filter the point cloud using Open3D functions
     open3d::geometry::PointCloud filtered_open3d_cloud = open3d_cloud; // Perform your filtering operation here
-
+    
     // Visualize the filtered point cloud
     open3d::visualization::Visualizer visualizer;
-    visualizer.CreateVisualizerWindow("Open3D Point Cloud", 1920, 1080);
+    visualizer.CreateVisualizerWindow("Open3D Point Cloud", 800, 800);
 
     std::shared_ptr<const open3d::geometry::Geometry> filtered_geometry_ptr = std::make_shared<const open3d::geometry::PointCloud>(filtered_open3d_cloud);
     visualizer.AddGeometry(filtered_geometry_ptr);
     visualizer.Run();
     visualizer.DestroyVisualizerWindow();
+    
 
     return filtered_cloud;
 }
 
+pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in)
+{
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipped_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+
+    for (const pcl::PointXYZRGBA &point : *cloud_in)
+    {
+        pcl::PointXYZRGBA flipped_point;
+
+        flipped_point.x = -point.x;
+        flipped_point.y = -point.y;
+        flipped_point.z = -point.z;
+        flipped_point.r = point.r;
+        flipped_point.g = point.g;
+        flipped_point.b = point.b;
+        flipped_point.a = point.a;
+
+        flipped_cloud->push_back(flipped_point);
+    }
+
+    return flipped_cloud;
+}
 
 void the_origin_main_function()
 {
@@ -532,10 +500,9 @@ void the_origin_main_function()
     sor.filter(*smooth);
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud(smooth);
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filteredCloud = searchAndFilterItems(flipCloud);
-    printPointCloudRange(filteredCloud);
+    //printPointCloudRange(smooth);
 
-    vector<vector<double>> vectors = estimateNormals(filteredCloud);
+    vector<vector<double>> vectors = estimateNormals(flipCloud);
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
 
     // jylong edit
@@ -555,7 +522,7 @@ void the_origin_main_function()
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
-    std::string absfile_path = std::string(homeDir) + "/PSP/testingFile/B003.LS";
+    std::string absfile_path = std::string(homeDir) + "/PSP/files/B003.LS";
 
     const std::string file_path = "B003.LS";
     if (writeLsFile(absfile_path,file_path ,waypoints)){
