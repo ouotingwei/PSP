@@ -23,8 +23,12 @@
 #define REI_B 0.04
 #define REI_H 0.01
 
+using namespace std;
+using json = nlohmann::json;
+
 // Filter out the workspacef
 double DOWN_SAMPLE_SIZE = 0.005;
+
 // path planning
 double CLOUD_SEARCHING_RANGE = 0.002;
 double PLASMA_DIA = 0.05;
@@ -35,21 +39,20 @@ double velocity = 300;
 double camera_x = 0;
 double camera_y = 0;
 double camera_z = -100;
-
-using namespace std;
-using json = nlohmann::json;
 vector<vector<double>> edge_contour;
 
-int readParameters()
+int readParameters ()
 {
-    const char *homeDir = getenv("HOME");
-    if (homeDir == nullptr){
+    const char *homeDir = getenv ( "HOME" );
+    if ( homeDir == nullptr )
+    {
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
-    std::string filePath = std::string(homeDir) + "/PSP/src/path_planning_ver1/src/parameters.json";
-    std::ifstream file(filePath);
-    if (!file.is_open()){
+    std::string filePath = std::string ( homeDir ) + "/PSP/src/path_planning_ver1/src/parameters.json";
+    std::ifstream file ( filePath );
+    if ( !file.is_open() )
+    {
         std::cerr << "Error opening parameters.json" << std::endl;
         return 0;
     }
@@ -58,34 +61,38 @@ int readParameters()
     file >> parameters;
     file.close();
 
-    PLASMA_DIA = parameters["PLASMA_DIA"];
-    TF_Z_BIAS = parameters["TF_Z_BIAS"];
-    removeBounceGate = parameters["removeBounceGate"];
-    nearby_distance = parameters["nearby_distance"];
-    velocity = parameters["velocity"];
+    PLASMA_DIA = parameters[ "PLASMA_DIA" ];
+    TF_Z_BIAS = parameters[ "TF_Z_BIAS" ];
+    removeBounceGate = parameters[ "removeBounceGate" ];
+    nearby_distance = parameters[ "nearby_distance" ];
+    velocity = parameters[ "velocity" ];
 
     return 1;
 }
 
-double midHighestHeightOfShoe(vector<vector<double>> point_cloud)
+double midHighestHeightOfShoe ( vector<vector<double>> point_cloud )
 {
     priority_queue<double> pq;
 
-    for (auto point : point_cloud){
-        pq.push(point[2]);
+    for ( auto point : point_cloud )
+    {
+        pq.push( point[ 2 ] );
     }
 
-    for (int i = 0; i < point_cloud.size() / 2; i++){
+    for ( int i = 0; i < point_cloud.size() / 2; i++ )
+    {
          pq.pop();
     }
        
     return pq.top();
 }
 
-bool isNearEdge(vector<double> point, double &refer_height)
+bool isNearEdge ( vector<double> point, double &refer_height )
 {
-    for (auto edge_point : edge_contour){
-        if (abs(edge_point[0] - point[0]) + abs(edge_point[1] - point[1]) < nearby_distance){
+    for ( auto edge_point : edge_contour )
+    {
+        if ( abs( edge_point[ 0 ] - point[ 0 ] ) + abs( edge_point[ 1 ] - point[ 1 ] ) < nearby_distance ) 
+        {
             return true;
         }
     }
@@ -93,94 +100,100 @@ bool isNearEdge(vector<double> point, double &refer_height)
     return false;
 }
 
-vector<double> getRANSACPlane()
+vector<double> getRANSACPlane ()
 {
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    const char* homeDir = getenv("HOME");
-    if (homeDir == nullptr) {
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud( new pcl::PointCloud<pcl::PointXYZ> );
+    const char* homeDir = getenv( "HOME" );
+    if ( homeDir == nullptr ) 
+    {
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
-    std::string downSampledPath = std::string(homeDir) + "/PSP/files/point_cloud.pcd";
-	if (pcl::io::loadPCDFile(downSampledPath, *cloud) < 0){
-		PCL_ERROR("点云读取失败！\n");
+    std::string downSampledPath = std::string( homeDir ) + "/PSP/files/point_cloud.pcd";
+	if ( pcl::io::loadPCDFile( downSampledPath, *cloud ) < 0 )
+    {
+		PCL_ERROR( "点云读取失败！\n" );
 	}
 
     //--------------------------RANSAC拟合平面--------------------------
-	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr model_plane(new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(cloud));
-	pcl::RandomSampleConsensus<pcl::PointXYZ> ransac(model_plane);	
-	ransac.setDistanceThreshold(0.01);	//设置距离阈值，与平面距离小于0.1的点作为内点
+	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr model_plane( new pcl::SampleConsensusModelPlane<pcl::PointXYZ>( cloud ) );
+	pcl::RandomSampleConsensus<pcl::PointXYZ> ransac( model_plane );	
+	ransac.setDistanceThreshold( 0.01 );	//设置距离阈值，与平面距离小于0.1的点作为内点
 	ransac.computeModel();				//执行模型估计
 	//-------------------------根据索引提取内点--------------------------
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane( new pcl::PointCloud<pcl::PointXYZ> );
 	vector<int> inliers;				//存储内点索引的容器
-	ransac.getInliers(inliers);			//提取内点索引
-	pcl::copyPointCloud<pcl::PointXYZ>(*cloud, inliers, *cloud_plane);
+	ransac.getInliers( inliers );			//提取内点索引
+	pcl::copyPointCloud<pcl::PointXYZ>( *cloud, inliers, *cloud_plane );
 	//----------------------------输出模型参数---------------------------
 	Eigen::VectorXf coefficient;
-	ransac.getModelCoefficients(coefficient);
-	std::cout << "平面方程为：\n" << coefficient[0] << "x + " << coefficient[1] << "y + " << coefficient[2] << "z + " << coefficient[3] << " = 0" << std::endl;
-    vector<double> result{coefficient[0],coefficient[1],coefficient[2],coefficient[3]};
+	ransac.getModelCoefficients( coefficient );
+	std::cout << "平面方程为：\n" << coefficient[ 0 ] << "x + " << coefficient[1 ] << "y + " << coefficient[ 2 ] << "z + " << coefficient[ 3 ] << " = 0" << std::endl;
+    vector<double> result{ coefficient[ 0 ], coefficient[ 1 ], coefficient[ 2 ], coefficient[ 3 ] };
     return result;
 }
 
-vector<vector<double>> smoothEdgePointCloud(vector<vector<double>> point_cloud)
+vector<vector<double>> smoothEdgePointCloud ( vector<vector<double>> point_cloud )
 {
-    double refer_height = midHighestHeightOfShoe(point_cloud);
+    double refer_height = midHighestHeightOfShoe( point_cloud );
     vector<vector<double>> return_cloud = point_cloud;
-    for (auto &point : return_cloud){
-        if (isNearEdge(point, refer_height)){
-            point[2] = refer_height;
+    for ( auto &point : return_cloud )
+    {
+        if ( isNearEdge( point, refer_height ) )
+        {
+            point[ 2 ] = refer_height;
         }
     }
 
     return return_cloud;
 }
 
-
-vector<vector<double>> estimateNormals(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
+vector<vector<double>> estimateNormals ( pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud )
 {
     // Normal estimation
-    pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
+    pcl::PointCloud<pcl::Normal>::Ptr normals( new pcl::PointCloud<pcl::Normal> );
     pcl::NormalEstimation<pcl::PointXYZRGBA, pcl::Normal> ne;
-    ne.setInputCloud(cloud);
-    ne.setRadiusSearch(0.1);
-    ne.compute(*normals);
+    ne.setInputCloud( cloud );
+    ne.setRadiusSearch( 0.1 );
+    ne.compute( *normals );
 
     // Convert to Open3D's PointCloud format
     open3d::geometry::PointCloud o3dCloud;
-    for (const auto &point : cloud->points){
-        o3dCloud.points_.push_back(Eigen::Vector3d(point.x, point.y, point.z));
+    for ( const auto &point : cloud->points )
+    {
+        o3dCloud.points_.push_back( Eigen::Vector3d( point.x, point.y, point.z ) );
     }
 
     // Adjusting the normal directions
     open3d::geometry::PointCloud o3dNormals;
-    for (const auto &normal : normals->points){
-        o3dNormals.points_.push_back(Eigen::Vector3d(normal.normal_x, normal.normal_y, normal.normal_z));
+    for ( const auto &normal : normals->points )
+    {
+        o3dNormals.points_.push_back( Eigen::Vector3d( normal.normal_x, normal.normal_y, normal.normal_z ) );
     }
 
     o3dCloud.normals_ = o3dNormals.points_;
     // o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d::Zero());
-    o3dCloud.OrientNormalsTowardsCameraLocation(Eigen::Vector3d(camera_x, camera_y, camera_z));
+    o3dCloud.OrientNormalsTowardsCameraLocation( Eigen::Vector3d( camera_x, camera_y, camera_z ) );
 
     // Convert to (x, y, z, a, b, c) vector format
     vector<vector<double>> vectors;
-    for (size_t i = 0; i < o3dCloud.points_.size(); ++i){
-        const auto &point = o3dCloud.points_[i];
-        const auto &normal = o3dCloud.normals_[i];
-        vector<double> vector{point.x(), point.y(), point.z(), normal.x(), normal.y(), normal.z()};
-        vectors.push_back(vector);
+    for ( size_t i = 0; i < o3dCloud.points_.size(); ++i )
+    {
+        const auto &point = o3dCloud.points_[ i ];
+        const auto &normal = o3dCloud.normals_[ i ];
+        vector<double> vector{ point.x(), point.y(), point.z(), normal.x(), normal.y(), normal.z() };
+        vectors.push_back( vector );
     }
 
     vector<shared_ptr<const open3d::geometry::Geometry>> geometries;
-    geometries.push_back(make_shared<const open3d::geometry::PointCloud>(o3dCloud));
+    geometries.push_back( make_shared<const open3d::geometry::PointCloud>( o3dCloud ) );
 
     //open3d::visualization::DrawGeometries(geometries, "result", 800, 800, 50, 50, true);
 
     return vectors;
 }
 
-void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
+void printPointCloudRange ( const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud )
 {
     float min_x = std::numeric_limits<float>::max();
     float max_x = -std::numeric_limits<float>::max();
@@ -189,248 +202,279 @@ void printPointCloudRange(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud)
     float min_z = std::numeric_limits<float>::max();
     float max_z = -std::numeric_limits<float>::max();
 
-    for (const pcl::PointXYZRGBA &point : cloud->points){
-        if (point.x < min_x){
+    for ( const pcl::PointXYZRGBA &point : cloud->points )
+    {
+        if ( point.x < min_x )
+        {
             min_x = point.x;
         }
 
-        if (point.x > max_x){
+        if ( point.x > max_x ) 
+        {
             max_x = point.x;
         }
 
-        if (point.y < min_y){
+        if ( point.y < min_y )
+        {
             min_y = point.y;
         }
             
-        if (point.y > max_y){
+        if ( point.y > max_y )
+        {
             max_y = point.y;
         }
             
-        if (point.z < min_z){
+        if ( point.z < min_z )
+        {
             min_z = point.z;
         }
             
-        if (point.z > max_z){
+        if ( point.z > max_z )
+        {
             max_z = point.z;
         }  
     }
 }
 
-vector<vector<double>> OriginCorrectionPointCloud(vector<vector<double>> cloud)
+vector<vector<double>> OriginCorrectionPointCloud ( vector<vector<double>> cloud )
 {
     float center_x, center_y, low_z, max_x, min_x, max_y, min_y = 0;
-    max_x = cloud[0][0];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][0] > max_x){
-            max_x = cloud[i][0];
+    max_x = cloud[ 0 ][ 0 ];
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        if ( cloud[ i ][ 0 ] > max_x )
+        {
+            max_x = cloud[ i ][ 0 ];
         }
     }
 
-    min_x = cloud[0][0];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][0] < min_x){
-            min_x = cloud[i][0];
+    min_x = cloud[ 0 ][ 0 ];
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        if ( cloud[ i ][ 0 ] < min_x )
+        {
+            min_x = cloud[ i ][ 0 ];
         }
     }
 
-    max_y = cloud[0][1];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][1] > max_y){
-            max_y = cloud[i][1];
+    max_y = cloud[ 0 ][ 1 ];
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        if ( cloud[ i ][ 1 ] > max_y )
+        {
+            max_y = cloud[ i ][ 1 ];
         }
     }
 
-    min_y = cloud[0][1];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][1] < min_y){
-            min_y = cloud[i][1];
+    min_y = cloud[ 0 ][ 1 ];
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        if ( cloud[ i ][ 1 ] < min_y )
+        {
+            min_y = cloud[ i ][ 1 ];
         }
     }
 
-    low_z = cloud[0][2];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][2] < low_z){
-            low_z = cloud[i][2];
+    low_z = cloud[ 0 ][ 2 ];
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        if ( cloud[ i ][ 2 ] < low_z )
+        {
+            low_z = cloud[ i ][ 2 ];
         }
     }
 
-    center_x = (max_x + min_x) / 2;
-    center_y = (max_y + min_y) / 2;
+    center_x = ( max_x + min_x ) / 2;
+    center_y = ( max_y + min_y ) / 2;
 
-    for (int i = 0; i < cloud.size(); i++){
-        cloud[i][0] = cloud[i][0] - center_x;
-        cloud[i][1] = cloud[i][1] - center_y;
-        cloud[i][2] = cloud[i][2] - low_z;
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        cloud[ i ][ 0 ] = cloud[ i ][ 0 ] - center_x;
+        cloud[ i ][ 1 ] = cloud[ i ][ 1 ] - center_y;
+        cloud[ i ][ 2 ] = cloud[ i ][ 2 ] - low_z;
     }
 
     return cloud;
 }
 
-bool SortYaxisBigToSmall(vector<double> a, vector<double> b)
+bool SortYaxisBigToSmall ( vector<double> a, vector<double> b )
 {
-    return a[1] > b[1];
+    return a[ 1 ] > b[ 1 ];
 }
 
-bool SortYaxisSmallToBig(vector<double> a, vector<double> b)
+bool SortYaxisSmallToBig ( vector<double> a, vector<double> b )
 {
-    return a[1] < b[1];
+    return a[ 1 ] < b[ 1 ];
 }
 
-double polar_angle(vector<double> center, vector<double> p)
+double polar_angle ( vector<double> center, vector<double> p )
 {
-    return atan2(p[1] - center[1], p[0] - center[0]);
+    return atan2( p[ 1 ] - center[ 1 ], p[ 0 ] - center[ 0 ] );
 }
 
-vector<vector<double>> removeBouncePoints(vector<vector<double>> cloud)
+vector<vector<double>> removeBouncePoints ( vector<vector<double>> cloud )
 {
 
-    float temp_z = cloud[0][2];
-    for (int i = 1; i < cloud.size(); i++){
-        if (abs(cloud[i][2] - temp_z) > removeBounceGate){
-            if (cloud[i][2] < temp_z){
-                cloud[i][2] = temp_z;
+    float temp_z = cloud[ 0 ][ 2 ];
+    for ( int i = 1; i < cloud.size(); i++ )
+    {
+        if ( abs( cloud[ i ][ 2 ] - temp_z ) > removeBounceGate )
+        {
+            if ( cloud[ i ][ 2 ] < temp_z )
+            {
+                cloud[ i ][ 2 ] = temp_z;
             }
 
-            temp_z = cloud[i][2];
+            temp_z = cloud[ i ][ 2 ];
         }
     }
 
     return cloud;
 }
 
-bool customCompare(const vector<double> &a, const vector<double> &b)
+bool customCompare ( const vector<double> &a, const vector<double> &b )
 {
-    return a[7] > b[7];
+    return a[ 7 ] > b[ 7 ];
 }
 
-
-vector<vector<double>> BorderReinforcement(vector<vector<double>> cloud)
+vector<vector<double>> BorderReinforcement ( vector<vector<double>> cloud )
 {
     open3d::geometry::PointCloud pcd;
     vector<vector<double>> square_path;
     vector<vector<double>> contour = edge_contour;
 
-    double center_x = (contour[contour.size()-1][0] + contour[contour.size() - 2][0]) / 2;
-    double center_y = (contour[contour.size()-1][1] + contour[contour.size() - 2][1]) / 2;
-    vector<double> center{center_x, center_y};
+    double center_x = ( contour[ contour.size()-1 ][ 0 ] + contour[ contour.size() - 2 ][ 0 ]) / 2;
+    double center_y = ( contour[ contour.size()-1] [ 1 ] + contour[ contour.size() - 2 ][ 1 ]) / 2;
+    vector<double> center{ center_x, center_y };
 
-    sort(contour.begin(), contour.end(), [&](const vector<double> &a, const vector<double> &b){ return polar_angle(center, a) < polar_angle(center, b); });
-    for(auto& point: contour){
-        point[2]+=0.03;
-        pcd.points_.push_back({point[0], point[1], point[2]});
+    sort( contour.begin(), contour.end(), [&](const vector<double> &a, const vector<double> &b )
+    {
+        return polar_angle ( center, a ) < polar_angle( center, b ); 
+    });
+
+    for( auto& point: contour ) 
+    {
+        point[ 2 ]+=0.03;
+        pcd.points_.push_back( { point[ 0 ], point[ 1 ], point[ 2 ] } );
     }
 
-    open3d::visualization::DrawGeometries({make_shared<open3d::geometry::PointCloud>(pcd)});
+    open3d::visualization::DrawGeometries( { make_shared<open3d::geometry::PointCloud>( pcd ) } );
 
     return contour;
 }
 
-
-vector<vector<double>> PathCloudFilter(vector<vector<double>> cloud)
+vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
 {
     int rounds = 6;
     vector<vector<double>> ok_cloud_1;
     vector<vector<double>> ok_cloud_2;
     vector<vector<double>> ok_cloud_3;
-    float max_x = cloud[0][0];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][0] > max_x){
-            max_x = cloud[i][0];
+    float max_x = cloud[ 0 ][ 0 ];
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        if ( cloud[ i ][ 0 ] > max_x )
+        {
+            max_x = cloud[ i ][ 0 ];
         }
     }
 
-    float min_x = cloud[0][0];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][0] < min_x){
-            min_x = cloud[i][0];
+    float min_x = cloud[ 0 ][ 0 ];
+    for ( int i = 0; i < cloud.size(); i++ ) 
+    {
+        if ( cloud[ i ][ 0 ] < min_x ) 
+        {
+            min_x = cloud[ i ][ 0 ];
         }
     }
 
-    float max_y = cloud[0][1];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][1] > max_y){
-            max_y = cloud[i][1];
+    float max_y = cloud[ 0 ][ 1 ];
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        if ( cloud[ i ][ 1 ] > max_y )
+        {
+            max_y = cloud[ i ][ 1 ];
         }
     }
 
-    float min_y = cloud[0][1];
-    for (int i = 0; i < cloud.size(); i++){
-        if (cloud[i][1] < min_y){
-            min_y = cloud[i][1];
+    float min_y = cloud[ 0 ][ 1 ];
+    for ( int i = 0; i < cloud.size(); i++ )
+    {
+        if ( cloud[ i ][ 1 ] < min_y )
+        {
+            min_y = cloud[ i ][ 1 ];
         }
     }
 
-    float shift_distance = (max_x - min_x) / rounds;
+    float shift_distance = ( max_x - min_x ) / rounds;
 
-    vector<double> startPoint = {0, 0, 0.1, 0, 0, 0};
+    vector<double> startPoint = { 0, 0, 0.1, 0, 0, 0 };
     
-    ok_cloud_1.push_back(startPoint);
+    ok_cloud_1.push_back( startPoint );
 
-    for (int i = 0; i <= rounds; i++){
-        float x = max_x - (shift_distance * i);
+    for ( int i = 0; i <= rounds; i++ )
+    {
+        float x = max_x - ( shift_distance * i );
         float up_x = x + CLOUD_SEARCHING_RANGE;
         float low_x = x - CLOUD_SEARCHING_RANGE;
 
         vector<vector<double>> tmp_cloud;
-        for (int j = 0; j < cloud.size(); j++){
-            if (cloud[j][0] > low_x && cloud[j][0] < up_x){
-                tmp_cloud.push_back(cloud[j]);
+        for ( int j = 0; j < cloud.size(); j++ )
+        {
+            if ( cloud[ j ][ 0 ] > low_x && cloud[ j ][ 0 ] < up_x )
+            {
+                tmp_cloud.push_back( cloud[ j ] );
             }
         }
 
-        if (i % 2 == 0){
-            std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall);
-            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.02, tmp_cloud[0][2] + 0.03, 0, 0, 0};
-            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.02, tmp_cloud[tmp_cloud.size() - 1][2] + 0.03, 0, 0, 0};
-            edge_contour.push_back(tmp_cloud.front());
-            edge_contour.push_back(tmp_cloud.back());
-            ok_cloud_1.push_back(ap_max_y);
+        if ( i % 2 == 0 )
+        {
+            std::sort( tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall );
+            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ 0 ][ 2 ] + 0.03, 0, 0, 0 };
+            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ] + 0.03, 0, 0, 0 };
+            edge_contour.push_back( tmp_cloud.front() );
+            edge_contour.push_back( tmp_cloud.back() );
+            ok_cloud_1.push_back( ap_max_y );
 
-            for (auto c : tmp_cloud){
-                ok_cloud_1.push_back(c);
+            for ( auto c : tmp_cloud )
+            {
+                ok_cloud_1.push_back( c );
             }
                 
-            ok_cloud_1.push_back(ap_min_y);
+            ok_cloud_1.push_back( ap_min_y );
 
-        }else{
-            std::sort(tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig);
-            vector<double> ap_max_y = {x, max_y + PLASMA_DIA + 0.02, tmp_cloud[tmp_cloud.size() - 1][2], 0, 0, 0};
-            vector<double> ap_min_y = {x, min_y - PLASMA_DIA - 0.02, tmp_cloud[0][2], 0, 0, 0};
-            edge_contour.push_back(tmp_cloud.back());
-            edge_contour.push_back(tmp_cloud.front());
-            ok_cloud_1.push_back(ap_min_y);
+        }
+        else
+        {
+            std::sort( tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig );
+            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ], 0, 0, 0 };
+            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ 0 ][ 2 ], 0, 0, 0 };
+            edge_contour.push_back( tmp_cloud.back() );
+            edge_contour.push_back( tmp_cloud.front() );
+            ok_cloud_1.push_back( ap_min_y );
 
-            for (auto c : tmp_cloud){
-                ok_cloud_1.push_back(c);
+            for ( auto c : tmp_cloud )
+            {
+                ok_cloud_1.push_back( c );
             }
                 
-            ok_cloud_1.push_back(ap_max_y);
+            ok_cloud_1.push_back( ap_max_y );
         }
     }
 
-    /*
-    vector<vector<double>> ring = BorderReinforcement(cloud);
-
-    ok_cloud_1.push_back(startPoint);
-
-    for (int i = 0; i < ring.size(); i++){
-        ok_cloud_1.push_back(ring[i]);
-    }
-    */
-
-    ok_cloud_1.push_back(startPoint);
+    ok_cloud_1.push_back( startPoint );
 
     return ok_cloud_1;
 }
 
-vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
+vector<vector<double>> PathPlanning ( vector<vector<double>> cloud )
 {
-    vector<vector<double>> filtered_cloud = PathCloudFilter(cloud);
+    vector<vector<double>> filtered_cloud = PathCloudFilter( cloud );
 
     // Convert input cloud to Open3D format
     open3d::geometry::PointCloud open3d_cloud;
-    for (const auto &point : filtered_cloud){
-        open3d_cloud.points_.push_back(Eigen::Vector3d(point[0], point[1], point[2]));
+    for ( const auto &point : filtered_cloud )
+    {
+        open3d_cloud.points_.push_back( Eigen::Vector3d ( point[ 0 ], point[ 1 ], point[ 2 ] ) );
     }
 
     // Filter the point cloud using Open3D functions
@@ -438,22 +482,21 @@ vector<vector<double>> PathPlanning(vector<vector<double>> cloud)
     
     // Visualize the filtered point cloud
     open3d::visualization::Visualizer visualizer;
-    visualizer.CreateVisualizerWindow("Open3D Point Cloud", 800, 800);
+    visualizer.CreateVisualizerWindow( "Open3D Point Cloud", 800, 800 );
 
-    std::shared_ptr<const open3d::geometry::Geometry> filtered_geometry_ptr = std::make_shared<const open3d::geometry::PointCloud>(filtered_open3d_cloud);
-    visualizer.AddGeometry(filtered_geometry_ptr);
+    std::shared_ptr<const open3d::geometry::Geometry> filtered_geometry_ptr = std::make_shared<const open3d::geometry::PointCloud>( filtered_open3d_cloud );
+    visualizer.AddGeometry( filtered_geometry_ptr );
     visualizer.Run();
     visualizer.DestroyVisualizerWindow();
-    
 
     return filtered_cloud;
 }
 
-pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in)
+pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud ( const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in )
 {
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipped_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipped_cloud( new pcl::PointCloud<pcl::PointXYZRGBA> );
 
-    for (const pcl::PointXYZRGBA &point : *cloud_in)
+    for ( const pcl::PointXYZRGBA &point : *cloud_in )
     {
         pcl::PointXYZRGBA flipped_point;
 
@@ -465,98 +508,109 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud(const pcl::PointCloud<pcl
         flipped_point.b = point.b;
         flipped_point.a = point.a;
 
-        flipped_cloud->push_back(flipped_point);
+        flipped_cloud->push_back( flipped_point );
     }
 
     return flipped_cloud;
 }
 
-void the_origin_main_function()
+void the_origin_main_function ()
 {
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud( new pcl::PointCloud<pcl::PointXYZRGBA> );
 
-    const char* homeDir = getenv("HOME");
-    if (homeDir == nullptr){
+    const char* homeDir = getenv( "HOME" );
+    if ( homeDir == nullptr )
+    {
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
-    std::string pointCloudPath = std::string(homeDir) + "/PSP/files/point_cloud.pcd";
+    std::string pointCloudPath = std::string( homeDir ) + "/PSP/files/point_cloud.pcd";
 
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA>(pointCloudPath, *cloud) == -1){}
+    if ( pcl::io::loadPCDFile<pcl::PointXYZRGBA>( pointCloudPath, *cloud ) == -1 )
+    {
+        //do nothing
+    }
 
     // Downsample
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr downsampledCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr downsampledCloud ( new pcl::PointCloud<pcl::PointXYZRGBA> );
     pcl::VoxelGrid<pcl::PointXYZRGBA> voxelGrid;
-    voxelGrid.setInputCloud(cloud);
-    voxelGrid.setLeafSize(DOWN_SAMPLE_SIZE, DOWN_SAMPLE_SIZE, DOWN_SAMPLE_SIZE);
-    voxelGrid.filter(*downsampledCloud);
+    voxelGrid.setInputCloud( cloud );
+    voxelGrid.setLeafSize( DOWN_SAMPLE_SIZE, DOWN_SAMPLE_SIZE, DOWN_SAMPLE_SIZE );
+    voxelGrid.filter( *downsampledCloud );
 
     pcl::StatisticalOutlierRemoval<pcl::PointXYZRGBA> sor;
-    sor.setInputCloud(downsampledCloud);
-    sor.setMeanK(500);
-    sor.setStddevMulThresh(0.001);
+    sor.setInputCloud( downsampledCloud );
+    sor.setMeanK( 500 );
+    sor.setStddevMulThresh( 0.001 );
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr smooth(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    sor.filter(*smooth);
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr smooth( new pcl::PointCloud<pcl::PointXYZRGBA> );
+    sor.filter( *smooth );
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud(smooth);
-    //printPointCloudRange(smooth);
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud( smooth );
 
-    vector<vector<double>> vectors = estimateNormals(flipCloud);
-    vector<vector<double>> ok_cloud = OriginCorrectionPointCloud(vectors);
+    vector<vector<double>> vectors = estimateNormals( flipCloud );
+    vector<vector<double>> ok_cloud = OriginCorrectionPointCloud( vectors );
 
     // jylong edit
-    std::vector<std::vector<double>> point_cloud = PathPlanning(ok_cloud);
-    for (auto &point : point_cloud){
-        point[0] = point[0] * 1000;
-        point[1] = point[1] * 1000;
-        point[2] = point[2] * 1000;
+    std::vector<std::vector<double>> point_cloud = PathPlanning( ok_cloud );
+    for ( auto &point : point_cloud )
+    {
+        point[ 0 ] = point[ 0 ] * 1000;
+        point[ 1 ] = point[ 1 ] * 1000;
+        point[ 2 ] = point[ 2 ] * 1000;
     }
 
     std::vector<Waypoint> waypoints;
     double theta = 0;
-    vector2Angle(point_cloud);
-    workingSpaceTF(point_cloud, waypoints, theta, TF_Z_BIAS, velocity);
+    vector2Angle( point_cloud );
+    workingSpaceTF( point_cloud, waypoints, theta, TF_Z_BIAS, velocity );
 
-    if (homeDir == nullptr){
+    if ( homeDir == nullptr )
+    {
         std::cerr << "Failed to get the home directory." << std::endl;
     }
 
-    std::string absfile_path = std::string(homeDir) + "/PSP/files/B003.LS";
+    std::string absfile_path = std::string( homeDir ) + "/PSP/files/B003.LS";
 
     const std::string file_path = "B003.LS";
-    if (writeLsFile(absfile_path,file_path ,waypoints)){
-        printf("Write LS error !!!\n");
-    }else{
-        printf("Sucess!!!\n");
+    if ( writeLsFile( absfile_path,file_path ,waypoints ) )
+    {
+        printf( "Write LS error !!!\n" );
+    }
+    else
+    {
+        printf( "Sucess!!!\n" );
     }
 }
 
-bool server_callback(path_planning_ver1::path_planning_ver1::Request &req, path_planning_ver1::path_planning_ver1::Response &res)
+bool server_callback ( path_planning_ver1::path_planning_ver1::Request &req, 
+                       path_planning_ver1::path_planning_ver1::Response &res )
 {
-    if(req.REQU_PP == true){
+    if ( req.REQU_PP == true )
+    {
         the_origin_main_function();
         res.RESP_PP = true;
-    }else{
+    }
+    else
+    {
         res.RESP_PP = false;
     }
 
     return true;
 }
 
-int main(int argc, char **argv)
+int main ( int argc, char **argv )
 {
     readParameters();
     the_origin_main_function();
 
-    ros::init(argc, argv, "path_planning_ver1");
+    ros::init( argc, argv, "path_planning_ver1" );
     ros::NodeHandle nh;
+    ros::Rate loop_rate( 30 );
+    ros::ServiceServer service = nh.advertiseService( "path_planning_ver1", server_callback );
 
-    ros::Rate loop_rate(30);
-
-    ros::ServiceServer service = nh.advertiseService("path_planning_ver1", server_callback);
-
-    while(ros::ok()){
+    while( ros::ok() ) 
+    {
         loop_rate.sleep();
         ros::spinOnce();
     }
