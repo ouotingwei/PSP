@@ -1,4 +1,6 @@
 import cv2
+import os
+import sys
 import numpy as np
 from pupil_apriltags import Detector
 from cv_bridge import CvBridge
@@ -61,7 +63,11 @@ class Detection:
         return self.tag_rotation, self.tag_translation
 
     def LOGGING ( self, state ):
-        file_loc = '/home/wei/PSP/files/logging_file.txt'
+        homeDir = os.getenv( "HOME" )
+        if homeDir is None:
+            sys.stderr.write( "Failed to get the home directory.\n" )
+
+        file_loc = homeDir + '/PSP/files/logging_file.txt'
         
         with open( file_loc, 'a' ) as file: 
             if file.tell() != 0: 
@@ -69,11 +75,15 @@ class Detection:
             file.write( state )
         
     def TF ( self, rotation, transition ):
+        homeDir = os.getenv( "HOME" )
+        if homeDir is None:
+            sys.stderr.write( "Failed to get the home directory.\n" )
+
         if rotation is None or transition is None:
             print( "Error: Rotation or translation is None." )
             return
         
-        file_loc = '/home/wei/PSP/files/TF.txt'
+        file_loc = homeDir + '/PSP/files/TF.txt'
         tf = [ ]
         for i in range( 3 ):
             for j in range( 3 ):
@@ -125,7 +135,11 @@ class CloudFilter ():
 
             centroid_pcd = self.center_point_cloud( downsampled_pcd )
 
-            o3d.io.write_point_cloud( "/home/wei/PSP/files/point_cloud.pcd", centroid_pcd )
+            homeDir = os.getenv( "HOME" )
+            if homeDir is None:
+                sys.stderr.write( "Failed to get the home directory.\n" )
+
+            o3d.io.write_point_cloud( homeDir + "/PSP/files/point_cloud.pcd", centroid_pcd )
 
 def capture( req ):
     if req.scan == True:
