@@ -7,6 +7,7 @@
 #include <array>
 #include <iostream>
 #include <iomanip>
+#include <Eigen/Dense>
 
 struct Waypoint
 {
@@ -32,25 +33,6 @@ void initializeWaypoints(Waypoint *waypoint,double V)
     waypoint->C = "CNT100";
 }
 
-std::vector<std::vector<double>> matrixMultiplication(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2)
-{
-    int rows1 = matrix1.size();
-    int cols1 = matrix1[0].size();
-    int cols2 = matrix2[0].size();
-
-    std::vector<std::vector<double>> result(rows1, std::vector<double>(cols2, 0));
-
-    for (int i = 0; i < rows1; ++i) {
-        for (int j = 0; j < cols2; ++j) {
-            for (int k = 0; k < cols1; ++k) {
-                result[i][j] += matrix1[i][k] * matrix2[k][j];
-            }
-        }
-    }
-
-    return result;
-}
-
 void vector2Angle(std::vector<std::vector<double>>& points)
 {
     for (int i = 0; i < points.size(); i++) {
@@ -66,30 +48,61 @@ void vector2Angle(std::vector<std::vector<double>>& points)
         //pich = pich*180.0/M_PI;
         //yow = yow*180.0/M_PI;
         points[i][3] = row;
-        //points[i][4] = pich;
-        //points[i][5] = yow;
+        points[i][4] = 0.0;
+        points[i][5] = 0.0;
     }
 }
 
 void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS,double vel) 
 {
+    // Transform robot base to camera
+    Eigen::MatrixXd tf_robot_to_camera(4, 4);
+    tf_robot_to_camera << 1.0, 0.0, 0.0, 0.0,
+                          0.0, 1.0, 0.0, 0.0,
+                          0.0, 0.0, 1.0, 0.0,
+                          0.0, 0.0, 0.0, 1.0;
+    
+    // Transform camera to workpiece
+    std::string file_path = "files/TF.txt"; 
+    std::ifstream input_file(file_path);
+    if (!input_file.is_open()) {
+        std::cerr << "Error opening file: " << file_path << std::endl;
+        return;  
+    }
+
+    std::vector<double> camera_to_piece;
+    std::string line;
+    while (std::getline(input_file, line)) {
+        camera_to_piece.push_back(std::stod(line));
+    }
+    input_file.close();
+
+    Eigen::MatrixXd tf_camera_to_workpiece(4, 4);
+    tf_camera_to_workpiece << camera_to_piece[0], camera_to_piece[1], camera_to_piece[2], camera_to_piece[3],
+                          camera_to_piece[4], camera_to_piece[5], camera_to_piece[6], camera_to_piece[7],
+                          camera_to_piece[8], camera_to_piece[9], camera_to_piece[10], camera_to_piece[11],
+                          0.0, 0.0, 0.0, 1.0;
+
+
+    // Transform robot base to workspace
+    // ! need add camera to plasma bias 
     double transition_p[3] = {420.000, 0.000, -325.827+TF_Z_BIAS};
     double transition_v[3] = {-180, 0, 0};
 
     theta = theta * (3.1415 / 180);
-    std::vector<std::vector<double>> rotation_matrix = {
-        {cos(theta), -sin(theta), 0},
-        {sin(theta), cos(theta), 0},
-        {0, 0, 1}
-    };
+    Eigen::MatrixXd tf_robot_workspace(4, 4);
+    tf_robot_workspace << cos(theta), -sin(theta), 0, transition_p[0],
+                          sin(theta), cos(theta), 0, transition_p[1],
+                          0.0, 0.0, 1.0, transition_p[2],
+                          0.0, 0.0, 0.0, 1.0;
 
     for (int i = 0; i < points.size(); i++) {
-        // Transform points to workspace
-        std::vector<std::vector<double>> matrix_tmp = {{points[i][0], points[i][1], points[i][2]}};
-        std::vector<std::vector<double>> position_tf = matrixMultiplication(matrix_tmp, rotation_matrix);
-        position_tf[0][0] += transition_p[0];
-        position_tf[0][1] += transition_p[1];
-        position_tf[0][2] += transition_p[2];
+        
+        Eigen::Vector4d point_matrix(points[i][0], points[i][1], points[i][2], 1.0);
+        Eigen::MatrixXd tf_robot_to_workpiece = tf_robot_to_camera*tf_camera_to_workpiece;
+        
+        Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;
+        // std::cout << "position_tf matrix:" << std::endl << position_tf << std::endl;
 
         // Transform vectors to workspace
         double vector_tf[3];
@@ -100,9 +113,9 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
         // Output waypoints
         Waypoint newPoint;
         initializeWaypoints(&newPoint,vel);
-        newPoint.x = position_tf[0][0];
-        newPoint.y = position_tf[0][1];
-        newPoint.z = position_tf[0][2];
+        newPoint.x = position_tf(0, 0);
+        newPoint.y = position_tf(1, 0);
+        newPoint.z = position_tf(2, 0);
         newPoint.W = vector_tf[0];
         newPoint.P = vector_tf[1];
         newPoint.R = vector_tf[2];
@@ -160,38 +173,3 @@ int writeLsFile(const std::string& absfile, const std::string& file, const std::
 
     return 0;
 }
-
-// int main() {
-//     std::vector<std::vector<double>> point_cloud = {
-//         {1, 2, 3, 0, 0, 0},
-//         {4, 5, 6, 0, 0, 0},
-//         {7, 8, 9, 0, 0, 0}
-//     }; 
-
-//     std::vector<Waypoint> waypoints;
-//     double theta = 45.0;
-//     vector2Angle(point_cloud);
-//     workingSpaceTF(point_cloud, waypoints, theta);
-
-//     // Print waypoints
-//     for (int i = 0; i < waypoints.size(); i++) {
-//         printf("Waypoint %d:\n", i);
-//         printf("x: %lf\n", waypoints[i].x);
-//         printf("y: %lf\n", waypoints[i].y);
-//         printf("z: %lf\n", waypoints[i].z);
-//         printf("W: %lf\n", waypoints[i].W);
-//         printf("P: %lf\n", waypoints[i].P);
-//         printf("R: %lf\n", waypoints[i].R);
-//         printf("V: %lf\n", waypoints[i].V);
-//         printf("C: %s\n", waypoints[i].C.c_str());
-//         printf("\n");
-//     }
-
-//     const std::string file_path = "B0001.LS";
-//     if(writeLsFile(file_path, waypoints))
-//         printf("Write LS error !!!\n");
-//     else
-//         printf("Sucess!!!\n");
-    
-//     return 0;
-// }
