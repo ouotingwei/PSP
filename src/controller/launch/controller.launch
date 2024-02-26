@@ -1,0 +1,7 @@
+<launch>
+    <node pkg="controller" type="controller.py" name="controller" output="screen"/>
+    <node pkg="vision_capture2" type = "vision_capture.py" name="vision_capture" output="screen"/>
+    <node pkg="path_planning_ver1" type="path_planning_ver1" name="path_planning_ver1" output="screen"/>
+    <node pkg="communication" type="passLS_srv" name="passLS_srv" output="screen"/>
+    
+</launch>

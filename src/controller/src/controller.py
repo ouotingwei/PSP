@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
+
 import rospy
 import sys
+import time
 import os
 import datetime
-from vision_capture.srv import VC
-from path_planning_ver1.srv import PP
+from vision_capture2.srv import VisionCapture
+from path_planning_ver1.srv import path_planning_ver1
 from communication.srv import ModbusPLC, ModbusRobot, Ftp
 
 request = False
@@ -13,8 +16,8 @@ class controller ():
     def __init__ ( self ):
         rospy.init_node ( 'controller' )
         
-        self.capture_proxy = rospy.ServiceProxy ( 'vision_capture', VC )
-        self.pp_proxy = rospy.ServiceProxy ( 'path_planning_ver1', PP )
+        self.capture_proxy = rospy.ServiceProxy ( 'vision_capture', VisionCapture )
+        self.pp_proxy = rospy.ServiceProxy ( 'path_planning_ver1', path_planning_ver1 )
         self.ftp_proxy = rospy.ServiceProxy('ftp_transfer', Ftp)
         self.funuc_proxy = rospy.ServiceProxy('modbus_robot_control', ModbusRobot)
         self.plc_proxy = rospy.ServiceProxy('modbus_plc_control', ModbusPLC)
@@ -84,8 +87,10 @@ class controller ():
             self.LOGGING(   "   [SERVER] Error Writing PLC Request" )
 
     def run(self):
+        time.sleep(1)
         self.capture(True)
         self.planning(True)
+        self.fileTf(True)
 
     def LOGGING ( self, state ):
         homeDir = os.getenv( "HOME" )
@@ -93,7 +98,8 @@ class controller ():
             sys.stderr.write( "Failed to get the home directory.\n" )
 
         current_datetime = datetime.datetime.now()
-        file_loc = homeDir + "/PSP/logfile/" + "logging_file.txt"
+        #file_loc = homeDir + "/PSP/logfile/" + "logging_file.txt"
+        file_loc = "/home/wei/PSP/logfile/logging_file.txt"
         
         with open( file_loc, 'a' ) as file: 
             if file.tell() != 0: 
@@ -107,7 +113,8 @@ if __name__ == '__main__':
         sys.stderr.write( "Failed to get the home directory.\n" )
 
     current_datetime = datetime.datetime.now()
-    file_loc = homeDir + "/PSP/logfile/" + "logging_file.txt"
+    #file_loc = homeDir + "/PSP/logfile/" + "logging_file.txt"
+    file_loc = "/home/wei/PSP/logfile/logging_file.txt"
 
     current_datetime = datetime.datetime.now()
 

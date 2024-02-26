@@ -63,7 +63,7 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
                           0.0, 0.0, 0.0, 1.0;
     
     // Transform camera to workpiece
-    std::string file_path = "files/TF.txt"; 
+    std::string file_path = "/home/wei/PSP/files/TF.txt"; 
     std::ifstream input_file(file_path);
     if (!input_file.is_open()) {
         std::cerr << "Error opening file: " << file_path << std::endl;
