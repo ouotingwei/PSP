@@ -4,6 +4,7 @@ import cv2
 import os
 import sys
 import numpy as np
+import time
 from pupil_apriltags import Detector
 from cv_bridge import CvBridge
 import rospy
@@ -13,8 +14,8 @@ import sensor_msgs.point_cloud2 as pc2
 import open3d as o3d
 from vision_capture2.srv import VisionCapture, VisionCaptureResponse
 
-camera_params = (604.373076, 608.179768, 317.741819, 247.792564)
-tag_size = 0.0596
+camera_params = (625.034191, 623.103645, 331.211763, 216.561415)
+tag_size = 0.033
 tag_rotation = None
 tag_translation = None
 
@@ -61,6 +62,7 @@ def get_pose():
                     LOGGING(state="   [MOD_ERROR]No ")
 
     TF(tag_rotation, tag_translation)
+
     return tag_rotation, tag_translation
 
 def LOGGING(state):
@@ -69,7 +71,7 @@ def LOGGING(state):
         sys.stderr.write("Failed to get the home directory.\n")
 
     # file_loc = homeDir + '/PSP/files/logging_file.txt'
-    file_loc = '/home/wei/PSP/logfile/logging_file.txt'
+    file_loc = '/home/honglang/PSP/logfile/logging_file.txt'
 
     with open(file_loc, 'a') as file:
         if file.tell() != 0:
@@ -86,7 +88,7 @@ def TF(rotation, transition):
         return
 
     # file_loc = homeDir + '/PSP/files/TF.txt'
-    file_loc = '/home/wei/PSP/files/TF.txt'
+    file_loc = '/home/honglang/PSP/files/TF.txt'
 
     tf = []
     for i in range(3):
@@ -110,7 +112,8 @@ def save_point_cloud_as_pcd(rotation, translation):
     global cloud_data
     if cloud_data is not None:
         pc_np = pc2.read_points(cloud_data, field_names=("x", "y", "z"), skip_nans=True)
-
+        print("pc_np=")
+        print(pc_np)
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(pc_np)
 
@@ -119,7 +122,7 @@ def save_point_cloud_as_pcd(rotation, translation):
 
         bounding_box = o3d.geometry.AxisAlignedBoundingBox(
             min_bound=[0, 0, -0.1],
-            max_bound=[0.22, 0.35, -0.03]
+            max_bound=[0.30, 0.40, -0.01]
         )
 
         cropped_pcd = pcd.crop(bounding_box)
@@ -129,11 +132,15 @@ def save_point_cloud_as_pcd(rotation, translation):
         centroid_pcd = center_point_cloud(downsampled_pcd)
 
         # o3d.io.write_point_cloud( homeDir + "/PSP/files/point_cloud.pcd", centroid_pcd )
-        o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", centroid_pcd)
-
+        try:
+            o3d.io.write_point_cloud("/home/honglang/PSP/files/point_cloud.pcd", centroid_pcd)
+        except Exception as e:
+            print(e)
+    
 def capture(req):
     if req.scan == True:
         rotation, translation = get_pose()
+        print(rotation, translation)
         save_point_cloud_as_pcd(rotation, translation)
         return VisionCaptureResponse(True)
 
@@ -142,6 +149,7 @@ def ros_server():
     rospy.Subscriber("/camera/color/image_raw", Image, image_callback)
     rospy.Subscriber("/camera/depth/color/points", PointCloud2, cloud_callback)
     s = rospy.Service('/vision_capture', VisionCapture, capture)
+    time.sleep( 1 )
     rospy.spin()
 
 if __name__ == '__main__':

@@ -90,7 +90,7 @@ class controller ():
         time.sleep(1)
         self.capture(True)
         self.planning(True)
-        self.fileTf(True)
+        self.fileTf('192.168.255.200', '/home/honglang/PSP/files/B003.LS')
 
     def LOGGING ( self, state ):
         homeDir = os.getenv( "HOME" )
@@ -99,7 +99,7 @@ class controller ():
 
         current_datetime = datetime.datetime.now()
         #file_loc = homeDir + "/PSP/logfile/" + "logging_file.txt"
-        file_loc = "/home/wei/PSP/logfile/logging_file.txt"
+        file_loc = "/home/honglang/PSP/logfile/logging_file.txt"
         
         with open( file_loc, 'a' ) as file: 
             if file.tell() != 0: 
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
     current_datetime = datetime.datetime.now()
     #file_loc = homeDir + "/PSP/logfile/" + "logging_file.txt"
-    file_loc = "/home/wei/PSP/logfile/logging_file.txt"
+    file_loc = "/home/honglang/PSP/logfile/logging_file.txt"
 
     current_datetime = datetime.datetime.now()
 

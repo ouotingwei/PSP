@@ -47,7 +47,8 @@ void vector2Angle(std::vector<std::vector<double>>& points)
         row = row*180.0/M_PI;
         //pich = pich*180.0/M_PI;
         //yow = yow*180.0/M_PI;
-        points[i][3] = row;
+        // points[i][3] = row;
+        points[i][3] = 0.0;
         points[i][4] = 0.0;
         points[i][5] = 0.0;
     }
@@ -56,14 +57,15 @@ void vector2Angle(std::vector<std::vector<double>>& points)
 void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS,double vel) 
 {
     // Transform robot base to camera
+    double transition_rtc[3] = {500.000, 0.000, 400.000};
     Eigen::MatrixXd tf_robot_to_camera(4, 4);
-    tf_robot_to_camera << 1.0, 0.0, 0.0, 0.0,
-                          0.0, 1.0, 0.0, 0.0,
-                          0.0, 0.0, 1.0, 0.0,
+    tf_robot_to_camera << 0.0, -1.0, 0.0, transition_rtc[0],
+                          -1.0, 0.0, 0.0, transition_rtc[1],
+                          0.0, 0.0, -1.0, transition_rtc[2],
                           0.0, 0.0, 0.0, 1.0;
     
     // Transform camera to workpiece
-    std::string file_path = "/home/wei/PSP/files/TF.txt"; 
+    std::string file_path = "/home/honglang/PSP/files/TF.txt"; 
     std::ifstream input_file(file_path);
     if (!input_file.is_open()) {
         std::cerr << "Error opening file: " << file_path << std::endl;
@@ -78,11 +80,11 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
     input_file.close();
 
     Eigen::MatrixXd tf_camera_to_workpiece(4, 4);
-    tf_camera_to_workpiece << camera_to_piece[0], camera_to_piece[1], camera_to_piece[2], camera_to_piece[3],
-                          camera_to_piece[4], camera_to_piece[5], camera_to_piece[6], camera_to_piece[7],
-                          camera_to_piece[8], camera_to_piece[9], camera_to_piece[10], camera_to_piece[11],
+    tf_camera_to_workpiece << camera_to_piece[0], camera_to_piece[1], camera_to_piece[2], camera_to_piece[9]*1000,
+                          camera_to_piece[3], camera_to_piece[4], camera_to_piece[5], camera_to_piece[10]*1000,
+                          camera_to_piece[6], camera_to_piece[7], camera_to_piece[8], camera_to_piece[11]*1000,
                           0.0, 0.0, 0.0, 1.0;
-
+    std::cout << "tf_camera_to_workpiece:" << std::endl << tf_camera_to_workpiece << std::endl;
 
     // Transform robot base to workspace
     // ! need add camera to plasma bias 
@@ -100,8 +102,11 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
         
         Eigen::Vector4d point_matrix(points[i][0], points[i][1], points[i][2], 1.0);
         Eigen::MatrixXd tf_robot_to_workpiece = tf_robot_to_camera*tf_camera_to_workpiece;
+        std::cout << "inverse matrix:" << std::endl << tf_robot_workspace*tf_camera_to_workpiece.inverse() << std::endl;
         
-        Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;
+        // Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;
+        Eigen::MatrixXd position_tf = tf_robot_workspace*point_matrix;
+        // std::cout << "inverse matrix:" << std::endl << tf_robot_workspace*tf_camera_to_workpiece.inverse() << std::endl;
         // std::cout << "position_tf matrix:" << std::endl << position_tf << std::endl;
 
         // Transform vectors to workspace

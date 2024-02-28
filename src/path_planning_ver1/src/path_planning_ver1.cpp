@@ -407,7 +407,7 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
 
     float shift_distance = ( max_x - min_x ) / rounds;
 
-    vector<double> startPoint = { 0, 0, 0.1, 0, 0, 0 };
+    vector<double> startPoint = { 0, 0, 0.25, 0, 0, 0 };
     
     ok_cloud_1.push_back( startPoint );
 
@@ -429,8 +429,8 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
         if ( i % 2 == 0 )
         {
             std::sort( tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall );
-            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ 0 ][ 2 ] + 0.03, 0, 0, 0 };
-            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ] + 0.03, 0, 0, 0 };
+            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ 0 ][ 2 ] + 0, 0, 0, 0 }; // origin z+=0.03
+            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ] + 0, 0, 0, 0 };
             edge_contour.push_back( tmp_cloud.front() );
             edge_contour.push_back( tmp_cloud.back() );
             ok_cloud_1.push_back( ap_max_y );
