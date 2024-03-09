@@ -80,7 +80,7 @@ double midHighestHeightOfShoe ( vector<vector<double>> point_cloud )
     }
 
     for ( int i = 0; i < point_cloud.size() / 2; i++ )
-    {
+    { 
          pq.pop();
     }
        
@@ -98,39 +98,6 @@ bool isNearEdge ( vector<double> point, double &refer_height )
     }
 
     return false;
-}
-
-vector<double> getRANSACPlane ()
-{
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud( new pcl::PointCloud<pcl::PointXYZ> );
-    const char* homeDir = getenv( "HOME" );
-    if ( homeDir == nullptr ) 
-    {
-        std::cerr << "Failed to get the home directory." << std::endl;
-    }
-
-    std::string downSampledPath = std::string( homeDir ) + "/PSP/files/point_cloud.pcd";
-	if ( pcl::io::loadPCDFile( downSampledPath, *cloud ) < 0 )
-    {
-		PCL_ERROR( "点云读取失败！\n" );
-	}
-
-    //--------------------------RANSAC拟合平面--------------------------
-	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr model_plane( new pcl::SampleConsensusModelPlane<pcl::PointXYZ>( cloud ) );
-	pcl::RandomSampleConsensus<pcl::PointXYZ> ransac( model_plane );	
-	ransac.setDistanceThreshold( 0.01 );	//设置距离阈值，与平面距离小于0.1的点作为内点
-	ransac.computeModel();				//执行模型估计
-	//-------------------------根据索引提取内点--------------------------
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane( new pcl::PointCloud<pcl::PointXYZ> );
-	vector<int> inliers;				//存储内点索引的容器
-	ransac.getInliers( inliers );			//提取内点索引
-	pcl::copyPointCloud<pcl::PointXYZ>( *cloud, inliers, *cloud_plane );
-	//----------------------------输出模型参数---------------------------
-	Eigen::VectorXf coefficient;
-	ransac.getModelCoefficients( coefficient );
-	std::cout << "平面方程为：\n" << coefficient[ 0 ] << "x + " << coefficient[1 ] << "y + " << coefficient[ 2 ] << "z + " << coefficient[ 3 ] << " = 0" << std::endl;
-    vector<double> result{ coefficient[ 0 ], coefficient[ 1 ], coefficient[ 2 ], coefficient[ 3 ] };
-    return result;
 }
 
 vector<vector<double>> smoothEdgePointCloud ( vector<vector<double>> point_cloud )
@@ -370,6 +337,8 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
     vector<vector<double>> ok_cloud_2;
     vector<vector<double>> ok_cloud_3;
     float max_x = cloud[ 0 ][ 0 ];
+
+    // find the pointcloud range
     for ( int i = 0; i < cloud.size(); i++ )
     {
         if ( cloud[ i ][ 0 ] > max_x )
@@ -407,7 +376,7 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
 
     float shift_distance = ( max_x - min_x ) / rounds;
 
-    vector<double> startPoint = { 0, 0, 0.1, 0, 0, 0 };
+    vector<double> startPoint = { 0, 0, -0.1, 0, 0, 0 };
     
     ok_cloud_1.push_back( startPoint );
 
@@ -429,8 +398,8 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
         if ( i % 2 == 0 )
         {
             std::sort( tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall );
-            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ 0 ][ 2 ] + 0.03, 0, 0, 0 };
-            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ] + 0.03, 0, 0, 0 };
+            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ 0 ][ 2 ] - 0.03, 0, 0, 0 };
+            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ] - 0.03, 0, 0, 0 };
             edge_contour.push_back( tmp_cloud.front() );
             edge_contour.push_back( tmp_cloud.back() );
             ok_cloud_1.push_back( ap_max_y );
@@ -492,28 +461,6 @@ vector<vector<double>> PathPlanning ( vector<vector<double>> cloud )
     return filtered_cloud;
 }
 
-pcl::PointCloud<pcl::PointXYZRGBA>::Ptr FlipPointCloud ( const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_in )
-{
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipped_cloud( new pcl::PointCloud<pcl::PointXYZRGBA> );
-
-    for ( const pcl::PointXYZRGBA &point : *cloud_in )
-    {
-        pcl::PointXYZRGBA flipped_point;
-
-        flipped_point.x = -point.x;
-        flipped_point.y = -point.y;
-        flipped_point.z = -point.z;
-        flipped_point.r = point.r;
-        flipped_point.g = point.g;
-        flipped_point.b = point.b;
-        flipped_point.a = point.a;
-
-        flipped_cloud->push_back( flipped_point );
-    }
-
-    return flipped_cloud;
-}
-
 void the_origin_main_function ()
 {
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud( new pcl::PointCloud<pcl::PointXYZRGBA> );
@@ -546,13 +493,12 @@ void the_origin_main_function ()
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr smooth( new pcl::PointCloud<pcl::PointXYZRGBA> );
     sor.filter( *smooth );
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr flipCloud = FlipPointCloud( smooth );
-
-    vector<vector<double>> vectors = estimateNormals( flipCloud );
+    vector<vector<double>> vectors = estimateNormals( smooth );
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud( vectors );
 
     // jylong edit
     std::vector<std::vector<double>> point_cloud = PathPlanning( ok_cloud );
+
     for ( auto &point : point_cloud )
     {
         point[ 0 ] = point[ 0 ] * 1000;

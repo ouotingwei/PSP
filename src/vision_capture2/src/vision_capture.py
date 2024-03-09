@@ -128,6 +128,33 @@ def save_point_cloud_as_pcd(rotation, translation):
 
         centroid_pcd = center_point_cloud(downsampled_pcd)
 
+        # find the max_y & min_y
+        max_y = float('-inf')
+        min_y = float('inf')
+        for point in centroid_pcd.points:
+            y = point[1]  # 第二個元素是 Y 座標
+            if y > max_y:
+                max_y = y
+            if y < min_y:
+                min_y = y
+
+        y_resolution = 0.01 # resolution = 1cm
+        current_y = min_y
+
+        loop_min_y = 100
+
+        while current_y < max_y:
+            for tmp_points in centroid_pcd.points:
+                if point[1] < current_y + y_resolution and point[1] >= current_y:
+                    if point[2] < loop_min_y:
+                        loop_min_y = point[2]
+            for tmp_points in centroid_pcd.points:
+                if point[1] < current_y + y_resolution and point[1] >= current_y:
+                    tmp_points[2]=loop_min_y 
+
+            current_y=current_y+y_resolution
+
+
         # o3d.io.write_point_cloud( homeDir + "/PSP/files/point_cloud.pcd", centroid_pcd )
         o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", centroid_pcd)
 
