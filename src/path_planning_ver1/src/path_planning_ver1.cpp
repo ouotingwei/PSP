@@ -35,6 +35,8 @@ double PLASMA_DIA = 0.05;
 double TF_Z_BIAS = 0;
 double nearby_distance = 0.022;
 float removeBounceGate = 0.1;
+int rounds=10;
+double height=0.03;
 double velocity = 300;
 double camera_x = 0;
 double camera_y = 0;
@@ -66,7 +68,9 @@ int readParameters ()
     removeBounceGate = parameters[ "removeBounceGate" ];
     nearby_distance = parameters[ "nearby_distance" ];
     velocity = parameters[ "velocity" ];
-
+    rounds = parameters[ "rounds" ];
+    height = parameters[ "height" ];
+    
     return 1;
 }
 
@@ -332,7 +336,7 @@ vector<vector<double>> BorderReinforcement ( vector<vector<double>> cloud )
 
 vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
 {
-    int rounds = 6;
+    // int rounds = 6;
     vector<vector<double>> ok_cloud_1;
     vector<vector<double>> ok_cloud_2;
     vector<vector<double>> ok_cloud_3;
@@ -503,7 +507,7 @@ void the_origin_main_function ()
     {
         point[ 0 ] = point[ 0 ] * 1000;
         point[ 1 ] = point[ 1 ] * 1000;
-        point[ 2 ] = point[ 2 ] * 1000;
+        point[ 2 ] = (point[ 2 ]+height )* 1000;
     }
 
     std::vector<Waypoint> waypoints;
