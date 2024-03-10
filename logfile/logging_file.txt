@@ -178,3 +178,62 @@
 [End] 
 [Time] 2024-02-27_18-37-34[Start] 
 [End] 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No APRILTAG detected

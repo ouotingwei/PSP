@@ -13,14 +13,17 @@ import sensor_msgs.point_cloud2 as pc2
 import open3d as o3d
 from vision_capture2.srv import VisionCapture, VisionCaptureResponse
 
-camera_params = (604.373076, 608.179768, 317.741819, 247.792564)
-tag_size = 0.0596
+global image, tag_rotation, tag_translation, centroid
+
+camera_params = (610.319671, 611.570539, 317.992731, 235.564522)
+tag_size = 0.0408
 tag_rotation = None
 tag_translation = None
 
 bridge = CvBridge()
 image = None
 cloud_data = None
+centroid = None
 
 def image_callback(msg):
     global image
@@ -60,7 +63,7 @@ def get_pose():
                     print('\033[91m' + " [MOD] POSE_ERROR: No APRILTAG detected." + '\033[0m')
                     LOGGING(state="   [MOD_ERROR]No ")
 
-    TF(tag_rotation, tag_translation)
+    #TF(tag_rotation, tag_translation)
     return tag_rotation, tag_translation
 
 def LOGGING(state):
@@ -69,7 +72,7 @@ def LOGGING(state):
         sys.stderr.write("Failed to get the home directory.\n")
 
     # file_loc = homeDir + '/PSP/files/logging_file.txt'
-    file_loc = '/home/wei/PSP/logfile/logging_file.txt'
+    file_loc = '/home/honglang/PSP/logfile/logging_file.txt'
 
     with open(file_loc, 'a') as file:
         if file.tell() != 0:
@@ -77,6 +80,7 @@ def LOGGING(state):
         file.write(state)
 
 def TF(rotation, transition):
+    print("tf ............")
     homeDir = os.getenv("HOME")
     if homeDir is None:
         sys.stderr.write("Failed to get the home directory.\n")
@@ -86,15 +90,14 @@ def TF(rotation, transition):
         return
 
     # file_loc = homeDir + '/PSP/files/TF.txt'
-    file_loc = '/home/wei/PSP/files/TF.txt'
+    file_loc = '/home/honglang/PSP/files/TF.txt'
 
     tf = []
     for i in range(3):
         for j in range(3):
             tf.append(rotation[i][j])
-
     for i in range(3):
-        tf.append(transition[i][0])
+        tf.append(transition[0][i])
 
     with open(file_loc, 'w') as file:
         for i in range(len(tf)):
@@ -102,6 +105,8 @@ def TF(rotation, transition):
             file.write('\n')
 
 def center_point_cloud(point_cloud):
+    global centroid
+    print(centroid)
     centroid = np.mean(np.asarray(point_cloud.points), axis=0)
     translated_pcd = point_cloud.translate(-centroid)
     return translated_pcd
@@ -118,8 +123,8 @@ def save_point_cloud_as_pcd(rotation, translation):
         pcd.translate(-1 * np.linalg.inv(rotation) @ translation)
 
         bounding_box = o3d.geometry.AxisAlignedBoundingBox(
-            min_bound=[0, 0, -0.1],
-            max_bound=[0.22, 0.35, -0.03]
+            min_bound=[-0.35, 0, -0.1],
+            max_bound=[0, 0.22, -0.03]
         )
 
         cropped_pcd = pcd.crop(bounding_box)
@@ -128,35 +133,43 @@ def save_point_cloud_as_pcd(rotation, translation):
 
         centroid_pcd = center_point_cloud(downsampled_pcd)
 
-        # find the max_y & min_y
-        max_y = float('-inf')
-        min_y = float('inf')
+        print("tag.transition", tag_translation)
+        print("centroid", centroid)
+        camera_to_centroid = tag_translation.T + centroid
+        # for i in range(3):
+        #     camera_to_centroid[i] =  tag_translation[i] + centroid[i]
+        print("camera_to_centroid", camera_to_centroid)
+        TF(tag_rotation, camera_to_centroid)
+
+        # find the max_x & min_x
+        max_x = float('-inf')
+        min_x = float('inf')
         for point in centroid_pcd.points:
-            y = point[1]  # 第二個元素是 Y 座標
-            if y > max_y:
-                max_y = y
-            if y < min_y:
-                min_y = y
+            x = point[0]  # 第一个元素是 X 座标
+            if x > max_x:
+                max_x = x
+            if x < min_x:
+                min_x = x
 
-        y_resolution = 0.01 # resolution = 1cm
-        current_y = min_y
+        x_resolution = 0.005 # resolution = 1cm
+        current_x = min_x
 
-        loop_min_y = 100
-
-        while current_y < max_y:
+        while current_x < max_x:
+            loop_min_x = 100
             for tmp_points in centroid_pcd.points:
-                if point[1] < current_y + y_resolution and point[1] >= current_y:
-                    if point[2] < loop_min_y:
-                        loop_min_y = point[2]
+                if tmp_points[0] < current_x + x_resolution and tmp_points[0] >= current_x:
+                    if tmp_points[2] < loop_min_x:
+                        loop_min_x = tmp_points[2]
             for tmp_points in centroid_pcd.points:
-                if point[1] < current_y + y_resolution and point[1] >= current_y:
-                    tmp_points[2]=loop_min_y 
+                if tmp_points[0] < current_x + x_resolution and tmp_points[0] >= current_x:
+                    tmp_points[2] = loop_min_x 
 
-            current_y=current_y+y_resolution
+            current_x = current_x + x_resolution
+
 
 
         # o3d.io.write_point_cloud( homeDir + "/PSP/files/point_cloud.pcd", centroid_pcd )
-        o3d.io.write_point_cloud("/home/wei/PSP/files/point_cloud.pcd", centroid_pcd)
+        o3d.io.write_point_cloud("/home/honglang/PSP/files/point_cloud.pcd", centroid_pcd)
 
 def capture(req):
     if req.scan == True:
