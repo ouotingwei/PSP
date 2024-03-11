@@ -88,7 +88,8 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
 
     // Transform robot base to workspace
     // ! need add camera to plasma bias 
-    double transition_p[3] = {420.000, 0.000, -325.827+TF_Z_BIAS};
+    // double transition_p[3] = {420.000, 0.000, -325.827+TF_Z_BIAS};
+    double transition_p[3] = {0.000, 0.000, -325.827+TF_Z_BIAS};
     double transition_v[3] = {-180, 0, 0};
 
     theta = theta * (3.1415 / 180);
@@ -111,7 +112,7 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
         // Eigen::MatrixXd position_tf = tf_robot_to_camera.inverse()*point_matrix;     // V2
         // Eigen::MatrixXd position_tf = tf_robot_to_workpiece.inverse()*point_matrix;     // V3
         // Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;  // V4
-        Eigen::MatrixXd position_tf = tf_robot_to_workpiece.inverse()*point_matrix;
+        Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;
         // Eigen::MatrixXd position_tf = tf_robot_workspace*point_matrix;  // V1
         // std::cout << "inverse matrix:" << std::endl << tf_robot_workspace*tf_camera_to_workpiece.inverse() << std::endl;
         // std::cout << "position_tf matrix:" << std::endl << position_tf << std::endl;
