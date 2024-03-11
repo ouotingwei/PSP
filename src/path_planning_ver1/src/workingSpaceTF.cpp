@@ -58,8 +58,8 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
     // Transform robot base to camera
     double transition_rtc[3] = {500.000, 0.000, 400.000};
     Eigen::MatrixXd tf_robot_to_camera(4, 4);
-    tf_robot_to_camera << -1.0, 0.0, 0.0, transition_rtc[0],
-                          0.0, -1.0, 0.0, transition_rtc[1],
+    tf_robot_to_camera << 0.0, 1.0, 0.0, transition_rtc[1],
+                          1.0, 0.0, 0.0, -transition_rtc[0],
                           0.0, 0.0, -1.0, transition_rtc[2],
                           0.0, 0.0, 0.0, 1.0;
     std::cout << "tf_robot_to_camera:" << std::endl << tf_robot_to_camera << std::endl;
@@ -80,8 +80,8 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
     input_file.close();
 
     Eigen::MatrixXd tf_camera_to_workpiece(4, 4);
-    tf_camera_to_workpiece << camera_to_piece[0], camera_to_piece[1], camera_to_piece[2], camera_to_piece[9]*1000,
-                          camera_to_piece[3], camera_to_piece[4], camera_to_piece[5], camera_to_piece[10]*1000,
+    tf_camera_to_workpiece << camera_to_piece[0], camera_to_piece[1], camera_to_piece[2], -camera_to_piece[9]*1000,
+                          camera_to_piece[3], camera_to_piece[4], camera_to_piece[5], -camera_to_piece[10]*1000,
                           camera_to_piece[6], camera_to_piece[7], camera_to_piece[8], camera_to_piece[11]*1000,
                           0.0, 0.0, 0.0, 1.0;
     std::cout << "tf_camera_to_workpiece:" << std::endl << tf_camera_to_workpiece << std::endl;
@@ -111,7 +111,7 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
         // Eigen::MatrixXd position_tf = tf_robot_to_camera.inverse()*point_matrix;     // V2
         // Eigen::MatrixXd position_tf = tf_robot_to_workpiece.inverse()*point_matrix;     // V3
         // Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;  // V4
-        Eigen::MatrixXd position_tf = point_matrix;
+        Eigen::MatrixXd position_tf = tf_robot_to_workpiece.inverse()*point_matrix;
         // Eigen::MatrixXd position_tf = tf_robot_workspace*point_matrix;  // V1
         // std::cout << "inverse matrix:" << std::endl << tf_robot_workspace*tf_camera_to_workpiece.inverse() << std::endl;
         // std::cout << "position_tf matrix:" << std::endl << position_tf << std::endl;
