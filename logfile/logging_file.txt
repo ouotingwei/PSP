@@ -237,3 +237,5 @@
    [MOD_ERROR]No 
    [MOD_ERROR]No APRILTAG detected
    [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No APRILTAG detected
+   [MOD_ERROR]No 

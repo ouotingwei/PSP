@@ -334,14 +334,20 @@ vector<vector<double>> BorderReinforcement ( vector<vector<double>> cloud )
     return contour;
 }
 
-vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
+vector<vector<double>> PathCloudFilter ( vector<vector<double>> input_cloud )
 {
     // int rounds = 6;
     vector<vector<double>> ok_cloud_1;
-    vector<vector<double>> ok_cloud_2;
-    vector<vector<double>> ok_cloud_3;
-    float max_x = cloud[ 0 ][ 0 ];
+    // vector<vector<double>> ok_cloud_2;
+    // vector<vector<double>> ok_cloud_3;
+    vector<vector<double>> cloud=input_cloud;
+    for(auto& point:cloud){
+        double tmp=point[0];
+        point[0]=point[1];
+        point[1]=tmp;
 
+    }
+    float max_x = cloud[ 0 ][ 0 ];
     // find the pointcloud range
     for ( int i = 0; i < cloud.size(); i++ )
     {
@@ -380,9 +386,9 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
 
     float shift_distance = ( max_x - min_x ) / rounds;
 
-    vector<double> startPoint = { 0, 0, -0.1, 0, 0, 0 };
+    vector<double> startPoint = { 0, 0, -0.3, 0, 0, 0 };
     
-    ok_cloud_1.push_back( startPoint );
+    // ok_cloud_1.push_back( startPoint );
 
     for ( int i = 0; i <= rounds; i++ )
     {
@@ -402,8 +408,8 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
         if ( i % 2 == 0 )
         {
             std::sort( tmp_cloud.begin(), tmp_cloud.end(), SortYaxisBigToSmall );
-            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ 0 ][ 2 ] - 0.03, 0, 0, 0 };
-            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ] - 0.03, 0, 0, 0 };
+            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ 0 ][ 2 ] - 0.0, 0, 0, 0 };
+            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ] - 0.0, 0, 0, 0 };
             edge_contour.push_back( tmp_cloud.front() );
             edge_contour.push_back( tmp_cloud.back() );
             ok_cloud_1.push_back( ap_max_y );
@@ -419,8 +425,8 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
         else
         {
             std::sort( tmp_cloud.begin(), tmp_cloud.end(), SortYaxisSmallToBig );
-            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ], 0, 0, 0 };
-            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ 0 ][ 2 ], 0, 0, 0 };
+            vector<double> ap_max_y = { x, max_y + PLASMA_DIA + 0.02, tmp_cloud[ tmp_cloud.size() - 1 ][ 2 ]- 0.0, 0, 0, 0 };
+            vector<double> ap_min_y = { x, min_y - PLASMA_DIA - 0.02, tmp_cloud[ 0 ][ 2 ]- 0.0, 0, 0, 0 };
             edge_contour.push_back( tmp_cloud.back() );
             edge_contour.push_back( tmp_cloud.front() );
             ok_cloud_1.push_back( ap_min_y );
@@ -434,7 +440,7 @@ vector<vector<double>> PathCloudFilter ( vector<vector<double>> cloud )
         }
     }
 
-    ok_cloud_1.push_back( startPoint );
+    // ok_cloud_1.push_back( startPoint );
 
     return ok_cloud_1;
 }
@@ -495,9 +501,9 @@ void the_origin_main_function ()
     sor.setStddevMulThresh( 0.001 );
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr smooth( new pcl::PointCloud<pcl::PointXYZRGBA> );
-    sor.filter( *smooth );
+    // sor.filter( *smooth );
 
-    vector<vector<double>> vectors = estimateNormals( smooth );
+    vector<vector<double>> vectors = estimateNormals( downsampledCloud );
     vector<vector<double>> ok_cloud = OriginCorrectionPointCloud( vectors );
 
     // jylong edit
@@ -523,6 +529,13 @@ void the_origin_main_function ()
     std::string absfile_path = std::string( homeDir ) + "/PSP/files/B003.LS";
 
     const std::string file_path = "B003.LS";
+
+    // for(auto& point:waypoints){
+    //     double tmp=point.x;
+    //     point.x=point.y;
+    //     point.y=tmp;
+    // }
+
     if ( writeLsFile( absfile_path,file_path ,waypoints ) )
     {
         printf( "Write LS error !!!\n" );

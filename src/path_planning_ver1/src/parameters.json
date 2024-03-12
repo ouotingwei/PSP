@@ -3,7 +3,7 @@
   "TF_Z_BIAS":58,  
   "removeBounceGate":0.1,
   "nearby_distance":0.01,
-  "rounds":12,
+  "rounds":6,
   "height":0.00,
   "velocity":100
   }
