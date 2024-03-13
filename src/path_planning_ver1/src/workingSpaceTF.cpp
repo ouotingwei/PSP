@@ -81,13 +81,12 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
 
     Eigen::MatrixXd tf_camera_to_workpiece(4, 4);
     tf_camera_to_workpiece << camera_to_piece[0], camera_to_piece[1], camera_to_piece[2], -camera_to_piece[9]*1000,
-                          camera_to_piece[3], camera_to_piece[4], camera_to_piece[5], camera_to_piece[10]*1000,
-                          camera_to_piece[6], camera_to_piece[7], camera_to_piece[8], camera_to_piece[11]*1000,
+                          camera_to_piece[3], camera_to_piece[4], camera_to_piece[5], -camera_to_piece[10]*1000,
+                          camera_to_piece[6], camera_to_piece[7], camera_to_piece[8], -camera_to_piece[11]*1000,
                           0.0, 0.0, 0.0, 1.0;
     std::cout << "tf_camera_to_workpiece:" << std::endl << tf_camera_to_workpiece << std::endl;
 
     // Transform robot base to workspace
-    // ! need add camera to plasma bias 
     // double transition_p[3] = {420.000, 0.000, -325.827+TF_Z_BIAS};
     double transition_p[3] = {0.000, 0.000, -325.827+TF_Z_BIAS};
     double transition_v[3] = {-180, 0, 0};
@@ -100,38 +99,25 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
                           0.0, 0.0, 0.0, 1.0;
     std::cout << "tf_robot_workspace:" << std::endl << tf_robot_workspace << std::endl;
 
-    Eigen::MatrixXd tf_robot_to_workpiece = tf_robot_to_camera*tf_camera_to_workpiece;
+    Eigen::MatrixXd tf_robot_to_workpiece = tf_camera_to_workpiece*tf_robot_to_camera;
     std::cout << "tf_robot_to_workpiece:" << std::endl << tf_robot_to_workpiece << std::endl;
 
-    std::cout << "tf_robot_to_workpiece inverse:" << std::endl << tf_robot_to_workpiece.inverse() << std::endl;
-    // std::cout << "tf_robot_to_workpiece inverse:" << std::endl << tf_robot_to_workpiece.inverse() << std::endl;
-    // std::cout << "all :" << std::endl << tf_robot_workspace*tf_robot_to_workpiece.inverse() << std::endl;
-        Waypoint startPoint;
-        initializeWaypoints(&startPoint,vel);
-        startPoint.x = 420.246;
-        startPoint.y = 0.000;
-        startPoint.z = 53.417;
-        startPoint.W = -180.000;
-        startPoint.P = 0.000;
-        startPoint.R = 0.000;
-        waypoints.push_back(startPoint);
+    std::cout << "final tf :" << std::endl << tf_robot_workspace*tf_robot_to_workpiece.inverse() << std::endl;
+
+    // capture point
+    Waypoint startPoint;
+    initializeWaypoints(&startPoint,vel);
+    startPoint.x = 420.246;
+    startPoint.y = 0.000;
+    startPoint.z = 53.417;
+    startPoint.W = -180.000;
+    startPoint.P = 0.000;
+    startPoint.R = 0.000;
+
+    waypoints.push_back(startPoint);
     for (int i = 0; i < points.size(); i++) {
         Eigen::Vector4d point_matrix(points[i][0], points[i][1], points[i][2], 1.0);
-        Eigen::MatrixXd tf_robot_to_workpiece = tf_robot_to_camera*tf_camera_to_workpiece;
-        
-        // Eigen::MatrixXd position_tf = tf_robot_to_camera.inverse()*point_matrix;     // V2
-        // Eigen::MatrixXd position_tf = tf_robot_to_workpiece.inverse()*point_matrix;     // V3
-        // Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;  // V4
-        Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;  // V4
-        // std::cout << "point_matrix :" << std::endl << point_matrix << std::endl;
-        // Eigen::MatrixXd position_tf = point_matrix.transpose()*tf_robot_to_workpiece.inverse();
-        // position_tf=position_tf/position_tf(0,3);
-        // std::cout<<position_tf<<std::endl;
-        // Eigen::MatrixXd position_tf = 
-        // Eigen::MatrixXd position_tf = tf_robot_to_workpiece.inverse()*point_matrix;
-        // Eigen::MatrixXd position_tf = tf_robot_workspace*point_matrix;  // V1
-        // std::cout << "inverse matrix:" << std::endl << tf_robot_workspace*tf_camera_to_workpiece.inverse() << std::endl;
-        // std::cout << "position_tf matrix:" << std::endl << position_tf << std::endl;
+        Eigen::MatrixXd position_tf = tf_robot_workspace*tf_robot_to_workpiece.inverse()*point_matrix;  
 
         // Transform vectors to workspace
         double vector_tf[3];
@@ -140,8 +126,6 @@ void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<
         }
 
         // Output waypoints
-
-
         Waypoint newPoint;
         initializeWaypoints(&newPoint,vel);
         newPoint.x = position_tf(0, 0);
