@@ -56,7 +56,7 @@ void vector2Angle(std::vector<std::vector<double>>& points)
 void workingSpaceTF(const std::vector<std::vector<double>>& points, std::vector<Waypoint>& waypoints, double theta,double TF_Z_BIAS,double vel) 
 {
     // Transform robot base to camera
-    double transition_rtc[3] = {500.000, 60.000, 460.000};
+    double transition_rtc[3] = {500.000, 20.000, 460.000};
     Eigen::MatrixXd tf_robot_to_camera(4, 4);
     tf_robot_to_camera << -1.0, 0.0, 0.0, transition_rtc[0],
                           0.0, -1.0, 0.0, transition_rtc[1],

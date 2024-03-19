@@ -124,7 +124,7 @@ def save_point_cloud_as_pcd(rotation, translation):
 
         bounding_box = o3d.geometry.AxisAlignedBoundingBox(
             min_bound=[-0.35, 0, -0.1],
-            max_bound=[0, 0.22, -0.01]
+            max_bound=[0, 0.22, -0.03]
         )
 
         cropped_pcd = pcd.crop(bounding_box)
